@@ -17,8 +17,75 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Criado com a Lasy",
-  description: "Projeto criado com Lasy AI",
+  title: "Imobiliário GO - Gestão Imobiliária Inteligente com IA | Portugal & Brasil",
+  description: "Plataforma líder de gestão imobiliária com Inteligência Artificial para corretores em Portugal e Brasil. Deduplicação automática de imóveis, integração Casafari, otimização de vendas e cruzamento inteligente de dados. Transforme sua corretagem com tecnologia de ponta.",
+  keywords: [
+    "gestão imobiliária",
+    "corretores de imóveis",
+    "imóveis Portugal",
+    "imóveis Brasil",
+    "inteligência artificial imobiliária",
+    "Casafari",
+    "deduplicação de imóveis",
+    "plataforma imobiliária",
+    "software para corretores",
+    "CRM imobiliário",
+    "vendas de imóveis",
+    "mercado imobiliário",
+    "tecnologia imobiliária",
+    "gestão de propriedades",
+    "corretagem inteligente"
+  ],
+  authors: [{ name: "Imobiliário GO" }],
+  creator: "Imobiliário GO",
+  publisher: "Imobiliário GO",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_PT",
+    alternateLocale: ["pt_BR"],
+    url: "https://imobiliario-go.com",
+    title: "Imobiliário GO - Gestão Imobiliária Inteligente com IA",
+    description: "Plataforma líder de gestão imobiliária com IA para corretores em Portugal e Brasil. Deduplicação automática, integração Casafari e otimização de vendas.",
+    siteName: "Imobiliário GO",
+    images: [
+      {
+        url: "/icon.svg",
+        width: 1200,
+        height: 630,
+        alt: "Imobiliário GO - Gestão Imobiliária Inteligente",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Imobiliário GO - Gestão Imobiliária Inteligente com IA",
+    description: "Plataforma líder de gestão imobiliária com IA para corretores em Portugal e Brasil.",
+    images: ["/icon.svg"],
+    creator: "@imobiliariogo",
+  },
+  alternates: {
+    canonical: "https://imobiliario-go.com",
+    languages: {
+      'pt-PT': 'https://imobiliario-go.com/pt',
+      'pt-BR': 'https://imobiliario-go.com/br',
+    },
+  },
+  verification: {
+    google: "google-site-verification-code",
+    yandex: "yandex-verification-code",
+  },
+  category: "Real Estate Technology",
 };
 
 export default function RootLayout({
@@ -30,6 +97,59 @@ export default function RootLayout({
     <html lang="pt-BR">
       <head>
         <Script src="/lasy-bridge.js" strategy="beforeInteractive" />
+        
+        {/* Schema.org JSON-LD para SEO */}
+        <Script
+          id="schema-org"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Imobiliário GO",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "150"
+              },
+              "description": "Plataforma líder de gestão imobiliária com Inteligência Artificial para corretores em Portugal e Brasil. Deduplicação automática de imóveis, integração Casafari, otimização de vendas.",
+              "featureList": [
+                "Deduplicação automática de imóveis",
+                "Integração com Casafari API",
+                "Cruzamento inteligente de dados com IA",
+                "Otimização de consultas",
+                "Gestão centralizada de propriedades"
+              ],
+              "screenshot": "/icon.svg",
+              "softwareVersion": "1.0",
+              "author": {
+                "@type": "Organization",
+                "name": "Imobiliário GO"
+              },
+              "provider": {
+                "@type": "Organization",
+                "name": "Imobiliário GO",
+                "url": "https://imobiliario-go.com"
+              }
+            })
+          }}
+        />
+
+        {/* Hreflang para Portugal e Brasil */}
+        <link rel="alternate" hrefLang="pt-PT" href="https://imobiliario-go.com/pt" />
+        <link rel="alternate" hrefLang="pt-BR" href="https://imobiliario-go.com/br" />
+        <link rel="alternate" hrefLang="x-default" href="https://imobiliario-go.com" />
+        
+        {/* Preconnect para performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

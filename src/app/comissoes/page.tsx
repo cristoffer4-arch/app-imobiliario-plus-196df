@@ -4,21 +4,29 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { 
   ArrowLeft, Calculator, DollarSign, TrendingUp, FileText,
-  Download, Eye, CheckCircle
+  Download, Eye, CheckCircle, Percent, Building2
 } from 'lucide-react';
 import { TAXA_IVA_RECIBOS_VERDES } from '@/lib/constants';
 
 export default function ComissoesPage() {
   const [valorVenda, setValorVenda] = useState<string>('');
-  const [percentualComissao, setPercentualComissao] = useState<string>('3');
+  const [percentualComissaoImobiliaria, setPercentualComissaoImobiliaria] = useState<string>('5');
+  const [percentualConsultor, setPercentualConsultor] = useState<string>('50');
   const [tipoNegocio, setTipoNegocio] = useState<'venda' | 'arrendamento'>('venda');
   
   const valorVendaNum = parseFloat(valorVenda) || 0;
-  const percentualNum = parseFloat(percentualComissao) || 0;
+  const percentualImobiliariaNum = parseFloat(percentualComissaoImobiliaria) || 0;
+  const percentualConsultorNum = parseFloat(percentualConsultor) || 0;
   
-  const valorBruto = valorVendaNum * (percentualNum / 100);
-  const valorIVA = valorBruto * TAXA_IVA_RECIBOS_VERDES;
-  const valorLiquido = valorBruto - valorIVA;
+  // Cálculo da comissão total da imobiliária
+  const comissaoTotalImobiliaria = valorVendaNum * (percentualImobiliariaNum / 100);
+  
+  // Cálculo da comissão bruta do consultor (% sobre a comissão da imobiliária)
+  const valorBrutoConsultor = comissaoTotalImobiliaria * (percentualConsultorNum / 100);
+  
+  // Cálculo do IVA e valor líquido do consultor
+  const valorIVA = valorBrutoConsultor * TAXA_IVA_RECIBOS_VERDES;
+  const valorLiquidoConsultor = valorBrutoConsultor - valorIVA;
 
   const comissoesHistorico = [
     {
@@ -26,8 +34,10 @@ export default function ComissoesPage() {
       cliente: 'João Silva',
       imovel: 'Apartamento T3 - Lisboa',
       valor_venda: 285000,
-      comissao_bruta: 8550,
-      comissao_liquida: 6583.50,
+      comissao_imobiliaria: 14250,
+      percentual_consultor: 50,
+      comissao_bruta: 7125,
+      comissao_liquida: 5486.25,
       data: new Date('2024-01-20'),
       status: 'pago'
     },
@@ -36,6 +46,8 @@ export default function ComissoesPage() {
       cliente: 'Maria Santos',
       imovel: 'Moradia V3 - Cascais',
       valor_venda: 450000,
+      comissao_imobiliaria: 22500,
+      percentual_consultor: 60,
       comissao_bruta: 13500,
       comissao_liquida: 10395,
       data: new Date('2024-01-18'),
@@ -46,8 +58,10 @@ export default function ComissoesPage() {
       cliente: 'Carlos Pereira',
       imovel: 'Apartamento T2 - Porto',
       valor_venda: 195000,
-      comissao_bruta: 5850,
-      comissao_liquida: 4504.50,
+      comissao_imobiliaria: 9750,
+      percentual_consultor: 45,
+      comissao_bruta: 4387.50,
+      comissao_liquida: 3378.38,
       data: new Date('2024-01-15'),
       status: 'pendente'
     },
@@ -174,19 +188,44 @@ export default function ComissoesPage() {
                 />
               </div>
 
-              {/* Percentual de Comissão */}
+              {/* Percentual de Comissão da Imobiliária */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Percentual de Comissão (%)
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Comissão da Imobiliária (%)
                 </label>
                 <input
                   type="number"
-                  value={percentualComissao}
-                  onChange={(e) => setPercentualComissao(e.target.value)}
-                  placeholder="Ex: 3"
+                  value={percentualComissaoImobiliaria}
+                  onChange={(e) => setPercentualComissaoImobiliaria(e.target.value)}
+                  placeholder="Ex: 5"
                   step="0.1"
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Percentual que a imobiliária cobra sobre o valor da venda
+                </p>
+              </div>
+
+              {/* Percentual do Consultor */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <Percent className="w-4 h-4" />
+                  Percentual do Consultor (%)
+                </label>
+                <input
+                  type="number"
+                  value={percentualConsultor}
+                  onChange={(e) => setPercentualConsultor(e.target.value)}
+                  placeholder="Ex: 50"
+                  step="1"
+                  min="0"
+                  max="100"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Percentual que você recebe sobre a comissão da imobiliária
+                </p>
               </div>
 
               {/* Resultados */}
@@ -196,12 +235,21 @@ export default function ComissoesPage() {
                 </h3>
 
                 <div className="space-y-3">
+                  <div className="flex justify-between items-center pb-3 border-b border-green-200 dark:border-green-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Comissão Total Imobiliária
+                    </span>
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      {comissaoTotalImobiliaria.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
+                    </span>
+                  </div>
+
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Comissão Bruta
+                      Sua Comissão Bruta ({percentualConsultorNum}%)
                     </span>
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      {valorBruto.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
+                      {valorBrutoConsultor.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
                     </span>
                   </div>
 
@@ -217,10 +265,10 @@ export default function ComissoesPage() {
                   <div className="pt-3 border-t-2 border-green-300 dark:border-green-700">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        Valor Líquido
+                        Seu Valor Líquido
                       </span>
                       <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {valorLiquido.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
+                        {valorLiquidoConsultor.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
                       </span>
                     </div>
                   </div>
@@ -272,20 +320,32 @@ export default function ComissoesPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Comissão Bruta</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Comissão Imobiliária</p>
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                        {comissao.comissao_imobiliaria.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Seu % ({comissao.percentual_consultor}%)</p>
                       <p className="font-semibold text-gray-900 dark:text-white">
                         {comissao.comissao_bruta.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Seu Líquido</p>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                        {comissao.comissao_liquida.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-600">
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Líquido</p>
-                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                        {comissao.comissao_liquida.toLocaleString('pt-PT', { minimumFractionDigits: 2 })}€
-                      </p>
-                    </div>
+                    <p className="text-xs text-gray-400">
+                      {comissao.data.toLocaleDateString('pt-PT')}
+                    </p>
                     <div className="flex gap-2">
                       <button className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
                         <Eye className="w-4 h-4" />
@@ -295,10 +355,6 @@ export default function ComissoesPage() {
                       </button>
                     </div>
                   </div>
-
-                  <p className="text-xs text-gray-400 mt-2">
-                    {comissao.data.toLocaleDateString('pt-PT')}
-                  </p>
                 </div>
               ))}
             </div>

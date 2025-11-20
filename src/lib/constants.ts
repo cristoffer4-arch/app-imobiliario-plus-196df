@@ -1,5 +1,5 @@
 // Constantes e dados mock para Imobiliário GO Plus
-import { Lead, Imovel, Badge, Desafio, UserStats, Notificacao, RelatorioMercado } from './types';
+import { Lead, Imovel, Badge, Desafio, UserStats, Notificacao, RelatorioMercado, MetaCoaching, SessaoCoaching, KPICoaching, PlanoAcao, FeedbackCoaching, AnalisePerformance } from './types';
 
 export const TAXA_IVA_RECIBOS_VERDES = 0.23; // 23% IVA em Portugal
 
@@ -76,6 +76,8 @@ export const MOCK_IMOVEIS: Imovel[] = [
     imagens: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop'],
     data_adicao: new Date('2024-01-10'),
     proprietario: 'António Ferreira',
+    imobiliaria: 'Imobiliária Prime Lisboa',
+    data_ultima_atualizacao: new Date('2024-01-22'),
   },
   {
     id: '2',
@@ -91,6 +93,8 @@ export const MOCK_IMOVEIS: Imovel[] = [
     imagens: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop'],
     data_adicao: new Date('2024-01-12'),
     proprietario: 'Sofia Rodrigues',
+    imobiliaria: 'Cascais Premium Properties',
+    data_ultima_atualizacao: new Date('2024-01-20'),
   },
   {
     id: '3',
@@ -106,6 +110,8 @@ export const MOCK_IMOVEIS: Imovel[] = [
     imagens: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop'],
     data_adicao: new Date('2024-01-14'),
     proprietario: 'Miguel Sousa',
+    imobiliaria: 'Porto Real Estate',
+    data_ultima_atualizacao: new Date('2024-01-23'),
   },
 ];
 
@@ -221,4 +227,248 @@ export const PROFILE_FEATURES = {
     relatorios_ia: true,
     limite_leads: -1, // ilimitado
   },
+};
+
+// Dados Mock para Coaching Comercial
+
+export const MOCK_METAS_COACHING: MetaCoaching[] = [
+  {
+    id: '1',
+    titulo: 'Aumentar Vendas Mensais',
+    descricao: 'Atingir 5 vendas por mês de forma consistente',
+    prazo: 'curto',
+    data_inicio: new Date('2024-01-01'),
+    data_fim: new Date('2024-03-31'),
+    status: 'em_progresso',
+    valor_inicial: 2,
+    valor_atual: 3,
+    valor_meta: 5,
+    unidade: 'vendas',
+    area: 'fechamento',
+    acoes: [
+      { id: 'a1', meta_id: '1', descricao: 'Fazer follow-up diário com leads quentes', prazo: new Date('2024-01-31'), concluida: true, data_conclusao: new Date('2024-01-25') },
+      { id: 'a2', meta_id: '1', descricao: 'Implementar técnica de fechamento consultivo', prazo: new Date('2024-02-15'), concluida: false },
+      { id: 'a3', meta_id: '1', descricao: 'Criar urgência com ofertas limitadas', prazo: new Date('2024-02-28'), concluida: false },
+    ]
+  },
+  {
+    id: '2',
+    titulo: 'Melhorar Taxa de Conversão',
+    descricao: 'Aumentar conversão de leads para 25%',
+    prazo: 'medio',
+    data_inicio: new Date('2024-01-01'),
+    data_fim: new Date('2024-06-30'),
+    status: 'em_progresso',
+    valor_inicial: 15,
+    valor_atual: 18,
+    valor_meta: 25,
+    unidade: 'percentual',
+    area: 'negociacao',
+    acoes: [
+      { id: 'a4', meta_id: '2', descricao: 'Qualificar melhor os leads antes do contacto', prazo: new Date('2024-02-15'), concluida: false },
+      { id: 'a5', meta_id: '2', descricao: 'Desenvolver script de apresentação personalizado', prazo: new Date('2024-03-01'), concluida: false },
+    ]
+  },
+  {
+    id: '3',
+    titulo: 'Gerar 50 Leads Qualificados/Mês',
+    descricao: 'Construir pipeline robusto de leads qualificados',
+    prazo: 'medio',
+    data_inicio: new Date('2024-01-01'),
+    data_fim: new Date('2024-06-30'),
+    status: 'em_progresso',
+    valor_inicial: 25,
+    valor_atual: 35,
+    valor_meta: 50,
+    unidade: 'leads',
+    area: 'prospeccao',
+    acoes: [
+      { id: 'a6', meta_id: '3', descricao: 'Criar conteúdo de valor nas redes sociais', prazo: new Date('2024-02-01'), concluida: true, data_conclusao: new Date('2024-01-28') },
+      { id: 'a7', meta_id: '3', descricao: 'Participar em 2 eventos de networking por mês', prazo: new Date('2024-03-31'), concluida: false },
+    ]
+  },
+];
+
+export const MOCK_SESSOES_COACHING: SessaoCoaching[] = [
+  {
+    id: '1',
+    titulo: 'Sessão Inicial - Definição de Objetivos',
+    data: new Date('2024-01-05T10:00:00'),
+    duracao: 90,
+    status: 'concluida',
+    coach: 'Dr. Ricardo Mendes',
+    consultor: 'Ana Costa',
+    topicos: ['Análise situação atual', 'Definição de metas SMART', 'Plano de ação trimestral'],
+    notas: 'Consultor demonstra forte motivação. Principais desafios: gestão de tempo e follow-up consistente.',
+    proximos_passos: ['Implementar sistema CRM', 'Definir rotina matinal de prospecção', 'Agendar próxima sessão'],
+  },
+  {
+    id: '2',
+    titulo: 'Revisão Mensal - Janeiro',
+    data: new Date('2024-02-02T14:00:00'),
+    duracao: 60,
+    status: 'concluida',
+    coach: 'Dr. Ricardo Mendes',
+    consultor: 'Ana Costa',
+    topicos: ['Análise de resultados', 'Ajuste de estratégias', 'Feedback sobre técnicas de negociação'],
+    notas: 'Progresso positivo. Taxa de conversão aumentou 3%. Necessário trabalhar objeções comuns.',
+    proximos_passos: ['Praticar role-play de objeções', 'Implementar técnica de espelhamento', 'Aumentar frequência de follow-up'],
+  },
+  {
+    id: '3',
+    titulo: 'Sessão Estratégica - Fevereiro',
+    data: new Date('2024-02-28T10:00:00'),
+    duracao: 90,
+    status: 'agendada',
+    coach: 'Dr. Ricardo Mendes',
+    consultor: 'Ana Costa',
+    topicos: ['Revisão trimestral', 'Estratégias de marketing pessoal', 'Planeamento Q2'],
+  },
+];
+
+export const MOCK_KPIS_COACHING: KPICoaching[] = [
+  {
+    id: '1',
+    nome: 'Leads Gerados',
+    valor_atual: 35,
+    valor_meta: 50,
+    unidade: 'leads/mês',
+    periodo: 'mensal',
+    tendencia: 'subida',
+    historico: [
+      { data: new Date('2024-01-01'), valor: 25 },
+      { data: new Date('2024-01-08'), valor: 28 },
+      { data: new Date('2024-01-15'), valor: 32 },
+      { data: new Date('2024-01-22'), valor: 35 },
+    ]
+  },
+  {
+    id: '2',
+    nome: 'Taxa de Conversão',
+    valor_atual: 18,
+    valor_meta: 25,
+    unidade: '%',
+    periodo: 'mensal',
+    tendencia: 'subida',
+    historico: [
+      { data: new Date('2024-01-01'), valor: 15 },
+      { data: new Date('2024-01-08'), valor: 16 },
+      { data: new Date('2024-01-15'), valor: 17 },
+      { data: new Date('2024-01-22'), valor: 18 },
+    ]
+  },
+  {
+    id: '3',
+    nome: 'Vendas Realizadas',
+    valor_atual: 3,
+    valor_meta: 5,
+    unidade: 'vendas/mês',
+    periodo: 'mensal',
+    tendencia: 'estavel',
+    historico: [
+      { data: new Date('2024-01-01'), valor: 2 },
+      { data: new Date('2024-01-08'), valor: 2 },
+      { data: new Date('2024-01-15'), valor: 3 },
+      { data: new Date('2024-01-22'), valor: 3 },
+    ]
+  },
+  {
+    id: '4',
+    nome: 'Comissão Gerada',
+    valor_atual: 8500,
+    valor_meta: 15000,
+    unidade: '€/mês',
+    periodo: 'mensal',
+    tendencia: 'subida',
+    historico: [
+      { data: new Date('2024-01-01'), valor: 5000 },
+      { data: new Date('2024-01-08'), valor: 6200 },
+      { data: new Date('2024-01-15'), valor: 7800 },
+      { data: new Date('2024-01-22'), valor: 8500 },
+    ]
+  },
+];
+
+export const MOCK_PLANO_ACAO: PlanoAcao = {
+  id: '1',
+  semana: 4,
+  ano: 2024,
+  objetivos: [
+    'Contactar 15 novos leads',
+    'Marcar 5 visitas',
+    'Fechar 2 vendas',
+    'Publicar 3 posts nas redes sociais'
+  ],
+  acoes_diarias: [
+    {
+      dia: 'Segunda',
+      acoes: ['Revisar pipeline de leads', 'Fazer 5 chamadas de prospecção', 'Preparar apresentações para visitas da semana']
+    },
+    {
+      dia: 'Terça',
+      acoes: ['Follow-up com leads quentes', 'Realizar 2 visitas agendadas', 'Atualizar CRM']
+    },
+    {
+      dia: 'Quarta',
+      acoes: ['Networking - evento imobiliário', 'Preparar propostas comerciais', 'Publicar conteúdo redes sociais']
+    },
+    {
+      dia: 'Quinta',
+      acoes: ['Fazer 5 chamadas de prospecção', 'Realizar 1 visita', 'Negociar com leads em proposta']
+    },
+    {
+      dia: 'Sexta',
+      acoes: ['Follow-up semanal com todos os leads', 'Fechar negociações pendentes', 'Planeamento próxima semana']
+    },
+  ],
+  resultado_esperado: 'Aumentar pipeline em 30% e fechar 2 vendas',
+  resultado_real: 'Pipeline aumentou 25%, fechadas 1 venda (50% da meta)',
+  aprendizados: [
+    'Necessário melhorar qualificação de leads antes do contacto',
+    'Técnica de urgência funcionou bem em 2 casos',
+    'Networking gerou 3 leads qualificados'
+  ]
+};
+
+export const MOCK_FEEDBACK_COACHING: FeedbackCoaching[] = [
+  {
+    id: '1',
+    data: new Date('2024-01-31'),
+    tipo: 'mensal',
+    pontos_fortes: [
+      'Excelente capacidade de relacionamento com clientes',
+      'Proatividade na prospecção de novos leads',
+      'Boa organização do pipeline de vendas'
+    ],
+    areas_melhoria: [
+      'Gestão de objeções - necessita de mais prática',
+      'Follow-up poderia ser mais consistente',
+      'Técnicas de fechamento precisam ser aprimoradas'
+    ],
+    recomendacoes: [
+      'Estudar e praticar 5 técnicas de tratamento de objeções',
+      'Implementar sistema de lembretes automáticos para follow-up',
+      'Participar em workshop de técnicas de fechamento',
+      'Fazer role-play semanal com coach'
+    ],
+    proximas_acoes: [
+      'Agendar workshop de objeções para próxima semana',
+      'Configurar automações de follow-up no CRM',
+      'Praticar script de fechamento diariamente'
+    ],
+    nota_desempenho: 7.5
+  },
+];
+
+export const MOCK_ANALISE_PERFORMANCE: AnalisePerformance = {
+  periodo: 'Janeiro 2024',
+  leads_gerados: 35,
+  leads_convertidos: 6,
+  taxa_conversao: 17.1,
+  vendas_realizadas: 3,
+  comissao_gerada: 8500,
+  tempo_medio_fechamento: 28,
+  satisfacao_cliente: 8.5,
+  areas_destaque: ['prospeccao', 'relacionamento'],
+  areas_atencao: ['negociacao', 'fechamento']
 };
