@@ -1,36 +1,317 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 Imobiliário GO - Gestão Imobiliária Inteligente
 
-## Getting Started
+Plataforma de gestão imobiliária com Inteligência Artificial para corretores em Portugal e Brasil.
 
-First, run the development server:
+## 🚀 Quick Start
+
+### Pré-requisitos
+
+- Node.js 20+ instalado
+- npm ou yarn
+- Chave API OpenAI
+
+### Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clonar repositório
+git clone <seu-repositorio>
+cd imobiliario-go
+
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env.local
+# Edite .env.local com suas chaves
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Configurar Variáveis de Ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crie o arquivo `.env.local` na raiz do projeto:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# OpenAI (Obrigatório)
+OPENAI_API_KEY="sua-chave-openai"
 
-## Learn More
+# Supabase (Opcional - para funcionalidades futuras)
+NEXT_PUBLIC_SUPABASE_URL="https://seu-projeto.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="sua-chave-anon"
+SUPABASE_SERVICE_ROLE_KEY="sua-chave-service"
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Executar em Desenvolvimento
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Porta padrão (3000)
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Porta customizada (3001)
+npm run dev -- -p 3001
 
-## Deploy on Vercel
+# Abrir navegador
+# http://localhost:3000 (ou 3001)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Build e Produção
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Build
+npm run build
+
+# Iniciar servidor de produção
+npm start
+
+# Porta customizada
+PORT=3001 npm start
+```
+
+## 📖 Documentação Completa
+
+- **[Relatório Técnico Detalhado](./RELATORIO-TECNICO.md)** - Arquitetura, stack, endpoints, configurações
+- **[Guia de Porta 3001](./README-PORT-3001.md)** - Como rodar na porta 3001 (dev, prod, Docker, PM2, Nginx)
+- **[Status do Projeto](./STATUS-PROJETO.md)** - Tarefas concluídas e pendentes
+- **[Checklist de Deploy](./CHECKLIST-DEPLOY.md)** - Passo a passo para deploy
+
+## 🛠️ Stack Tecnológico
+
+- **Framework:** Next.js 15.4.6 (App Router)
+- **UI:** React 19.1.0 + TypeScript
+- **Styling:** Tailwind CSS v4
+- **Componentes:** Shadcn/ui + Radix UI
+- **IA:** OpenAI GPT-4o
+- **Database:** Supabase (configurado)
+- **Deploy:** Vercel (recomendado)
+
+## 📁 Estrutura do Projeto
+
+```
+projeto/
+├── src/
+│   ├── app/              # App Router (páginas e API)
+│   │   ├── api/chat/     # Endpoint OpenAI
+│   │   ├── layout.tsx    # Layout raiz
+│   │   └── page.tsx      # Página principal (Chat)
+│   ├── components/       # Componentes React
+│   │   └── ui/          # Shadcn/ui components
+│   ├── lib/             # Bibliotecas e utilitários
+│   │   └── openai.ts    # Cliente OpenAI
+│   └── hooks/           # React Hooks customizados
+├── public/              # Assets estáticos
+├── .env.local           # Variáveis de ambiente (criar)
+└── package.json         # Dependências e scripts
+```
+
+## 🔧 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev              # Porta 3000 (padrão)
+
+# Build
+npm run build            # Compilar para produção
+
+# Produção
+npm start                # Iniciar servidor (porta 3000)
+
+# Linting
+npm run lint             # Verificar código
+```
+
+## 🌐 Rodar na Porta 3001
+
+### Desenvolvimento
+
+**Opção 1: Flag inline**
+```bash
+npm run dev -- -p 3001
+```
+
+**Opção 2: Editar package.json**
+```json
+{
+  "scripts": {
+    "dev": "next dev --turbopack -p 3001"
+  }
+}
+```
+
+### Produção
+
+**Opção 1: Variável de ambiente**
+```bash
+PORT=3001 npm start
+```
+
+**Opção 2: Editar package.json**
+```json
+{
+  "scripts": {
+    "start": "PORT=3001 next start"
+  }
+}
+```
+
+**Opção 3: Arquivo .env.local**
+```bash
+PORT=3001
+```
+
+📚 **[Guia Completo de Porta 3001](./README-PORT-3001.md)** - Inclui Docker, PM2, Nginx
+
+## 🐳 Docker
+
+```bash
+# Build
+docker build -t imobiliario-go .
+
+# Run (porta 3001)
+docker run -p 3001:3001 --env-file .env.local imobiliario-go
+
+# Ou usar docker-compose
+docker-compose up -d
+```
+
+## 🔄 PM2 (Process Manager)
+
+```bash
+# Instalar PM2
+npm install -g pm2
+
+# Iniciar
+pm2 start ecosystem.config.js
+
+# Status
+pm2 status
+
+# Logs
+pm2 logs imobiliario-go
+```
+
+## 🌐 Nginx (Proxy Reverso)
+
+```nginx
+upstream nextjs_backend {
+    server localhost:3001;
+}
+
+server {
+    listen 80;
+    server_name seu-dominio.com;
+
+    location / {
+        proxy_pass http://nextjs_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+## ☁️ Deploy
+
+### Vercel (Recomendado)
+
+```bash
+# Instalar CLI
+npm install -g vercel
+
+# Deploy
+vercel --prod
+
+# Configurar variáveis no dashboard
+# https://vercel.com/seu-projeto/settings/environment-variables
+```
+
+### Outras Plataformas
+
+- **Railway:** Conectar repositório Git
+- **Render:** Deploy automático via Git
+- **AWS/GCP/Azure:** Usar Docker ou PM2
+
+## 🔐 Segurança
+
+⚠️ **IMPORTANTE:**
+
+- **NUNCA** commite `.env.local` no Git
+- Use variáveis de ambiente para chaves sensíveis
+- Configure CORS adequadamente em produção
+- Implemente rate limiting para APIs
+
+## 🧪 Testes
+
+```bash
+# Testes unitários (quando implementados)
+npm run test
+
+# Testes E2E (quando implementados)
+npm run test:e2e
+
+# Cobertura (quando implementados)
+npm run test:coverage
+```
+
+## 📊 Monitoramento
+
+### Logs
+
+```bash
+# Desenvolvimento
+# Logs aparecem no terminal
+
+# Produção com PM2
+pm2 logs imobiliario-go
+
+# Docker
+docker logs -f imobiliario-go
+```
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🆘 Suporte
+
+- **Documentação:** [RELATORIO-TECNICO.md](./RELATORIO-TECNICO.md)
+- **Issues:** Abra uma issue no GitHub
+- **Email:** suporte@imobiliario-go.com
+
+## 🗺️ Roadmap
+
+### ✅ Concluído
+- [x] Setup Next.js 15 + React 19
+- [x] Integração OpenAI GPT-4o
+- [x] Interface de chat funcional
+- [x] Design responsivo
+- [x] SEO otimizado
+
+### 🔄 Em Desenvolvimento
+- [ ] Sistema de autenticação (Supabase)
+- [ ] CRUD de imóveis
+- [ ] Dashboard de gestão
+- [ ] Integração Casafari API
+
+### 📋 Planejado
+- [ ] Sistema de deduplicação com IA
+- [ ] Análise preditiva
+- [ ] Relatórios automatizados
+- [ ] App mobile (React Native)
+
+## 📈 Status do Projeto
+
+**Versão:** 0.1.0  
+**Status:** 🟡 Em Desenvolvimento  
+**Última atualização:** 22/11/2024
+
+---
+
+**Desenvolvido com ❤️ para corretores de imóveis em Portugal e Brasil**
