@@ -38,7 +38,7 @@ jobs:
             npm run lint
           else
             echo "No 'lint' script. 
-            Skipping."
+        Skipping."
           fi
 
       - name: Type-check
