@@ -30,6 +30,9 @@ cp .env.example .env.local
 Crie o arquivo `.env.local` na raiz do projeto:
 
 ```bash
+# Porta da aplicação
+PORT=3001
+
 # OpenAI (Obrigatório)
 OPENAI_API_KEY="sua-chave-openai"
 
@@ -39,17 +42,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="sua-chave-anon"
 SUPABASE_SERVICE_ROLE_KEY="sua-chave-service"
 ```
 
+### Rodando na porta 3001 por padrão
+
+Este projeto está configurado para rodar na **porta 3001** tanto em desenvolvimento quanto em produção.
+
 ### Executar em Desenvolvimento
 
 ```bash
-# Porta padrão (3000)
+# Porta padrão (3001)
 npm run dev
 
-# Porta customizada (3001)
-npm run dev -- -p 3001
-
 # Abrir navegador
-# http://localhost:3000 (ou 3001)
+# http://localhost:3001
 ```
 
 ### Build e Produção
@@ -58,11 +62,11 @@ npm run dev -- -p 3001
 # Build
 npm run build
 
-# Iniciar servidor de produção
+# Iniciar servidor de produção (porta 3001)
 npm start
 
-# Porta customizada
-PORT=3001 npm start
+# Abrir navegador
+# http://localhost:3001
 ```
 
 ## 📖 Documentação Completa
@@ -104,56 +108,48 @@ projeto/
 ## 🔧 Scripts Disponíveis
 
 ```bash
-# Desenvolvimento
-npm run dev              # Porta 3000 (padrão)
+# Desenvolvimento (porta 3001)
+npm run dev
 
 # Build
 npm run build            # Compilar para produção
 
-# Produção
-npm start                # Iniciar servidor (porta 3000)
+# Produção (porta 3001)
+npm start
 
 # Linting
 npm run lint             # Verificar código
 ```
 
-## 🌐 Rodar na Porta 3001
+## 🌐 Configuração de Porta
 
-### Desenvolvimento
+### Porta Padrão: 3001
 
-**Opção 1: Flag inline**
+O projeto está configurado para usar a **porta 3001** por padrão em todos os ambientes:
+
+- **Desenvolvimento:** `npm run dev` abre em `http://localhost:3001`
+- **Produção:** `npm start` abre em `http://localhost:3001`
+
+### Alterando a Porta (se necessário)
+
+**Opção 1: Variável de ambiente (.env.local)**
 ```bash
-npm run dev -- -p 3001
+PORT=3002
 ```
 
-**Opção 2: Editar package.json**
+**Opção 2: Flag inline (desenvolvimento)**
+```bash
+npm run dev -- -p 3002
+```
+
+**Opção 3: Editar package.json**
 ```json
 {
   "scripts": {
-    "dev": "next dev --turbopack -p 3001"
+    "dev": "next dev --turbopack -p 3002",
+    "start": "next start -p 3002"
   }
 }
-```
-
-### Produção
-
-**Opção 1: Variável de ambiente**
-```bash
-PORT=3001 npm start
-```
-
-**Opção 2: Editar package.json**
-```json
-{
-  "scripts": {
-    "start": "PORT=3001 next start"
-  }
-}
-```
-
-**Opção 3: Arquivo .env.local**
-```bash
-PORT=3001
 ```
 
 📚 **[Guia Completo de Porta 3001](./README-PORT-3001.md)** - Inclui Docker, PM2, Nginx
