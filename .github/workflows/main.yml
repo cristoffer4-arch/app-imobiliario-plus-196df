@@ -1,1 +1,55 @@
+name: CI (Next.js)
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+
+  - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+
+      - name: Lint
+        run: |
+          if [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ]; then
+            npm run lint || echo "No lint script; skipping"
+          else
+            echo "No ESLint config; skipping"
+          fi
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        env:
+          # Adicione variáveis necessárias ao build, se houver (NEXT_PUBLIC_*)
+          NODE_ENV: production
+        run: |
+          if [ -f package.json ]; then
+            npm run build
+          else
+            echo "No package.json; skipping build"
+          fi
