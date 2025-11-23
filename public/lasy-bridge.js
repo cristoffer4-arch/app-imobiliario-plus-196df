@@ -76,22 +76,22 @@
         return; // Não processar outros erros se sandbox expirou
       }
       
-      // ✅ NOVO: Detectar erro de conexão na porta 3000
+      // ✅ NOVO: Detectar erro de conexão na porta 3001
       if (document.title.includes('This site can\'t be reached') ||
           document.body.innerHTML.includes('ERR_CONNECTION_REFUSED') ||
-          document.body.innerHTML.includes('localhost:3000') ||
+          document.body.innerHTML.includes('localhost:3001') ||
           document.body.innerHTML.includes('refused to connect') ||
           document.body.innerHTML.includes('This page isn\'t working') ||
           (window.location.hostname === 'localhost' && document.body.innerHTML.includes('connection'))) {
         publish({
           source: 'connection-error',
           level: 'error',
-          message: 'Projeto não conectado na porta 3000',
-          args: ['Projeto não está rodando na porta 3000'],
-          type: 'port-3000-not-connected',
+          message: 'Projeto não conectado na porta 3001',
+          args: ['Projeto não está rodando na porta 3001'],
+          type: 'port-3001-not-connected',
           errorSource: 'localhost-connection'
         });
-        console.warn('[Lasy Bridge] Port 3000 connection error detected');
+        console.warn('[Lasy Bridge] Port 3001 connection error detected');
         return;
       }
       
