@@ -34,11 +34,11 @@ jobs:
       - name: Lint (optional)
         run: |
           if npm run | grep -q "^  lint$"; then
-              npm run lint
-          else
-              echo "No 'lint' script. Skipping."
-          fi
-
+    npm run lint
+else
+    echo "No 'lint' script. Skipping."
+fi
+ 
       - name: Type-check
         run: npx tsc --noEmit
 
