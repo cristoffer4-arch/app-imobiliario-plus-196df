@@ -31,8 +31,7 @@ jobs:
             npm i
           fi
 
-     
-- name: Lint (optional)
+   - name: Lint (optional)
   run: |
     if npm run | grep -q "^  lint$"; then
       npm run lint
