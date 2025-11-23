@@ -34,7 +34,7 @@ jobs:
       - name: Lint (optional)
         run: |
           if npm run | grep -q "^  lint$"; then
-              npm run lint
+            npm run lint
           else
             echo "No 'lint' script. Skipping."
           fi
