@@ -6,40 +6,165 @@
     <title>Coach Imobiliário - MVP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F5F5F5; }
-        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #20B2AA 0%, #1A9A93 100%); }
-        .login-card { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #20B2AA 0%, #1a8a7f 100%); }
+        .login-card { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
         .login-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 32px; text-align: center; }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
         .form-input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
         .btn-primary { width: 100%; padding: 16px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .btn-primary:hover { background: #1A9A93; }
+        .btn-primary:hover { background: #1a8a7f; }
         #appContainer { display: none; }
         #appContainer.active { display: block; }
+        .navbar { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 700; color: #20B2AA; }
+        .nav-menu { display: flex; gap: 24px; }
+        .nav-item { padding: 8px 16px; cursor: pointer; color: #666; font-weight: 500; border-radius: 8px; transition: all 0.3s; }
+        .nav-item.active { background: #20B2AA; color: white; }
+        .nav-item:hover { background: #e8f5f5; color: #20B2AA; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .properties-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #333; }
+        .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; }
+        .filter-input { padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; min-width: 150px; }
+        .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        .property-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
+        .property-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .property-image { width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; }
+        .property-content { padding: 16px; }
+        .property-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #333; }
+        .property-price { font-size: 22px; font-weight: 700; color: #20B2AA; margin-bottom: 8px; }
+        .property-location { color: #666; margin-bottom: 12px; font-size: 14px; }
+        .property-features { display: flex; gap: 16px; color: #888; font-size: 14px; }
+        .coach-chat { background: white; border-radius: 12px; padding: 24px; height: 600px; display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 16px; padding: 16px; }
+        .message { margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; max-width: 80%; }
+        .message.bot { background: #f0f9ff; align-self: flex-start; }
+        .message.user { background: #20B2AA; color: white; align-self: flex-end; margin-left: auto; }
+        .chat-input-group { display: flex; gap: 12px; }
+        .chat-input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn-send { padding: 12px 24px; background: #20B2AA; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .ranking-list { background: white; border-radius: 12px; padding: 24px; }
+        .ranking-item { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #eee; }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-position { font-size: 24px; font-weight: 700; color: #20B2AA; margin-right: 20px; min-width: 40px; }
+        .ranking-info { flex: 1; }
+        .ranking-name { font-weight: 600; margin-bottom: 4px; }
+        .ranking-points { color: #666; font-size: 14px; }
+        .profile-card { background: white; border-radius: 12px; padding: 32px; max-width: 600px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: #20B2AA; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700; margin: 0 auto 24px; }
+        .profile-info { text-align: center; margin-bottom: 32px; }
+        .profile-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .profile-email { color: #666; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
+        .tool-card { background: white; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: transform 0.3s; }
+        .tool-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .tool-icon { font-size: 48px; margin-bottom: 16px; }
+        .tool-name { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .tool-description { color: #666; font-size: 14px; }
+        .subscription-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .plan-card { background: white; border-radius: 12px; padding: 32px; text-align: center; border: 2px solid #eee; transition: all 0.3s; }
+        .plan-card.featured { border-color: #20B2AA; }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .plan-name { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+        .plan-price { font-size: 36px; font-weight: 700; color: #20B2AA; margin-bottom: 8px; }
+        .plan-period { color: #666; margin-bottom: 24px; }
+        .plan-features { text-align: left; margin-bottom: 24px; }
+        .plan-feature { padding: 8px 0; color: #666; font-size: 14px; }
+        .btn-plan { width: 100%; padding: 12px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="loginScreen" class="login-screen">
-        <h1 class="login-title">Coach Imobiliário</h1>
+    <div class="login-screen" id="loginScreen">
+        <h1 class="login-title">🏠 Coach Imobiliário</h1>
         <div class="login-card">
             <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-input" value="joao@teste.pt" required>
+                    <input type="email" class="form-input" placeholder="joao@teste.pt" value="joao@teste.pt" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Senha</label>
-                    <input type="password" class="form-input" value="123456" required>
+                    <input type="password" class="form-input" placeholder="123456" value="123456" required>
                 </div>
                 <button type="submit" class="btn-primary">Entrar</button>
             </form>
         </div>
     </div>
+
     <div id="appContainer">
-        <h1 style="padding: 40px; text-align: center;">✅ MVP Coach Imobiliário Funcionando!</h1>
-        <p style="text-align: center;">Credenciais: joao@teste.pt / 123456</p>
+        <nav class="navbar">
+            <div class="logo">🏠 Coach Imobiliário</div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-page="dashboard">Imóveis</div>
+                <div class="nav-item" data-page="coach">Coach IA</div>
+                <div class="nav-item" data-page="ranking">Ranking</div>
+                <div class="nav-item" data-page="ferramentas">Ferramentas</div>
+                <div class="nav-item" data-page="perfil">Perfil</div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="page-section active" id="dashboard">
+                <div class="properties-header">
+                    <h1 class="page-title">Imóveis Disponíveis</h1>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" class="filter-input" placeholder="Buscar por localização..." id="searchLocation">
+                    <select class="filter-input" id="filterType">
+                        <option value="">Todos os tipos</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="casa">Casa</option>
+                        <option value="terreno">Terreno</option>
+                    </select>
+                    <input type="number" class="filter-input" placeholder="Preço mínimo" id="minPrice">
+                    <input type="number" class="filter-input" placeholder="Preço máximo" id="maxPrice">
+                </div>
+                <div class="properties-grid" id="propertiesGrid"></div>
+            </div>
+
+            <div class="page-section" id="coach">
+                <h1 class="page-title">Coach IA - Assistente Imobiliário</h1>
+                <div class="coach-chat">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            Olá! Sou seu assistente de IA. Como posso ajudar você hoje?
+                        </div>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua pergunta...">
+                        <button class="btn-send" onclick="sendMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-section" id="ranking">
+                <h1 class="page-title">Ranking da Equipe</h1>
+                <div class="ranking-list" id="rankingList"></div>
+            </div>
+
+            <div class="page-section" id="ferramentas">
+                <h1 class="page-title">Ferramentas</h1>
+                <div class="tools-grid" id="toolsGrid"></div>
+            </div>
+
+            <div class="page-section" id="perfil">
+                <h1 class="page-title">Meu Perfil</h1>
+                <div class="profile-card">
+                    <div class="profile-avatar">JT</div>
+                    <div class="profile-info">
+                        <div class="profile-name">João Teste</div>
+                        <div class="profile-email">joao@teste.pt</div>
+                    </div>
+                    <div class="subscription-plans" id="subscriptionPlans"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
