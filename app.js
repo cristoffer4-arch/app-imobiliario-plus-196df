@@ -496,6 +496,87 @@ const OnboardingSystem = {
     }
 };
 
+// Coach IA - Gemini AI Daily Plan Generation
+async function generateDailyPlan() {
+    try {
+        const discProfile = localStorage.getItem('discProfile');
+        const user = await window.supabaseService.getCurrentUser();
+        
+        if (!discProfile || !user) {
+            console.log('Perfil DISC ou usuário não disponível');
+            return;
+        }
+
+        // Mostrar loading
+        const dailyPlanEl = document.getElementById('dailyPlan');
+        if (dailyPlanEl) {
+            dailyPlanEl.innerHTML = '<div class="loading-spinner">Gerando seu plano diário...</div>';
+        }
+
+        // Prompt personalizado baseado no perfil DISC
+        const prompt = `Você é um coach imobiliário especializado. Crie um plano de ação diário personalizado para um agente imobiliário com perfil DISC ${discProfile}.
+
+O plano deve incluir:
+1. 3-4 ações prioritárias específicas para hoje
+2. Dicas de comunicação baseadas no perfil ${discProfile}
+3. Uma meta de vendas realista
+4. Um lembrete motivacional
+
+Formato: JSON com campos {"actions": ["..."], "communication_tips": ["..."], "goal": "...", "motivation": "..."}`;
+
+        // Chamar Gemini AI
+        const response = await window.geminiService.generateContent(prompt);
+        const planData = JSON.parse(response);
+
+        // Renderizar plano
+        renderDailyPlan(planData);
+
+        // Salvar no Supabase
+        await window.supabaseService.saveDailyPlan({
+            user_id: user.id,
+            plan_data: planData,
+            created_at: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Erro ao gerar plano diário:', error);
+        const dailyPlanEl = document.getElementById('dailyPlan');
+        if (dailyPlanEl) {
+            dailyPlanEl.innerHTML = '<p class="error">Erro ao gerar plano. Tente novamente.</p>';
+        }
+    }
+}
+
+function renderDailyPlan(planData) {
+    const dailyPlanEl = document.getElementById('dailyPlan');
+    if (!dailyPlanEl) return;
+
+    let html = '<div class="daily-plan-content">';
+    
+    // Ações
+    html += '<div class="plan-section"><h3>🎯 Ações Prioritárias</h3><ul>';
+    planData.actions.forEach(action => {
+        html += `<li>${action}</li>`;
+    });
+    html += '</ul></div>';
+
+    // Dicas de comunicação
+    html += '<div class="plan-section"><h3>💬 Dicas de Comunicação</h3><ul>';
+    planData.communication_tips.forEach(tip => {
+        html += `<li>${tip}</li>`;
+    });
+    html += '</ul></div>';
+
+    // Meta
+    html += `<div class="plan-section"><h3>🏆 Meta do Dia</h3><p>${planData.goal}</p></div>`;
+
+    // Motivação
+    html += `<div class="plan-section motivation"><h3>✨ Motivação</h3><p>${planData.motivation}</p></div>`;
+
+    html += '</div>';
+    dailyPlanEl.innerHTML = html;
+}
+
 
 
 if (document.readyState === 'loading') {
