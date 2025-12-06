@@ -60,6 +60,11 @@ const app = {
 
     setupEventListeners() {
         const loginForm = document.getElementById('loginForm');
+                
+        // Inicializar sistema de onboarding
+        if (window.OnboardingSystem) {
+            OnboardingSystem.init();
+        }
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -227,6 +232,271 @@ function sendMessage() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }, 1000);
 }
+
+// ===========================================
+// SISTEMA DE ONBOARDING E DISC
+// ===========================================
+
+const OnboardingSystem = {
+    currentStep: 0,
+    discAnswers: {},
+    
+    questions: [
+        {
+            category: 'D',
+            text: 'Prefiro ser direto e objetivo nas conversas de negócios',
+            weight: 1
+        },
+        {
+            category: 'I',
+            text: 'Gosto de conhecer novas pessoas e expandir minha rede',
+            weight: 1
+        },
+        {
+            category: 'S',
+            text: 'Valorizo relacionamentos de longo prazo com meus clientes',
+            weight: 1
+        },
+        {
+            category: 'C',
+            text: 'Analiso detalhadamente todos os dados antes de tomar decisões',
+            weight: 1
+        },
+        {
+            category: 'D',
+            text: 'Encaro desafios como oportunidades de crescimento',
+            weight: 1
+        },
+        {
+            category: 'I',
+            text: 'Sou otimista e entusiasta ao apresentar imóveis',
+            weight: 1
+        },
+        {
+            category: 'S',
+            text: 'Prefiro trabalhar em equipe do que sozinho',
+            weight: 1
+        },
+        {
+            category: 'C',
+            text: 'Organizo meticulosamente minha agenda e documentos',
+            weight: 1
+        },
+        {
+            category: 'D',
+            text: 'Tomo decisões rapidamente mesmo sob pressão',
+            weight: 1
+        },
+        {
+            category: 'I',
+            text: 'Uso humor e criatividade nas minhas apresentações',
+            weight: 1
+        },
+        {
+            category: 'S',
+            text: 'Evito conflitos e busco sempre o consenso',
+            weight: 1
+        },
+        {
+            category: 'C',
+            text: 'Valorizo precisão e qualidade acima da velocidade',
+            weight: 1
+        }
+    ],
+    
+    init() {
+        // Verificar se usuário já completou onboarding
+        const onboardingComplete = localStorage.getItem('onboardingComplete');
+        
+        if (!onboardingComplete && window.supabaseService?.currentUser) {
+            this.showSplashScreen();
+        }
+    },
+    
+    showSplashScreen() {
+        const splash = `
+            <div id="onboardingSplash" class="onboarding-overlay">
+                <div class="onboarding-content">
+                    <div class="splash-logo">
+                        <span style="font-size: 64px;">🏠</span>
+                        <h1>Coach Imobiliário</h1>
+                    </div>
+                    <h2>Bem-vindo ao Futuro do Mercado Imobiliário!</h2>
+                    <p>Vamos configurar seu perfil de coaching personalizado</p>
+                    <button onclick="OnboardingSystem.startDISC()" class="btn-primary btn-large">
+                        Começar Avaliação DISC
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', splash);
+    },
+    
+    startDISC() {
+        document.getElementById('onboardingSplash').remove();
+        this.currentStep = 0;
+        this.discAnswers = { D: 0, I: 0, S: 0, C: 0 };
+        this.renderDISCQuestion();
+    },
+    
+    renderDISCQuestion() {
+        const question = this.questions[this.currentStep];
+        const progress = ((this.currentStep + 1) / this.questions.length) * 100;
+        
+        const questionHTML = `
+            <div id="discQuestionnaire" class="onboarding-overlay">
+                <div class="onboarding-content">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <p class="question-counter">Questão ${this.currentStep + 1} de ${this.questions.length}</p>
+                    <h2 class="disc-question">${question.text}</h2>
+                    <div class="disc-scale">
+                        <button onclick="OnboardingSystem.answerDISC(1)" class="scale-btn">
+                            <span class="scale-emoji">😐</span>
+                            <span>Discordo</span>
+                        </button>
+                        <button onclick="OnboardingSystem.answerDISC(2)" class="scale-btn">
+                            <span class="scale-emoji">🤔</span>
+                            <span>Neutro</span>
+                        </button>
+                        <button onclick="OnboardingSystem.answerDISC(3)" class="scale-btn">
+                            <span class="scale-emoji">👍</span>
+                            <span>Concordo</span>
+                        </button>
+                        <button onclick="OnboardingSystem.answerDISC(4)" class="scale-btn">
+                            <span class="scale-emoji">⭐</span>
+                            <span>Muito!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const existing = document.getElementById('discQuestionnaire');
+        if (existing) existing.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', questionHTML);
+    },
+    
+    answerDISC(score) {
+        const question = this.questions[this.currentStep];
+        this.discAnswers[question.category] += score;
+        
+        this.currentStep++;
+        
+        if (this.currentStep < this.questions.length) {
+            this.renderDISCQuestion();
+        } else {
+            this.completeDISC();
+        }
+    },
+    
+    async completeDISC() {
+        document.getElementById('discQuestionnaire').remove();
+        
+        // Calcular perfil dominante
+        const profile = Object.entries(this.discAnswers)
+            .sort((a, b) => b[1] - a[1])[0][0];
+        
+        const profiles = {
+            D: {
+                name: 'Dominante',
+                description: 'Você é decisivo, orientado a resultados e focado em conquistas. Seu estilo é direto e eficaz.',
+                strengths: ['Liderança natural', 'Tomada de decisões rápida', 'Foco em resultados'],
+                tips: ['Pratique escuta ativa', 'Desenvolva paciência', 'Valorize o processo']
+            },
+            I: {
+                name: 'Influente',
+                description: 'Você é comunicativo, entusiasta e excelente em criar conexões. Seu carisma é sua maior força.',
+                strengths: ['Networking natural', 'Comunicação persuasiva', 'Otimismo contagiante'],
+                tips: ['Foque em detalhes', 'Melhore follow-up', 'Organize sua agenda']
+            },
+            S: {
+                name: 'Estável',
+                description: 'Você é paciente, leal e excelente em construir relacionamentos duradouros. Sua empatia é notável.',
+                strengths: ['Relacionamentos duradouros', 'Trabalho em equipe', 'Empatia natural'],
+                tips: ['Seja mais assertivo', 'Aceite mudanças', 'Tome decisões rápidas']
+            },
+            C: {
+                name: 'Consciencioso',
+                description: 'Você é analítico, preciso e focado em qualidade. Sua atenção aos detalhes é excepcional.',
+                strengths: ['Análise detalhada', 'Precisão técnica', 'Qualidade garantida'],
+                tips: ['Acelere decisões', 'Aceite imperfeições', 'Seja mais flexível']
+            }
+        };
+        
+        const userProfile = profiles[profile];
+        
+        // Salvar no Supabase
+        try {
+            await window.supabaseService.saveUserProfile({
+                disc_profile: profile,
+                disc_scores: this.discAnswers,
+                onboarding_complete: true
+            });
+        } catch (error) {
+            console.error('Erro ao salvar perfil:', error);
+        }
+        
+        localStorage.setItem('onboardingComplete', 'true');
+        localStorage.setItem('discProfile', profile);
+        
+        this.showResults(userProfile, profile);
+    },
+    
+    showResults(userProfile, profile) {
+        const resultsHTML = `
+            <div id="discResults" class="onboarding-overlay">
+                <div class="onboarding-content">
+                    <div class="result-badge">
+                        <span class="profile-icon">${profile}</span>
+                        <h1>Perfil ${userProfile.name}</h1>
+                    </div>
+                    <p class="profile-description">${userProfile.description}</p>
+                    
+                    <div class="profile-section">
+                        <h3>💪 Seus Pontos Fortes:</h3>
+                        <ul>
+                            ${userProfile.strengths.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>📈 Dicas para Crescimento:</h3>
+                        <ul>
+                            ${userProfile.tips.map(t => `<li>${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <button onclick="OnboardingSystem.finishOnboarding()" class="btn-primary btn-large">
+                        Começar Minha Jornada! 🚀
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', resultsHTML);
+    },
+    
+    finishOnboarding() {
+        document.getElementById('discResults').remove();
+        
+        // Mostrar mensagem de boas-vindas
+        const toast = document.createElement('div');
+        toast.className = 'toast-success';
+        toast.textContent = '✨ Perfil configurado com sucesso! Bem-vindo ao Coach Imobiliário!';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.remove(), 3000);
+        
+        // Recarregar app com perfil configurado
+        location.reload();
+    }
+};
+
+
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => app.init());
