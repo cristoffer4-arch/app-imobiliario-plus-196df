@@ -46,7 +46,7 @@ export interface GameChallenge {
  * Orquestra e processa informações de todas as outras IAs
  */
 export class IAPrincipal {
-  private openai: OpenAI | null = null;
+  private openai: any // OpenAI temporariamente desabilitado | null = null;
   private iaBusca: IABuscaImoveis;
   private iaBanco: IABancoDados;
   private iaCoaching: IACoaching;
