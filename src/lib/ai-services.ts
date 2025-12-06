@@ -3,8 +3,7 @@
  * Gerencia todas as 9 IAs do sistema de forma integrada
  */
 
-import OpenAI from 'openai';
-
+import { GoogleGenerativeAI } from '@google/generative-ai';
 // Tipos e interfaces
 export interface IAResponse {
   success: boolean;
