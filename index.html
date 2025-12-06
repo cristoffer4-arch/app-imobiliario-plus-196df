@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Imobiliário - MVP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F5F5F5; }
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #20B2AA 0%, #1A9A93 100%); }
+        .login-card { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .login-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 32px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .btn-primary { width: 100%; padding: 16px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-primary:hover { background: #1A9A93; }
+        #appContainer { display: none; }
+        #appContainer.active { display: block; }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <h1 class="login-title">Coach Imobiliário</h1>
+        <div class="login-card">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" value="joao@teste.pt" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Senha</label>
+                    <input type="password" class="form-input" value="123456" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+    </div>
+    <div id="appContainer">
+        <h1 style="padding: 40px; text-align: center;">✅ MVP Coach Imobiliário Funcionando!</h1>
+        <p style="text-align: center;">Credenciais: joao@teste.pt / 123456</p>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
