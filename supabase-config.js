@@ -147,6 +147,39 @@ class SupabaseService {
         return await response.json();
     }
 
+        async saveUserProfile(profileData) {
+        const token = this.getToken();
+        
+        if (!this.currentUser) {
+            console.error('Nenhum usuário autenticado');
+            return { success: false, error: 'Usuário não autenticado' };
+        }
+        
+        try {
+            const response = await fetch(
+                `${this.baseURL}/rest/v1/user_profiles?user_id=eq.${this.currentUser.id}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': this.anonKey,
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(profileData)
+                }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`Erro ao salvar perfil: ${response.status}`);
+            }
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Erro ao salvar perfil:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
     async updateKPIs(userId, periodStart, kpis) {
         const token = this.getToken();
         
