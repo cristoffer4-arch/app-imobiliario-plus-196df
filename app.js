@@ -174,6 +174,69 @@ const CONFIG = {
 };
 
 // ============================================================================
+// OAUTH CALLBACK HANDLER
+// ============================================================================
+
+// Processa tokens OAuth do hash da URL após redirect do Google
+function handleOAuthCallback() {
+    const hash = window.location.hash;
+    
+    if (hash && hash.includes('access_token')) {
+        console.log('OAuth tokens detectados no hash:', hash);
+        
+        // Extrai tokens do hash
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+        const expiresIn = params.get('expires_in');
+        const tokenType = params.get('token_type');
+        
+        if (accessToken) {
+            console.log('Processando OAuth callback com access_token');
+            
+            // Calcula expires_at
+            const expiresAt = expiresIn ? 
+                Math.floor(Date.now() / 1000) + parseInt(expiresIn) : 
+                null;
+            
+            // Cria session object para Supabase
+            const session = {
+                access_token: accessToken,
+                refresh_token: refreshToken || null,
+                expires_at: expiresAt,
+                token_type: tokenType || 'bearer',
+                user: null
+            };
+            
+            // Define a sessão no Supabase
+            window.supabase.auth.setSession(session)
+                .then(({ data, error }) => {
+                    if (error) {
+                        console.error('Erro ao definir sessão:', error);
+                        return;
+                    }
+                    
+                    console.log('Sessão OAuth definida com sucesso:', data);
+                    
+                    // Limpa o hash da URL
+                    window.history.replaceState(null, '', window.location.pathname);
+                    
+                    // Esconde loading e mostra dashboard
+                    hideLoadingScreen();
+                    showScreen('dashboard');
+                })
+                .catch(err => {
+                    console.error('Erro no setSession:', err);
+                });
+                
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+// ============================================================================
 // GLOBALS
 // ============================================================================
 
@@ -219,6 +282,11 @@ function t(key) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 LuxeAgent Pro - Initializing...');
+
+        // Processa OAuth callback se houver tokens no hash
+    if (handleOAuthCallback()) {
+        return; // Se processou OAuth, para aqui
+    }
     
     try {
         // Check if Supabase library is loaded
