@@ -178,7 +178,7 @@ const CONFIG = {
 // ============================================================================
 
 // Processa tokens OAuth do hash da URL após redirect do Google
-function handleOAuthCallback() {
+async function Processa tokens OAuth do hash da URL após redirect do Google() {
     const hash = window.location.hash;
     
     if (hash && hash.includes('access_token')) {
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✅ Supabase client initialized');
 
     // Processa OAuth callback se houver tokens no hash
-    if (handleOAuthCallback()) {
+    if (Processa tokens OAuth do hash da URL após redirect do Google()) {
         return; // Se processou OAuth, para aqui
     }
         
@@ -783,10 +783,10 @@ async function initiateGoogleOAuthForGemini() {
         `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    window.addEventListener('message', handleOAuthCallback);
+    window.addEventListener('message', Processa tokens OAuth do hash da URL após redirect do Google);
 }
 
-async function handleOAuthCallback(event) {
+async function Processa tokens OAuth do hash da URL após redirect do Google(event) {
     if (event.data.type !== 'oauth_success') return;
     
     const { code } = event.data;
