@@ -322,6 +322,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
         
         console.log('✅ Supabase client initialized');
+
+                // BYPASS TEMPORÁRIO - Remover autenticação para testar
+                console.log('⚠️ BYPASS: Pulando autenticação para teste');
+                hideLoadingScreen();
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                setupEventListeners();
+                return; // Sai da função sem verificar sessão
         
         // Check session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
