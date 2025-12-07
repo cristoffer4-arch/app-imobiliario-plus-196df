@@ -89,35 +89,30 @@ function initSupabase() {
         return null;
     }
     
-    // Import Supabase client from CDN
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    script.onload = () => {
-        supabase = window.supabase.createClient(
-            CONFIG.SUPABASE_URL,
-            CONFIG.SUPABASE_ANON_KEY
-        );
-        
-        // Check for existing session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                handleAuthSuccess(session.user);
-            } else {
-                showAuthScreen();
-            }
-        });
-        
-        // Listen for auth changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                handleAuthSuccess(session.user);
-            } else if (event === 'SIGNED_OUT') {
-                handleSignOut();
-            }
-        });
-    };
-    document.head.appendChild(script);
-}
+      supabase = window.supabase.createClient(
+        CONFIG.SUPABASE_URL,
+        CONFIG.SUPABASE_ANON_KEY
+    );
+    
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            handleAuthSuccess(session.user);
+        } else {
+            showAuthScreen();
+        }
+    });
+    
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+            handleAuthSuccess(session.user);
+        } else if (event === 'SIGNED_OUT') {
+            handleSignOut();
+        }
+    });
+
+
 
 // ============================================================================
 // GOOGLE OAUTH AUTHENTICATION
