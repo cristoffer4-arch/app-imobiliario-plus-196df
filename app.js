@@ -228,6 +228,38 @@ function sendMessage() {
     }, 1000);
 }
 
+// Função para obter localização do usuário
+function getUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error('Geolocalização não suportada'));
+            return;
+        }
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            },
+            (error) => {
+                console.log('Erro ao obter localização:', error);
+                // Retorna localização padrão (Lisboa) em caso de erro
+                resolve({
+                    latitude: 38.7223,
+                    longitude: -9.1393
+                });
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    });
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => app.init());
 } else {
