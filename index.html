@@ -1,173 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Imobiliário - MVP</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
-        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #20B2AA 0%, #1a8a7f 100%); }
-        .login-card { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-        .login-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 32px; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
-        .form-input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .btn-primary { width: 100%; padding: 16px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .btn-primary:hover { background: #1a8a7f; }
-        #appContainer { display: none; }
-        #appContainer.active { display: block; }
-        .navbar { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 20px; font-weight: 700; color: #20B2AA; }
-        .nav-menu { display: flex; gap: 24px; }
-        .nav-item { padding: 8px 16px; cursor: pointer; color: #666; font-weight: 500; border-radius: 8px; transition: all 0.3s; }
-        .nav-item.active { background: #20B2AA; color: white; }
-        .nav-item:hover { background: #e8f5f5; color: #20B2AA; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-        .page-section { display: none; }
-        .page-section.active { display: block; }
-        .properties-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .page-title { font-size: 28px; font-weight: 700; color: #333; }
-        .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; }
-        .filter-input { padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; min-width: 150px; }
-        .properties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .property-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
-        .property-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .property-image { width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; }
-        .property-content { padding: 16px; }
-        .property-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #333; }
-        .property-price { font-size: 22px; font-weight: 700; color: #20B2AA; margin-bottom: 8px; }
-        .property-location { color: #666; margin-bottom: 12px; font-size: 14px; }
-        .property-features { display: flex; gap: 16px; color: #888; font-size: 14px; }
-        .coach-chat { background: white; border-radius: 12px; padding: 24px; height: 600px; display: flex; flex-direction: column; }
-        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 16px; padding: 16px; }
-        .message { margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; max-width: 80%; }
-        .message.bot { background: #f0f9ff; align-self: flex-start; }
-        .message.user { background: #20B2AA; color: white; align-self: flex-end; margin-left: auto; }
-        .chat-input-group { display: flex; gap: 12px; }
-        .chat-input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn-send { padding: 12px 24px; background: #20B2AA; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .ranking-list { background: white; border-radius: 12px; padding: 24px; }
-        .ranking-item { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #eee; }
-        .ranking-item:last-child { border-bottom: none; }
-        .ranking-position { font-size: 24px; font-weight: 700; color: #20B2AA; margin-right: 20px; min-width: 40px; }
-        .ranking-info { flex: 1; }
-        .ranking-name { font-weight: 600; margin-bottom: 4px; }
-        .ranking-points { color: #666; font-size: 14px; }
-        .profile-card { background: white; border-radius: 12px; padding: 32px; max-width: 600px; }
-        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: #20B2AA; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700; margin: 0 auto 24px; }
-        .profile-info { text-align: center; margin-bottom: 32px; }
-        .profile-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .profile-email { color: #666; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
-        .tool-card { background: white; border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: transform 0.3s; }
-        .tool-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .tool-icon { font-size: 48px; margin-bottom: 16px; }
-        .tool-name { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-        .tool-description { color: #666; font-size: 14px; }
-        .subscription-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .plan-card { background: white; border-radius: 12px; padding: 32px; text-align: center; border: 2px solid #eee; transition: all 0.3s; }
-        .plan-card.featured { border-color: #20B2AA; }
-        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        .plan-name { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
-        .plan-price { font-size: 36px; font-weight: 700; color: #20B2AA; margin-bottom: 8px; }
-        .plan-period { color: #666; margin-bottom: 24px; }
-        .plan-features { text-align: left; margin-bottom: 24px; }
-        .plan-feature { padding: 8px 0; color: #666; font-size: 14px; }
-        .btn-plan { width: 100%; padding: 12px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    </style>
-    
+    <title>lux.ai Pro | Plataforma IA Imobiliária</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600;700&family=Montserrat:wght@300;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root{--gold:#D4AF37;--gold-light:#F4D03F;--bg-primary:#0A0E27;--bg-secondary:#121838;--text-primary:#FFF;--text-secondary:#B8C5D6;--purple:#8B5CF6}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Montserrat,sans-serif;background:linear-gradient(135deg,var(--bg-primary),var(--bg-secondary));color:var(--text-primary);min-height:100vh;overflow-x:hidden}body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 50%,rgba(212,175,55,.05) 0,transparent 50%),radial-gradient(circle at 80% 80%,rgba(43,88,118,.05) 0,transparent 50%);pointer-events:none;animation:bgPulse 20s ease-in-out infinite}@keyframes bgPulse{0%,100%{opacity:.3}50%{opacity:.6}}.loading-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg-primary),var(--bg-secondary));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s}.loading-screen.hidden{opacity:0;visibility:hidden}.loading-logo{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:logoFloat 3s ease-in-out infinite}@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}.loading-spinner{width:60px;height:60px;border:3px solid rgba(212,175,55,.1);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.auth-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg-primary),var(--bg-secondary));display:flex;align-items:center;justify-content:center;z-index:9998;padding:1.5rem}.auth-card{background:rgba(26,34,71,.8);backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.2);border-radius:24px;padding:3rem;max-width:480px;width:100%;box-shadow:0 16px 64px rgba(0,0,0,.4),0 4px 24px rgba(212,175,55,.3);animation:slideUp .6s ease-out}@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}.auth-logo{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;text-align:center;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}.auth-subtitle{text-align:center;color:var(--text-secondary);font-size:.875rem;margin-bottom:3rem;font-weight:300;letter-spacing:1px}.auth-btn{width:100%;padding:1.5rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--bg-primary);border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:1rem}.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3),0 4px 24px rgba(212,175,55,.3)}.auth-features{margin-top:2rem;display:grid;gap:1rem}.auth-feature{display:flex;align-items:center;gap:1rem;color:var(--text-secondary);font-size:.875rem}.auth-feature i{color:var(--gold);font-size:1.25rem}.header{background:rgba(18,24,56,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,175,55,.1);padding:1rem 1.5rem;position:sticky;top:0;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.2)}.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;transition:transform .15s}.logo:hover{transform:scale(1.05)}.header-search{flex:1;max-width:500px;position:relative}.header-search input{width:100%;padding:.5rem 1.5rem .5rem 3rem;background:rgba(26,34,71,.6);border:1px solid rgba(212,175,55,.2);border-radius:50px;color:var(--text-primary);font-size:.875rem;transition:all .3s}.header-search input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1)}.header-search i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--gold)}.header-actions{display:flex;align-items:center;gap:1rem}.header-icon-btn{width:40px;height:40px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative}.header-icon-btn:hover{background:rgba(212,175,55,.2);transform:scale(1.1)}.header-icon-btn i{color:var(--gold)}.notification-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#EF4444;border-radius:50%;font-size:.625rem;display:flex;align-items:center;justify-content:center;font-weight:600;animation:badgePulse 2s ease-in-out infinite}@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}.user-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--gold);cursor:pointer;transition:all .3s;object-fit:cover}.user-avatar:hover{transform:scale(1.1);box-shadow:0 4px 24px rgba(212,175,55,.3)}.main-content{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:2rem}.stat-card{background:linear-gradient(135deg,rgba(26,34,71,.8),rgba(18,24,56,.8));backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.2);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;cursor:pointer;transition:all .3s}.stat-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.3);border-color:var(--gold)}.stat-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 4px 24px rgba(212,175,55,.3)}.stat-icon i{color:var(--bg-primary);font-size:1.5rem}.stat-value{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:.25rem}.stat-label{font-size:.875rem;color:var(--text-secondary);margin-bottom:.25rem}.stat-change{font-size:.75rem;display:flex;align-items:center;gap:.25rem}.stat-change.positive{color:#10B981}.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem}.module-card{background:linear-gradient(135deg,rgba(26,34,71,.8),rgba(18,24,56,.8));backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.2);border-radius:20px;padding:2rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}.module-card::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(212,175,55,.1) 0,transparent 70%);opacity:0;transition:all .5s}.module-card:hover::before{opacity:1;top:-25%;right:-25%}.module-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 16px 64px rgba(0,0,0,.4),0 4px 24px rgba(212,175,55,.3);border-color:var(--gold)}.module-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem}.module-icon{width:60px;height:60px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(212,175,55,.3)}.module-icon i{color:var(--bg-primary);font-size:1.75rem}.module-badge{background:var(--purple);color:#fff;padding:.25rem 1rem;border-radius:50px;font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}.module-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;margin-bottom:.5rem}.module-description{font-size:.875rem;color:var(--text-secondary);line-height:1.6;margin-bottom:1.5rem}.module-features{display:grid;gap:.5rem}.module-feature{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--text-secondary)}.module-feature i{color:var(--gold)}.modal-overlay{position:fixed;inset:0;background:rgba(10,14,39,.95);backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;animation:fadeIn .3s}.modal-overlay.active{display:flex}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.modal{background:linear-gradient(135deg,rgba(26,34,71,.95),rgba(18,24,56,.95));backdrop-filter:blur(30px);border:1px solid rgba(212,175,55,.3);border-radius:24px;max-width:900px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 16px 64px rgba(0,0,0,.4),0 4px 24px rgba(212,175,55,.3);animation:modalSlideUp .4s ease}@keyframes modalSlideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}.modal-header{padding:2rem;border-bottom:1px solid rgba(212,175,55,.2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(26,34,71,.95);backdrop-filter:blur(20px);z-index:1}.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:600;display:flex;align-items:center;gap:1rem}.modal-close{width:40px;height:40px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s}.modal-close:hover{background:rgba(212,175,55,.2);transform:rotate(90deg)}.modal-close i{color:var(--gold)}.modal-body{padding:2rem}.form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.875rem;font-weight:500;color:var(--text-secondary);margin-bottom:.5rem}.form-input,.form-select,.form-textarea{width:100%;padding:1rem;background:rgba(26,34,71,.6);border:1px solid rgba(212,175,55,.2);border-radius:12px;color:var(--text-primary);font-size:.875rem;transition:all .3s}.form-input:focus,.form-select:focus,.form-textarea:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.1)}.form-textarea{resize:vertical;min-height:120px}.btn{padding:1rem 2rem;border:none;border-radius:12px;font-size:.875rem;font-weight:600;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;justify-content:center;gap:.5rem}.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--bg-primary);box-shadow:0 4px 16px rgba(0,0,0,.2)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3),0 4px 24px rgba(212,175,55,.3)}.btn-secondary{background:rgba(212,175,55,.1);color:var(--gold);border:1px solid rgba(212,175,55,.3)}.btn-secondary:hover{background:rgba(212,175,55,.2)}.toast{position:fixed;bottom:2rem;right:2rem;background:linear-gradient(135deg,rgba(26,34,71,.95),rgba(18,24,56,.95));backdrop-filter:blur(20px);border:1px solid rgba(212,175,55,.3);border-radius:16px;padding:1.5rem;min-width:300px;box-shadow:0 16px 64px rgba(0,0,0,.4),0 4px 24px rgba(212,175,55,.3);z-index:300;transform:translateX(400px);transition:transform .4s cubic-bezier(.4,0,.2,1)}.toast.show{transform:translateX(0)}.toast-content{display:flex;align-items:center;gap:1rem}.toast-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(212,175,55,.3)}.toast-icon i{color:var(--bg-primary);font-size:1.5rem}.toast-text h4{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;margin-bottom:.25rem}.toast-text p{font-size:.75rem;color:var(--text-secondary)}.chat-container{display:flex;flex-direction:column;height:500px;background:rgba(26,34,71,.4);border-radius:16px;overflow:hidden}.chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem}.chat-message{display:flex;gap:1rem;animation:messageSlide .3s ease}@keyframes messageSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.chat-message.user{flex-direction:row-reverse}.chat-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0}.chat-bubble{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);padding:1rem;border-radius:16px;max-width:70%;font-size:.875rem;line-height:1.5}.chat-message.user .chat-bubble{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--bg-primary);border:0}.chat-input-container{padding:1.5rem;border-top:1px solid rgba(212,175,55,.2);display:flex;gap:1rem}.chat-input{flex:1;padding:1rem;background:rgba(26,34,71,.6);border:1px solid rgba(212,175,55,.2);border-radius:12px;color:var(--text-primary);font-size:.875rem}.chat-send-btn{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:0;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}.chat-send-btn:hover{transform:scale(1.1);box-shadow:0 4px 24px rgba(212,175,55,.3)}.chat-send-btn i{color:var(--bg-primary)}.property-card{background:linear-gradient(135deg,rgba(26,34,71,.8),rgba(18,24,56,.8));border:1px solid rgba(212,175,55,.2);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s}.property-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.3);border-color:var(--gold)}.property-image{width:100%;height:200px;object-fit:cover}.property-content{padding:1.5rem}.property-price{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--gold);margin-bottom:.5rem}.property-title{font-size:1rem;font-weight:600;margin-bottom:.5rem}.property-location{font-size:.75rem;color:var(--text-secondary);display:flex;align-items:center;gap:.25rem;margin-bottom:1rem}.property-features{display:flex;gap:1.5rem;font-size:.75rem;color:var(--text-secondary)}.property-feature{display:flex;align-items:center;gap:.25rem}.hidden{display:none!important}.progress-container{margin-bottom:1.5rem}.progress-label{display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.75rem;color:var(--text-secondary)}.progress-bar{width:100%;height:8px;background:rgba(212,175,55,.1);border-radius:50px;overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:50px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(212,175,55,.5);animation:progressShine 2s ease-in-out infinite}@keyframes progressShine{0%,100%{opacity:1}50%{opacity:.8}}#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999}@media (max-width:768px){.header-search{display:none}.stats-grid,.modules-grid{grid-template-columns:1fr}.modal{margin:1rem}.toast{inset:auto 1rem 1rem;min-width:auto}}</style>
+</head>
 <body>
-    <div class="login-screen" id="loginScreen">
-
-        <h1 class                ="login-title">🏠 Coach Imobiliário</h1>
-        <div class="login-card">
-            <form id="loginForm">
-                <div class="form-group">
-                    </style>
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" placeholder="joao@teste.pt" value="joao@teste.pt" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Senha</label>
-                    <input type="password" class="form-input" placeholder="123456" value="123456" required>
-                </div>
-                <button type="submit" class="btn-primary">Entrar</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="appContainer">
-        <nav class="navbar">
-            <div class="logo">🏠 Coach Imobiliário</div>
-            <div class="nav-menu">
-                <div class="nav-item active" data-page="dashboard">Imóveis</div>
-                <div class="nav-item" data-page="coach">Coach IA</div>
-                <div class="nav-item" data-page="ranking">Ranking</div>
-                <div class="nav-item" data-page="ferramentas">Ferramentas</div>
-                <div class="nav-item" data-page="perfil">Perfil</div>
-            </div>
-        </nav>
-
-        <div class="container">
-            <div class="page-section active" id="dashboard">
-                <div class="properties-header">
-                    <h1 class="page-title">Imóveis Disponíveis</h1>
-                </div>
-                <div class="filter-bar">
-                    <input type="text" class="filter-input" placeholder="Buscar por localização..." id="searchLocation">
-                    <select class="filter-input" id="filterType">
-                        <option value="">Todos os tipos</option>
-                        <option value="apartamento">Apartamento</option>
-                        <option value="casa">Casa</option>
-                        <option value="terreno">Terreno</option>
-                    </select>
-                    <input type="number" class="filter-input" placeholder="Preço mínimo" id="minPrice">
-                    <input type="number" class="filter-input" placeholder="Preço máximo" id="maxPrice">
-                </div>
-                <div class="properties-grid" id="propertiesGrid"></div>
-            </div>
-
-            <div class="page-section" id="coach">
-                <h1 class="page-title">Coach IA - Assistente Imobiliário</h1>
-                <div class="coach-chat">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message bot">
-                            Olá! Sou seu assistente de IA. Como posso ajudar você hoje?
-                        </div>
-                    </div>
-                    <div class="chat-input-group">
-                        <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua pergunta...">
-                        <button class="btn-send" onclick="sendMessage()">Enviar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page-section" id="ranking">
-                <h1 class="page-title">Ranking da Equipe</h1>
-                <div class="ranking-list" id="rankingList"></div>
-            </div>
-
-            <div class="page-section" id="ferramentas">
-                <h1 class="page-title">Ferramentas</h1>
-                <div class="tools-grid" id="toolsGrid"></div>
-            </div>
-
-            <div class="page-section" id="perfil">
-                <h1 class="page-title">Meu Perfil</h1>
-                <div class="profile-card">
-                    <div class="profile-avatar">JT</div>
-                    <div class="profile-info">
-                        <div class="profile-name">João Teste</div>
-                        <div class="profile-email">joao@teste.pt</div>
-                    </div>
-                    <div class="subscription-plans" id="subscriptionPlans"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-        <script src="supabase-config.js"></script>
-    <script src="app.js"></script>
+<canvas id="confetti-canvas"></canvas>
+<div id="loading-screen" class="loading-screen"><div class="loading-logo">lux.ai</div><div class="loading-spinner"></div></div>
+<div id="auth-screen" class="auth-screen hidden"><div class="auth-card"><div class="auth-logo">lux.ai Pro</div><div class="auth-subtitle">Plataforma IA para Consultores Imobiliários de Luxo</div><button id="google-login-btn" class="auth-btn"><i class="fab fa-google"></i>Entrar com Google</button><div class="auth-features"><div class="auth-feature"><i class="fas fa-robot"></i><span>IA Multi-Portal & Casafari integrado</span></div><div class="auth-feature"><i class="fas fa-trophy"></i><span>Gamificação & Rankings em tempo real</span></div><div class="auth-feature"><i class="fas fa-brain"></i><span>Coaching SMART com Gemini AI</span></div><div class="auth-feature"><i class="fas fa-chart-line"></i><span>Comissões & KPIs automatizados</span></div></div></div></div>
+<div id="app" class="app-container hidden"><header class="header"><div class="header-content"><div class="logo" onclick="app.showDashboard()">LuxeAgent</div><div class="header-search"><i class="fas fa-search"></i><input type="text" id="global-search" placeholder="Pesquisar imóveis, clientes, documentos..."></div><div class="header-actions"><div class="header-icon-btn" onclick="app.toggleNotifications()"><i class="fas fa-bell"></i><span class="notification-badge" id="notification-count">3</span></div><div class="header-icon-btn" onclick="app.openModule('gamification')"><i class="fas fa-trophy"></i></div><div class="header-icon-btn" onclick="app.toggleSettings()"><i class="fas fa-cog"></i></div><img id="user-avatar" class="user-avatar" src="" alt="User" onclick="app.toggleProfile()"></div></div></header><main class="main-content"><div id="dashboard-view"><div class="stats-grid"><div class="stat-card" onclick="app.openModule('casafari')"><div class="stat-icon"><i class="fas fa-home"></i></div><div class="stat-value" id="stat-properties">0</div><div class="stat-label">Imóveis Ativos</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i><span>+12%</span></div></div><div class="stat-card" onclick="app.openModule('casafari')"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="stat-leads">0</div><div class="stat-label">Leads Este Mês</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i><span>+24%</span></div></div><div class="stat-card" onclick="app.openModule('casafari')"><div class="stat-icon"><i class="fas fa-euro-sign"></i></div><div class="stat-value" id="stat-commission">0€</div><div class="stat-label">Comissões Previstas</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i><span>+18%</span></div></div><div class="stat-card" onclick="app.openModule('gamification')"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-value" id="stat-xp">0</div><div class="stat-label">XP Total</div></div></div><div class="modules-grid"><div class="module-card" onclick="app.openModule('ai-search')"><div class="module-header"><div class="module-icon"><i class="fas fa-search"></i></div><div class="module-badge">IA</div></div><h3 class="module-title">Busca Multi-Portal IA</h3><p class="module-description">Pesquisa inteligente em Idealista, Imovirtual, OLX com deduplicação automática.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>3 portais integrados</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Deduplicação automática</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Alertas em tempo real</span></div></div></div><div class="module-card" onclick="app.openModule('casafari')"><div class="module-header"><div class="module-icon"><i class="fas fa-building"></i></div><div class="module-badge">PREMIUM</div></div><h3 class="module-title">Casafari + IA Leads</h3><p class="module-description">Integração Casafari com scoring de leads IA e gestão de comissões.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>API Casafari real</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Scoring IA Gemini</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Comissões automáticas</span></div></div></div><div class="module-card" onclick="app.openModule('coaching')"><div class="module-header"><div class="module-icon"><i class="fas fa-brain"></i></div><div class="module-badge">IA</div></div><h3 class="module-title">Coaching SMART IA</h3><p class="module-description">Coach pessoal com Gemini: metas SMART, tarefas diárias, análise de desempenho.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>Metas SMART personalizadas</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Tarefas diárias IA</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Análise de performance</span></div></div></div><div class="module-card" onclick="app.openModule('legal')"><div class="module-header"><div class="module-icon"><i class="fas fa-gavel"></i></div><div class="module-badge">RAG</div></div><h3 class="module-title">Assistente Legal IA</h3><p class="module-description">RAG com legislação portuguesa: IMT, IMI, contratos, fiscalidade.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>Legislação PT atualizada</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Cálculos fiscais</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Templates contratos</span></div></div></div><div class="module-card" onclick="app.openModule('gamification')"><div class="module-header"><div class="module-icon"><i class="fas fa-trophy"></i></div><div class="module-badge">SOCIAL</div></div><h3 class="module-title">Gamificação & Equipas</h3><p class="module-description">6 tipos de campeonatos, rankings tempo real, badges, feed social.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>6 campeonatos simultâneos</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Rankings live</span></div><div class="module-feature"><i class="fas fa-check"></i><span>50+ badges</span></div></div></div><div class="module-card" onclick="app.openModule('idealista')"><div class="module-header"><div class="module-icon"><i class="fas fa-ad"></i></div><div class="module-badge">VISION</div></div><h3 class="module-title">Gerador Anúncios IA</h3><p class="module-description">Gemini Vision analisa fotos e gera anúncios perfeitos para Idealista.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>Análise de imagens IA</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Copywriting otimizado</span></div><div class="module-feature"><i class="fas fa-check"></i><span>SEO automático</span></div></div></div><div class="module-card" onclick="app.openModule('scanner')"><div class="module-header"><div class="module-icon"><i class="fas fa-camera"></i></div><div class="module-badge">OCR</div></div><h3 class="module-title">Scanner Documentos</h3><p class="module-description">Digitaliza contratos, certidões, cadernetas com câmara ou PDF.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>OCR com Gemini Vision</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Extração de dados</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Arquivo organizado</span></div></div></div><div class="module-card" onclick="app.openModule('subscription')"><div class="module-header"><div class="module-icon"><i class="fas fa-gem"></i></div><div class="module-badge">PREMIUM</div></div><h3 class="module-title">Assinatura Premium</h3><p class="module-description">Upgrade para 3,99€/mês: Casafari, IA ilimitada, suporte prioritário.</p><div class="module-features"><div class="module-feature"><i class="fas fa-check"></i><span>API Casafari completa</span></div><div class="module-feature"><i class="fas fa-check"></i><span>IA requests ilimitados</span></div><div class="module-feature"><i class="fas fa-check"></i><span>Suporte 24/7</span></div></div></div></div></div></main></div><div id="modal-overlay" class="modal-overlay"></div><div id="toast" class="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
