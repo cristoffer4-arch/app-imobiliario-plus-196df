@@ -89,7 +89,8 @@ function initSupabase() {
         return null;
     }
     
-      supabase = supabase.createClient(
+      const { createClient } = supabase;
+    supabase = createClient(
         CONFIG.SUPABASE_URL,
         CONFIG.SUPABASE_ANON_KEY
     );
