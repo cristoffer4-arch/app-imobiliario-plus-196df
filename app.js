@@ -1,5 +1,5 @@
 // ============================================================================
-// LUXEAGENT PRO - COMPLETE APPLICATION LOGIC
+// LUX.ai - COMPLETE APPLICATION LOGIC
 // Version: 2.0.1 (FIXED - Loading Screen & Initialization)
 // ============================================================================
 
@@ -178,7 +178,7 @@ const CONFIG = {
 // ============================================================================
 
 // Processa tokens OAuth do hash da URL após redirect do Google
-function handleOAuthCallback() {
+async function Processa tokens OAuth do hash da URL após redirect do Google() {
     const hash = window.location.hash;
     
     if (hash && hash.includes('access_token')) {
@@ -281,7 +281,7 @@ function t(key) {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 LuxeAgent Pro - Initializing...');
+    console.log('🚀 LUX.ai - Initializing...');
 
     
     try {
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✅ Supabase client initialized');
 
     // Processa OAuth callback se houver tokens no hash
-    if (handleOAuthCallback()) {
+    if (Processa tokens OAuth do hash da URL após redirect do Google()) {
         return; // Se processou OAuth, para aqui
     }
         
@@ -783,10 +783,10 @@ async function initiateGoogleOAuthForGemini() {
         `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    window.addEventListener('message', handleOAuthCallback);
+    window.addEventListener('message', Processa tokens OAuth do hash da URL após redirect do Google);
 }
 
-async function handleOAuthCallback(event) {
+async function Processa tokens OAuth do hash da URL após redirect do Google(event) {
     if (event.data.type !== 'oauth_success') return;
     
     const { code } = event.data;
@@ -881,7 +881,7 @@ function showVoucherModal() {
     const modal = createModal('🎁 Ative seu Voucher Premium', `
         <div style="text-align:center;padding:2rem">
             <div style="font-size:4rem;margin-bottom:1rem">🎉</div>
-            <h2 style="font-size:2rem;margin-bottom:1rem">Bem-vindo ao LuxeAgent Pro!</h2>
+            <h2 style="font-size:2rem;margin-bottom:1rem">Bem-vindo ao LUX.ai!</h2>
             <p style="color:var(--text-secondary);margin-bottom:2rem">
                 Tem um código de voucher? Ganhe <strong style="color:var(--gold)">3 meses de Premium GRÁTIS!</strong>
             </p>
@@ -1589,4 +1589,4 @@ window.app = {
     updateLanguage
 };
 
-console.log('✅ LuxeAgent Pro app.js loaded successfully');
+console.log('✅ LUX.ai app.js loaded successfully');
