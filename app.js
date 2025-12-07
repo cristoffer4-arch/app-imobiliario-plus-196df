@@ -1,39 +1,154 @@
-// lux.ai Pro - Complete AI-Powered Real Estate Platform
-// Portuguese Luxury Real Estate Consultants MVP
+// ============================================================================
+// LUXEAGENT PRO - COMPLETE APPLICATION LOGIC
+// Version: 2.0.1 (FIXED - Loading Screen & Initialization)
+// ============================================================================
 
 // ============================================================================
-// CONFIGURATION & INITIALIZATION
+// CONFIGURATION
 // ============================================================================
 
 const CONFIG = {
-    // Supabase Configuration
-    SUPABASE_URL: 'https://ebuktnhikkttcmxrbbhk.supabase.co',  // SET IN .env
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVidWt0bmhpa2t0dGNteHJiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2NTEwMTQsImV4cCI6MjA0OTIyNzAxNH0.s1K5cDOF8dP9X1jHZO6EXtWQ7S8YpE_8T0mBaQwkN8M', // SET IN .env
-    
-    // API Keys
-    CASAFARI_API_KEY: '', // SET IN .env
-    GOOGLE_GEMINI_KEY: '', // SET IN .env
-    STRIPE_PUBLISHABLE_KEY: '', // SET IN .env
+    // Supabase - CONFIGURE SUAS CREDENCIAIS AQUI
+    SUPABASE_URL: 'https://ebuktnhikkttcmxrbbhk.supabase.co',  // https://seu-projeto.supabase.co
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVidWt0bmhpa2t0dGNteHJiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2NTEwMTQsImV4cCI6MjA0OTIyNzAxNH0.s1K5cDOF8dP9X1jHZO6EXtWQ7S8YpE_8T0mBaQwkN8M',  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     
     // Google OAuth
-    GOOGLE_CLIENT_ID: '', // SET IN .env
+    GOOGLE_CLIENT_ID: '',
+    GOOGLE_OAUTH_SCOPES: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/generative-language.retriever'
+    ],
     
-    // Edge Function URLs (Supabase)
-    EDGE_FUNCTIONS: {
-        AI_SEARCH: '/functions/v1/ai-search',
-        AI_COACHING: '/functions/v1/ai-coaching',
-        AI_ASSISTANT: '/functions/v1/ai-assistant',
-        AI_GAMIFICATION: '/functions/v1/ai-gamification',
-        AI_IDEALISTA: '/functions/v1/ai-idealista',
-        SYNC_CASAFARI: '/functions/v1/sync-casafari',
-        DIRECTOR_KPIS: '/functions/v1/director-kpis'
+    // APIs
+    GEMINI_API_KEY: '',
+    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta',
+    CASAFARI_API_KEY: '',
+    STRIPE_PUBLISHABLE_KEY: '',
+    
+    // Voucher
+    VOUCHER_CODE: 'LUXAI-LAUNCH-3M-2025',
+    VOUCHER_DURATION_DAYS: 90,
+    
+    // Subscription Plans
+    PLANS: {
+        FREE: {
+            id: 'free',
+            name: 'Free',
+            price: 0,
+            currency: 'EUR',
+            features: {
+                max_properties: 5,
+                basic_dashboard: true,
+                basic_kpis: true,
+                ai_coach: false,
+                ai_pricing: 0,
+                ai_stories: 0,
+                virtual_staging: 0,
+                casafari_api: false,
+                lead_scoring: false,
+                advanced_analytics: false,
+                priority_support: false,
+                multi_users: 1
+            }
+        },
+        STARTER: {
+            id: 'starter',
+            name: 'Starter',
+            price: 47,
+            currency: 'EUR',
+            billing: 'monthly',
+            features: {
+                max_properties: 20,
+                basic_dashboard: true,
+                basic_kpis: true,
+                ai_coach: true,
+                ai_coach_limit: 50,
+                ai_pricing: 10,
+                ai_stories: 20,
+                virtual_staging: 5,
+                casafari_api: false,
+                lead_scoring: false,
+                advanced_analytics: false,
+                priority_support: false,
+                multi_users: 1
+            }
+        },
+        PRO: {
+            id: 'pro',
+            name: 'Pro',
+            price: 97,
+            currency: 'EUR',
+            billing: 'monthly',
+            popular: true,
+            features: {
+                max_properties: -1,
+                basic_dashboard: true,
+                basic_kpis: true,
+                ai_coach: true,
+                ai_coach_limit: -1,
+                ai_pricing: -1,
+                ai_stories: -1,
+                virtual_staging: 50,
+                casafari_api: false,
+                lead_scoring: true,
+                advanced_analytics: true,
+                priority_support: false,
+                multi_users: 1
+            }
+        },
+        PREMIUM: {
+            id: 'premium',
+            name: 'Premium',
+            price: 197,
+            currency: 'EUR',
+            billing: 'monthly',
+            features: {
+                max_properties: -1,
+                basic_dashboard: true,
+                basic_kpis: true,
+                ai_coach: true,
+                ai_coach_limit: -1,
+                ai_pricing: -1,
+                ai_stories: -1,
+                virtual_staging: -1,
+                casafari_api: true,
+                lead_scoring: true,
+                advanced_analytics: true,
+                marketing_automation: true,
+                priority_support: true,
+                multi_users: 1
+            }
+        },
+        ENTERPRISE: {
+            id: 'enterprise',
+            name: 'Enterprise',
+            price: 497,
+            currency: 'EUR',
+            billing: 'monthly',
+            features: {
+                max_properties: -1,
+                basic_dashboard: true,
+                basic_kpis: true,
+                ai_coach: true,
+                ai_coach_limit: -1,
+                ai_pricing: -1,
+                ai_stories: -1,
+                virtual_staging: -1,
+                casafari_api: true,
+                lead_scoring: true,
+                advanced_analytics: true,
+                marketing_automation: true,
+                priority_support: true,
+                white_label: true,
+                dedicated_api: true,
+                multi_users: 10,
+                custom_onboarding: true
+            }
+        }
     },
     
-    // Feature Flags
-    PREMIUM_FEATURES: ['casafari', 'unlimited_ai'],
-    FREE_AI_LIMIT: 50,
-    
-    // Gamification
+    // XP System
     XP_VALUES: {
         PROPERTY_VIEW: 5,
         LEAD_CONTACT: 10,
@@ -43,6 +158,7 @@ const CONFIG = {
         SALE_COMPLETED: 1000
     },
     
+    // Levels
     LEVELS: [
         { level: 1, xp: 0, title: 'Iniciante' },
         { level: 2, xp: 100, title: 'Consultor Jr' },
@@ -54,76 +170,152 @@ const CONFIG = {
         { level: 8, xp: 4000, title: 'Elite' },
         { level: 9, xp: 6000, title: 'Luxury Pro' },
         { level: 10, xp: 10000, title: 'Diamond Agent' }
-    ],
-    
-    // Championship Types
-    CHAMPIONSHIPS: {
-        MONTHLY_SALES: 'Vendas do Mês',
-        QUARTERLY_REVENUE: 'Faturamento Trimestral',
-        LEADS_CONVERSION: 'Conversão de Leads',
-        TEAM_PERFORMANCE: 'Performance Equipa',
-        LUXURY_SPECIALIST: 'Especialista Luxo',
-        ROOKIE_OF_MONTH: 'Revelação do Mês'
-    }
+    ]
 };
 
-// Load configuration from .env or localStorage
-function loadConfig() {
-    const stored = localStorage.getItem('lux.ai_config');
-    if (stored) {
-        const config = JSON.parse(stored);
-        Object.assign(CONFIG, config);
-    }
-}
-
 // ============================================================================
-// SUPABASE CLIENT & DATABASE OPERATIONS
+// GLOBALS
 // ============================================================================
 
 let supabase = null;
 let currentUser = null;
+let currentLanguage = 'pt-PT';
 
-function initSupabase() {
-    if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) {
-        console.error('Supabase configuration missing');
-        return null;
+// ============================================================================
+// TRANSLATIONS
+// ============================================================================
+
+const TRANSLATIONS = {
+    'pt-PT': {
+        welcome: 'Bem-vindo',
+        dashboard: 'Dashboard',
+        properties: 'Propriedades',
+        leads: 'Leads',
+        commissions: 'Comissões',
+    },
+    'es': {
+        welcome: 'Bienvenido',
+        dashboard: 'Panel',
+        properties: 'Propiedades',
+        leads: 'Contactos',
+        commissions: 'Comisiones',
+    },
+    'en': {
+        welcome: 'Welcome',
+        dashboard: 'Dashboard',
+        properties: 'Properties',
+        leads: 'Leads',
+        commissions: 'Commissions',
     }
-    
-      supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            handleAuthSuccess(session.user);
-        } else {
-            showAuthScreen();
-        }
-    });
-    
-    // Listen for auth changes
-    supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN') {
-            handleAuthSuccess(session.user);
-        } else if (event === 'SIGNED_OUT') {
-            handleSignOut();
-        }
-    });
+};
 
-
-
-// ============================================================================
-// GOOGLE OAUTH AUTHENTICATION
-// ============================================================================
-
-function initGoogleAuth() {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
+function t(key) {
+    return TRANSLATIONS[currentLanguage]?.[key] || key;
 }
 
-async function signInWithGoogle() {
+// ============================================================================
+// INITIALIZATION (FIXED)
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 LuxeAgent Pro - Initializing...');
+    
+    try {
+        // Check if Supabase library is loaded
+        if (typeof window.supabase === 'undefined') {
+            console.error('❌ Supabase library not loaded!');
+            hideLoadingScreen();
+            showAuthScreen();
+            showToast('Erro', 'Biblioteca Supabase não carregada', 'error');
+            return;
+        }
+        
+        console.log('✅ Supabase library loaded');
+        
+        // Check credentials
+        if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) {
+            console.error('❌ Supabase credentials not configured!');
+            console.error('Configure CONFIG.SUPABASE_URL e CONFIG.SUPABASE_ANON_KEY no app.js');
+            hideLoadingScreen();
+            showAuthScreen();
+            showToast('Configuração', 'Configure as credenciais do Supabase', 'warning');
+            return;
+        }
+        
+        console.log('✅ Credentials configured');
+        
+        // Initialize Supabase (FIXED)
+        supabase = window.supabase.createClient(
+            CONFIG.SUPABASE_URL,
+            CONFIG.SUPABASE_ANON_KEY
+        );
+        
+        console.log('✅ Supabase client initialized');
+        
+        // Check session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+            console.error('❌ Session check error:', sessionError);
+            hideLoadingScreen();
+            showAuthScreen();
+            return;
+        }
+        
+        if (session?.user) {
+            console.log('✅ User session found:', session.user.email);
+            await handleAuthSuccess(session.user);
+        } else {
+            console.log('ℹ️  No session, showing login screen');
+            hideLoadingScreen();
+            showAuthScreen();
+        }
+        
+        // Setup event listeners
+        setupEventListeners();
+        
+    } catch (error) {
+        console.error('❌ Initialization error:', error);
+        hideLoadingScreen();
+        showAuthScreen();
+        showToast('Erro', 'Falha na inicialização: ' + error.message, 'error');
+    }
+});
+
+function setupEventListeners() {
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', loginWithGoogle);
+    }
+    
+    const languageBtns = document.querySelectorAll('[data-language]');
+    languageBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentLanguage = e.target.dataset.language;
+            updateLanguage();
+        });
+    });
+}
+
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+    }
+}
+
+function showLoadingScreen() {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+    }
+}
+
+// ============================================================================
+// AUTHENTICATION
+// ============================================================================
+
+async function loginWithGoogle() {
     if (!supabase) {
         showToast('Erro', 'Sistema não inicializado', 'error');
         return;
@@ -133,40 +325,55 @@ async function signInWithGoogle() {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: `${window.location.origin}/`,
+                scopes: CONFIG.GOOGLE_OAUTH_SCOPES.join(' ')
             }
         });
         
         if (error) throw error;
+        
     } catch (error) {
-        console.error('Google auth error:', error);
-        showToast('Erro', 'Falha na autenticação', 'error');
+        console.error('Login error:', error);
+        showToast('Erro', 'Falha no login', 'error');
     }
 }
 
 async function handleAuthSuccess(user) {
     currentUser = user;
     
-    // Hide auth screen
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
     
-    // Set user avatar
     document.getElementById('user-avatar').src = user.user_metadata?.avatar_url || 
         `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=D4AF37&color=0A0E27`;
     
-    // Initialize user data in database
     await initializeUserData(user);
     
-    // Load dashboard
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('voucher_used, subscription_plan, created_at')
+        .eq('id', user.id)
+        .single();
+    
+    if (profile) {
+        const isFirstLogin = new Date(profile.created_at) > new Date(Date.now() - 60000);
+        
+        if (isFirstLogin && !profile.voucher_used) {
+            setTimeout(() => showVoucherModal(), 1000);
+        }
+        
+        await checkSubscriptionExpiry();
+        
+        const hasOAuth = await hasGeminiOAuth();
+        updateGeminiConnectionStatus(hasOAuth);
+        
+        updatePlanBadge(profile.subscription_plan);
+    }
+    
     await loadDashboard();
     
-    // Hide loading screen
-    setTimeout(() => {
-        document.getElementById('loading-screen').classList.add('hidden');
-    }, 500);
+    setTimeout(() => hideLoadingScreen(), 500);
     
-    // Show welcome toast
     showToast('Bem-vindo!', `Olá ${user.user_metadata?.full_name || user.email}`, 'success');
     playSound('success');
 }
@@ -175,91 +382,754 @@ async function initializeUserData(user) {
     if (!supabase) return;
     
     try {
-        // Check if user profile exists
-        const { data: profile } = await supabase
+        const { data: existingProfile } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .single();
         
-        if (!profile) {
-            // Create new profile
+        if (!existingProfile) {
             await supabase.from('profiles').insert({
                 id: user.id,
                 email: user.email,
                 full_name: user.user_metadata?.full_name,
                 avatar_url: user.user_metadata?.avatar_url,
-                subscription_tier: 'free',
+                subscription_plan: 'free',
                 xp: 0,
-                level: 1,
-                ai_requests_used: 0,
-                created_at: new Date().toISOString()
+                level: 1
             });
         }
+        
     } catch (error) {
         console.error('Error initializing user data:', error);
     }
 }
 
-function handleSignOut() {
-    currentUser = null;
+function showAuthScreen() {
+    hideLoadingScreen();
+    document.getElementById('auth-screen').classList.remove('hidden');
     document.getElementById('app').classList.add('hidden');
-    showAuthScreen();
 }
 
-function showAuthScreen() {
-    document.getElementById('loading-screen').classList.add('hidden');
-    document.getElementById('auth-screen').classList.remove('hidden');
+async function logout() {
+    if (!supabase) return;
+    
+    await supabase.auth.signOut();
+    currentUser = null;
+    showAuthScreen();
+    showToast('Logout', 'Sessão encerrada', 'info');
 }
 
 // ============================================================================
-// DASHBOARD & STATISTICS
+// SUBSCRIPTION & PRICING
+// ============================================================================
+
+async function validateVoucher(voucherCode) {
+    if (!supabase || !currentUser) {
+        throw new Error('Sistema não inicializado');
+    }
+    
+    const normalizedCode = voucherCode.trim().toUpperCase();
+    
+    if (normalizedCode !== CONFIG.VOUCHER_CODE) {
+        throw new Error('Código de voucher inválido');
+    }
+    
+    try {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('voucher_used, voucher_code')
+            .eq('id', currentUser.id)
+            .single();
+        
+        if (profile.voucher_used) {
+            throw new Error('Você já utilizou um voucher anteriormente');
+        }
+        
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + CONFIG.VOUCHER_DURATION_DAYS);
+        
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                subscription_plan: 'premium',
+                subscription_start_date: new Date().toISOString(),
+                subscription_end_date: expiresAt.toISOString(),
+                voucher_code: normalizedCode,
+                voucher_used: true,
+                voucher_activated_at: new Date().toISOString()
+            })
+            .eq('id', currentUser.id);
+        
+        if (error) throw error;
+        
+        await supabase.from('activity_feed').insert({
+            user_id: currentUser.id,
+            activity_type: 'voucher_activated',
+            description: `ativou voucher e ganhou 3 meses de Premium!`,
+            xp: 100
+        });
+        
+        await addXP(100);
+        
+        return {
+            success: true,
+            plan: 'premium',
+            expiresAt: expiresAt,
+            message: '🎉 Voucher ativado! 3 meses de Premium grátis!'
+        };
+        
+    } catch (error) {
+        console.error('Voucher validation error:', error);
+        throw error;
+    }
+}
+
+async function checkSubscriptionExpiry() {
+    if (!supabase || !currentUser) return;
+    
+    try {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('subscription_plan, subscription_end_date, voucher_used')
+            .eq('id', currentUser.id)
+            .single();
+        
+        if (!profile.subscription_end_date) {
+            return;
+        }
+        
+        const now = new Date();
+        const expiryDate = new Date(profile.subscription_end_date);
+        
+        if (now > expiryDate) {
+            await supabase
+                .from('profiles')
+                .update({
+                    subscription_plan: 'free',
+                    subscription_end_date: null
+                })
+                .eq('id', currentUser.id);
+            
+            showSubscriptionExpiredModal();
+            return true;
+        }
+        
+        const daysUntilExpiry = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+        if (daysUntilExpiry <= 7 && daysUntilExpiry > 0) {
+            showToast(
+                'Assinatura Expirando',
+                `Sua assinatura Premium expira em ${daysUntilExpiry} dias`,
+                'warning'
+            );
+        }
+        
+        return false;
+        
+    } catch (error) {
+        console.error('Subscription check error:', error);
+    }
+}
+
+function showSubscriptionExpiredModal() {
+    const modal = createModal('Assinatura Expirada', `
+        <div style="text-align:center;padding:2rem">
+            <i class="fas fa-hourglass-end" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+            <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:1rem">
+                Seu Período Premium Terminou
+            </h2>
+            <p style="color:var(--text-secondary);margin-bottom:2rem;font-size:1.125rem">
+                Escolha um plano para continuar aproveitando todos os recursos IA
+            </p>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem">
+                ${generatePricingCards(true)}
+            </div>
+            
+            <button class="btn btn-secondary" onclick="app.continueWithFree()" style="margin-top:1rem">
+                Continuar com Plano Free
+            </button>
+        </div>
+    `, '1200px');
+    
+    showModal(modal);
+}
+
+function generatePricingCards(compactMode = false) {
+    const plans = ['STARTER', 'PRO', 'PREMIUM', 'ENTERPRISE'];
+    
+    return plans.map(planKey => {
+        const plan = CONFIG.PLANS[planKey];
+        
+        return `
+            <div class="pricing-card ${plan.popular ? 'popular' : ''}" 
+                 onclick="app.selectPlan('${plan.id}')"
+                 style="
+                     background:linear-gradient(135deg,rgba(26,34,71,0.9),rgba(18,24,56,0.9));
+                     border:2px solid ${plan.popular ? 'var(--gold)' : 'rgba(212,175,55,0.2)'};
+                     border-radius:20px;
+                     padding:${compactMode ? '1.5rem' : '2rem'};
+                     cursor:pointer;
+                     transition:all 0.3s;
+                     position:relative;
+                 ">
+                ${plan.popular ? `
+                    <div style="position:absolute;top:1rem;right:-2rem;background:var(--gold);color:var(--bg-primary);padding:0.5rem 3rem;transform:rotate(45deg);font-size:0.75rem;font-weight:700;text-transform:uppercase;">Popular</div>
+                ` : ''}
+                
+                <div style="text-align:center">
+                    <h3 style="font-size:1.5rem;margin-bottom:0.5rem;color:var(--gold)">${plan.name}</h3>
+                    <div style="margin-bottom:1.5rem">
+                        <span style="font-size:${compactMode ? '2.5rem' : '3rem'};font-weight:700">${plan.price}€</span>
+                        <span style="color:var(--text-secondary);font-size:0.875rem">/mês</span>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%">Escolher ${plan.name}</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function selectPlan(planId) {
+    if (planId === 'free') {
+        await continueWithFree();
+        return;
+    }
+    
+    const plan = Object.values(CONFIG.PLANS).find(p => p.id === planId);
+    if (!plan) return;
+    
+    try {
+        const { data } = await supabase.functions.invoke('create-checkout-session', {
+            body: {
+                user_id: currentUser.id,
+                plan_id: planId,
+                price: plan.price,
+                currency: plan.currency
+            }
+        });
+        
+        if (data.checkout_url) {
+            window.location.href = data.checkout_url;
+        }
+        
+    } catch (error) {
+        console.error('Checkout error:', error);
+        showToast('Erro', 'Falha ao processar pagamento', 'error');
+    }
+}
+
+async function continueWithFree() {
+    try {
+        await supabase
+            .from('profiles')
+            .update({
+                subscription_plan: 'free',
+                subscription_end_date: null
+            })
+            .eq('id', currentUser.id);
+        
+        closeModal();
+        showToast('Plano Free', 'Você está no plano gratuito', 'info');
+        await loadDashboard();
+        
+    } catch (error) {
+        console.error('Free plan error:', error);
+    }
+}
+
+async function checkFeatureAccess(featureName) {
+    if (!supabase || !currentUser) return false;
+    
+    try {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('subscription_plan, subscription_end_date')
+            .eq('id', currentUser.id)
+            .single();
+        
+        if (profile.subscription_end_date) {
+            const now = new Date();
+            const expiry = new Date(profile.subscription_end_date);
+            if (now > expiry) {
+                return false;
+            }
+        }
+        
+        const plan = CONFIG.PLANS[profile.subscription_plan.toUpperCase()];
+        if (!plan) return false;
+        
+        return plan.features[featureName] === true || 
+               plan.features[featureName] === -1 ||
+               (typeof plan.features[featureName] === 'number' && plan.features[featureName] > 0);
+        
+    } catch (error) {
+        console.error('Feature access check error:', error);
+        return false;
+    }
+}
+
+function updatePlanBadge(planId) {
+    const badge = document.getElementById('plan-badge-header');
+    const nameEl = document.getElementById('plan-name-header');
+    
+    if (!badge || !nameEl) return;
+    
+    badge.className = `plan-badge ${planId}`;
+    nameEl.textContent = planId.charAt(0).toUpperCase() + planId.slice(1);
+}
+
+// ============================================================================
+// OAUTH GEMINI
+// ============================================================================
+
+async function initiateGoogleOAuthForGemini() {
+    if (!CONFIG.GOOGLE_CLIENT_ID) {
+        showToast('Erro', 'Google OAuth não configurado', 'error');
+        return;
+    }
+    
+    const redirectUri = `${window.location.origin}/oauth-callback`;
+    const scopes = CONFIG.GOOGLE_OAUTH_SCOPES.join(' ');
+    
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${CONFIG.GOOGLE_CLIENT_ID}&` +
+        `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+        `response_type=code&` +
+        `scope=${encodeURIComponent(scopes)}&` +
+        `access_type=offline&` +
+        `prompt=consent&` +
+        `state=${currentUser.id}`;
+    
+    const width = 500;
+    const height = 600;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+    
+    window.open(
+        authUrl,
+        'Google OAuth',
+        `width=${width},height=${height},left=${left},top=${top}`
+    );
+    
+    window.addEventListener('message', handleOAuthCallback);
+}
+
+async function handleOAuthCallback(event) {
+    if (event.data.type !== 'oauth_success') return;
+    
+    const { code } = event.data;
+    
+    try {
+        const { data, error } = await supabase.functions.invoke('oauth-exchange', {
+            body: {
+                code: code,
+                user_id: currentUser.id
+            }
+        });
+        
+        if (error) throw error;
+        
+        await supabase
+            .from('user_oauth_tokens')
+            .upsert({
+                user_id: currentUser.id,
+                provider: 'google_gemini',
+                access_token_encrypted: data.access_token_encrypted,
+                refresh_token_encrypted: data.refresh_token_encrypted,
+                expires_at: data.expires_at
+            });
+        
+        showToast('Sucesso', 'Google conectado! IA ativada', 'success');
+        playSound('success');
+        triggerConfetti();
+        updateGeminiConnectionStatus(true);
+        
+    } catch (error) {
+        console.error('OAuth exchange error:', error);
+        showToast('Erro', 'Falha ao conectar Google', 'error');
+    }
+}
+
+async function hasGeminiOAuth() {
+    if (!supabase || !currentUser) return false;
+    
+    try {
+        const { data } = await supabase
+            .from('user_oauth_tokens')
+            .select('expires_at')
+            .eq('user_id', currentUser.id)
+            .eq('provider', 'google_gemini')
+            .single();
+        
+        if (!data) return false;
+        
+        const now = new Date();
+        const expiry = new Date(data.expires_at);
+        
+        return now < expiry;
+        
+    } catch (error) {
+        return false;
+    }
+}
+
+function updateGeminiConnectionStatus(connected) {
+    const statusElement = document.getElementById('gemini-status');
+    if (!statusElement) return;
+    
+    if (connected) {
+        statusElement.innerHTML = `
+            <div class="gemini-status-info">
+                <div class="gemini-status-title">
+                    <i class="fas fa-check-circle" style="color:var(--color-success)"></i>
+                    IA Ativo (usando sua cota Google)
+                </div>
+            </div>
+        `;
+        statusElement.classList.remove('hidden');
+    } else {
+        statusElement.innerHTML = `
+            <div class="gemini-status-info">
+                <div class="gemini-status-title"><i class="fas fa-robot"></i> IA Gemini</div>
+                <div class="gemini-status-description">Conecte sua conta Google para usar IA gratuitamente</div>
+            </div>
+            <button class="gemini-connect-btn" onclick="app.initiateGoogleOAuthForGemini()">
+                <i class="fab fa-google"></i> Conectar Google
+            </button>
+        `;
+        statusElement.classList.remove('hidden');
+    }
+}
+
+// ============================================================================
+// VOUCHER MODAL
+// ============================================================================
+
+function showVoucherModal() {
+    const modal = createModal('🎁 Ative seu Voucher Premium', `
+        <div style="text-align:center;padding:2rem">
+            <div style="font-size:4rem;margin-bottom:1rem">🎉</div>
+            <h2 style="font-size:2rem;margin-bottom:1rem">Bem-vindo ao LuxeAgent Pro!</h2>
+            <p style="color:var(--text-secondary);margin-bottom:2rem">
+                Tem um código de voucher? Ganhe <strong style="color:var(--gold)">3 meses de Premium GRÁTIS!</strong>
+            </p>
+            
+            <div class="form-group" style="max-width:400px;margin:0 auto 2rem">
+                <input 
+                    type="text" 
+                    id="voucher-input" 
+                    class="form-input" 
+                    placeholder="Digite seu código (ex: LUXAI-LAUNCH-3M-2025)"
+                    style="text-align:center;font-size:1.125rem;text-transform:uppercase"
+                    maxlength="30"
+                >
+            </div>
+            
+            <button class="btn btn-primary" onclick="app.activateVoucher()" style="margin-bottom:1rem">
+                <i class="fas fa-gift"></i> Ativar Voucher
+            </button>
+            
+            <button class="btn btn-secondary" onclick="app.skipVoucher()">
+                Pular e Começar com Free
+            </button>
+        </div>
+    `, '600px');
+    
+    showModal(modal);
+    
+    setTimeout(() => {
+        document.getElementById('voucher-input').focus();
+    }, 300);
+    
+    document.getElementById('voucher-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            activateVoucher();
+        }
+    });
+}
+
+async function activateVoucher() {
+    const input = document.getElementById('voucher-input');
+    const code = input.value.trim();
+    
+    if (!code) {
+        showToast('Erro', 'Digite um código de voucher', 'error');
+        input.focus();
+        return;
+    }
+    
+    input.disabled = true;
+    const btn = event.target;
+    btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+    btn.disabled = true;
+    
+    try {
+        const result = await validateVoucher(code);
+        
+        closeModal();
+        triggerConfetti();
+        playSound('level-up');
+        
+        const successModal = createModal('🎉 Voucher Ativado!', `
+            <div style="text-align:center;padding:3rem">
+                <div style="font-size:5rem;margin-bottom:1.5rem">💎</div>
+                <h2 style="font-size:2.5rem;margin-bottom:1rem;color:var(--gold)">Parabéns!</h2>
+                <p style="font-size:1.25rem;margin-bottom:2rem">
+                    Você ganhou <strong style="color:var(--gold)">3 meses de Premium</strong> totalmente grátis!
+                </p>
+                <button class="btn btn-primary" onclick="app.closeModal();app.loadDashboard()" style="font-size:1.125rem;padding:1.5rem 3rem">
+                    <i class="fas fa-rocket"></i> Começar Agora!
+                </button>
+            </div>
+        `, '700px');
+        
+        showModal(successModal);
+        setTimeout(() => loadDashboard(), 1000);
+        
+    } catch (error) {
+        input.disabled = false;
+        btn.innerHTML = '<i class="fas fa-gift"></i> Ativar Voucher';
+        btn.disabled = false;
+        
+        showToast('Erro', error.message, 'error');
+        input.focus();
+        input.select();
+    }
+}
+
+function skipVoucher() {
+    closeModal();
+    showToast('Plano Free', 'Você pode ativar um voucher depois nas configurações', 'info');
+}
+
+// ============================================================================
+// GEOLOCATION
+// ============================================================================
+
+async function getUserLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error('Geolocalização não suportada'));
+            return;
+        }
+        
+        const locationInput = document.getElementById('search-location');
+        const originalPlaceholder = locationInput.placeholder;
+        locationInput.placeholder = '📍 A detetar localização...';
+        locationInput.disabled = true;
+        
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                
+                try {
+                    const address = await reverseGeocode(latitude, longitude);
+                    
+                    locationInput.value = address;
+                    locationInput.disabled = false;
+                    locationInput.placeholder = originalPlaceholder;
+                    
+                    showToast('Localização Detetada', `${address}`, 'success');
+                    playSound('success');
+                    
+                    resolve({ latitude, longitude, address });
+                    
+                } catch (error) {
+                    locationInput.disabled = false;
+                    locationInput.placeholder = originalPlaceholder;
+                    reject(error);
+                }
+            },
+            (error) => {
+                locationInput.disabled = false;
+                locationInput.placeholder = originalPlaceholder;
+                
+                let errorMessage = 'Erro ao obter localização';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Permissão de localização negada';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Localização indisponível';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Timeout ao obter localização';
+                        break;
+                }
+                
+                showToast('Erro', errorMessage, 'error');
+                reject(new Error(errorMessage));
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            }
+        );
+    });
+}
+
+async function reverseGeocode(latitude, longitude) {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=pt`,
+            {
+                headers: {
+                    'User-Agent': 'LuxeAgent/1.0'
+                }
+            }
+        );
+        
+        if (!response.ok) throw new Error('Falha no reverse geocoding');
+        
+        const data = await response.json();
+        const address = data.address;
+        const city = address.city || address.town || address.village || address.municipality || 'Localização Atual';
+        
+        if (address.country_code === 'pt') {
+            const district = address.state || '';
+            return district ? `${city}, ${district}` : city;
+        }
+        
+        return city;
+        
+    } catch (error) {
+        console.error('Reverse geocoding error:', error);
+        return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    }
+}
+
+// ============================================================================
+// DASHBOARD
 // ============================================================================
 
 async function loadDashboard() {
     if (!supabase || !currentUser) return;
     
     try {
-        // Load user stats
-        const { data: stats } = await supabase.rpc('get_user_stats', {
-            user_id: currentUser.id
+        const { data: stats, error } = await supabase.rpc('get_user_stats', {
+            p_user_id: currentUser.id
         });
         
-        if (stats) {
-            document.getElementById('stat-properties').textContent = stats.total_properties || 0;
-            document.getElementById('stat-leads').textContent = stats.total_leads || 0;
-            document.getElementById('stat-commission').textContent = 
-                `${(stats.total_commission || 0).toLocaleString('pt-PT')}€`;
-            document.getElementById('stat-xp').textContent = stats.xp || 0;
-        }
+        if (error) throw error;
         
-        // Load user level
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('xp, level')
-            .eq('id', currentUser.id)
-            .single();
+        document.getElementById('stat-properties').textContent = stats.total_properties || 0;
+        document.getElementById('stat-leads').textContent = stats.total_leads || 0;
+        document.getElementById('stat-commissions').textContent = `${(stats.total_commissions || 0).toLocaleString('pt-PT')}€`;
+        document.getElementById('stat-goals').textContent = stats.active_goals || 0;
         
-        if (profile) {
-            updateUserLevel(profile.xp, profile.level);
-        }
+        document.getElementById('user-level').textContent = `Nível ${stats.level}`;
+        document.getElementById('user-xp').textContent = `${stats.xp} XP`;
+        
+        const levelProgress = calculateLevelProgress(stats.xp, stats.level);
+        document.getElementById('xp-progress-bar').style.width = `${levelProgress}%`;
+        
+        showView('dashboard');
         
     } catch (error) {
-        console.error('Error loading dashboard:', error);
+        console.error('Dashboard load error:', error);
+        showToast('Erro', 'Falha ao carregar dashboard', 'error');
     }
 }
 
-function updateUserLevel(xp, currentLevel) {
-    const levelConfig = CONFIG.LEVELS.find(l => l.level === currentLevel);
-    if (levelConfig) {
-        document.getElementById('user-level').textContent = 
-            `${levelConfig.title} (${currentLevel})`;
-    }
+function calculateLevelProgress(currentXP, currentLevel) {
+    const currentLevelData = CONFIG.LEVELS.find(l => l.level === currentLevel);
+    const nextLevelData = CONFIG.LEVELS.find(l => l.level === currentLevel + 1);
+    
+    if (!nextLevelData) return 100;
+    
+    const xpInCurrentLevel = currentXP - currentLevelData.xp;
+    const xpNeededForNextLevel = nextLevelData.xp - currentLevelData.xp;
+    
+    return Math.min(100, (xpInCurrentLevel / xpNeededForNextLevel) * 100);
 }
 
 // ============================================================================
-// MODULE 1: AI MULTI-PORTAL PROPERTY SEARCH
+// MODULES
 // ============================================================================
+
+async function openModule(moduleName) {
+    const hasAccess = await checkFeatureAccess(moduleName);
+    
+    if (!hasAccess && !['dashboard', 'subscription'].includes(moduleName)) {
+        showUpgradeModal(moduleName);
+        return;
+    }
+    
+    switch(moduleName) {
+        case 'dashboard':
+            await loadDashboard();
+            break;
+        case 'ai-search':
+            await openAISearchModule();
+            break;
+        case 'casafari':
+            await openCasafariModule();
+            break;
+        case 'coaching':
+            await openCoachingModule();
+            break;
+        case 'legal':
+            await openLegalModule();
+            break;
+        case 'gamification':
+            await openGamificationModule();
+            break;
+        case 'idealista':
+            await openIdealistaModule();
+            break;
+        case 'scanner':
+            await openScannerModule();
+            break;
+        case 'subscription':
+            await openSubscriptionModule();
+            break;
+        case 'virtual-staging':
+            await openVirtualStagingModule();
+            break;
+        case 'ai-pricing':
+            await openAIPricingModule();
+            break;
+        case 'ai-stories':
+            await openAIStoriesModule();
+            break;
+        default:
+            showToast('Em Breve', `Módulo ${moduleName} em desenvolvimento`, 'info');
+    }
+}
+
+function showUpgradeModal(featureName) {
+    const modal = createModal('Upgrade Necessário', `
+        <div class="upgrade-prompt">
+            <i class="fas fa-lock upgrade-icon" style="color:var(--gold)"></i>
+            <h2 class="upgrade-title">Feature Premium</h2>
+            <p class="upgrade-message">
+                Este recurso está disponível apenas nos planos pagos.
+            </p>
+            <div class="upgrade-features">
+                <div class="upgrade-feature-item">
+                    <i class="fas fa-check"></i>
+                    <span>Acesso ilimitado a IA</span>
+                </div>
+                <div class="upgrade-feature-item">
+                    <i class="fas fa-check"></i>
+                    <span>Todas as funcionalidades desbloqueadas</span>
+                </div>
+                <div class="upgrade-feature-item">
+                    <i class="fas fa-check"></i>
+                    <span>Suporte prioritário</span>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="app.openModule('subscription')" style="margin-top:1.5rem">
+                <i class="fas fa-gem"></i>
+                Ver Planos
+            </button>
+        </div>
+    `, '500px');
+    
+    showModal(modal);
+}
 
 async function openAISearchModule() {
     const modal = createModal('Busca Multi-Portal IA', `
@@ -275,19 +1145,41 @@ async function openAISearchModule() {
         </div>
         <div class="form-group">
             <label class="form-label">Localização</label>
-            <input type="text" id="search-location" class="form-input" placeholder="Lisboa, Porto, Algarve...">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Preço Máximo</label>
-            <input type="number" id="search-max-price" class="form-input" placeholder="500000">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Portais</label>
-            <div style="display:grid;gap:0.5rem">
-                <label><input type="checkbox" checked id="portal-idealista"> Idealista</label>
-                <label><input type="checkbox" checked id="portal-imovirtual"> Imovirtual</label>
-                <label><input type="checkbox" checked id="portal-olx"> OLX</label>
+            <div style="display:flex;gap:0.5rem">
+                <input 
+                    type="text" 
+                    id="search-location" 
+                    class="form-input" 
+                    placeholder="Lisboa, Porto, Algarve..."
+                    style="flex:1"
+                >
+                <button 
+                    class="btn btn-secondary" 
+                    onclick="app.getUserLocation()"
+                    style="padding:1rem;white-space:nowrap"
+                    title="Usar minha localização"
+                >
+                    <i class="fas fa-location-crosshairs"></i>
+                    <span style="margin-left:0.5rem">Minha Localização</span>
+                </button>
             </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Preço Máximo (€)</label>
+            <input type="number" id="search-max-price" class="form-input" placeholder="500000" step="10000">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Área Mínima (m²)</label>
+            <input type="number" id="search-min-area" class="form-input" placeholder="100" step="10">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Raio de Pesquisa (km)</label>
+            <select id="search-radius" class="form-select">
+                <option value="5">5 km</option>
+                <option value="10" selected>10 km</option>
+                <option value="20">20 km</option>
+                <option value="50">50 km</option>
+            </select>
         </div>
         <button class="btn btn-primary" onclick="app.executeAISearch()">
             <i class="fas fa-search"></i>
@@ -303,45 +1195,49 @@ async function executeAISearch() {
     const propertyType = document.getElementById('search-property-type').value;
     const location = document.getElementById('search-location').value;
     const maxPrice = document.getElementById('search-max-price').value;
-    
-    const portals = [];
-    if (document.getElementById('portal-idealista').checked) portals.push('idealista');
-    if (document.getElementById('portal-imovirtual').checked) portals.push('imovirtual');
-    if (document.getElementById('portal-olx').checked) portals.push('olx');
+    const minArea = document.getElementById('search-min-area').value;
+    const radius = document.getElementById('search-radius').value;
     
     if (!location) {
-        showToast('Erro', 'Insira uma localização', 'error');
+        showToast('Erro', 'Insira ou detete uma localização', 'error');
         return;
     }
     
     const resultsDiv = document.getElementById('search-results');
-    resultsDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A pesquisar...';
+    resultsDiv.innerHTML = `
+        <div style="text-align:center;padding:2rem">
+            <div class="loading-spinner" style="margin:0 auto 1rem"></div>
+            <div style="color:var(--text-secondary)">A pesquisar imóveis...</div>
+        </div>
+    `;
     
     try {
-        // Call Supabase Edge Function for AI Search
         const { data, error } = await supabase.functions.invoke('ai-search', {
             body: {
                 property_type: propertyType,
                 location: location,
-                max_price: maxPrice,
-                portals: portals
+                max_price: maxPrice || 999999999,
+                min_area: minArea || 0,
+                radius: radius,
+                user_id: currentUser.id
             }
         });
         
         if (error) throw error;
         
-        // Deduplicate results using AI
-        const deduplicated = data.properties.filter((prop, index, self) =>
-            index === self.findIndex((p) => 
-                Math.abs(p.price - prop.price) < 5000 && 
-                p.location.toLowerCase().includes(prop.location.toLowerCase())
-            )
-        );
+        if (!data.properties || data.properties.length === 0) {
+            resultsDiv.innerHTML = `
+                <div style="text-align:center;padding:2rem">
+                    <i class="fas fa-search" style="font-size:3rem;color:var(--text-secondary);margin-bottom:1rem"></i>
+                    <h3>Nenhum Imóvel Encontrado</h3>
+                </div>
+            `;
+            return;
+        }
         
-        // Display results
-        resultsDiv.innerHTML = deduplicated.map(prop => `
-            <div class="property-card" style="margin-bottom:1rem">
-                <img class="property-image" src="${prop.image_url}" alt="${prop.title}">
+        resultsDiv.innerHTML = data.properties.map((prop, index) => `
+            <div class="property-card" style="margin-bottom:1rem;animation:slideUp 0.3s ease ${index * 0.1}s both">
+                <img class="property-image" src="${prop.image_url || 'https://via.placeholder.com/400x300'}" alt="${prop.title}">
                 <div class="property-content">
                     <div class="property-price">${prop.price.toLocaleString('pt-PT')}€</div>
                     <div class="property-title">${prop.title}</div>
@@ -349,1519 +1245,277 @@ async function executeAISearch() {
                         <i class="fas fa-map-marker-alt"></i>
                         ${prop.location}
                     </div>
-                    <div class="property-features">
-                        <div class="property-feature">
-                            <i class="fas fa-bed"></i>
-                            ${prop.bedrooms} quartos
-                        </div>
-                        <div class="property-feature">
-                            <i class="fas fa-bath"></i>
-                            ${prop.bathrooms} WC
-                        </div>
-                        <div class="property-feature">
-                            <i class="fas fa-ruler-combined"></i>
-                            ${prop.area}m²
-                        </div>
-                    </div>
+                    ${prop.area ? `<div class="property-feature"><i class="fas fa-ruler-combined"></i> ${prop.area}m²</div>` : ''}
                 </div>
             </div>
         `).join('');
         
-        // Add XP
-        await addXP(CONFIG.XP_VALUES.PROPERTY_VIEW * deduplicated.length);
-        
-        showToast('Sucesso', `${deduplicated.length} imóveis encontrados`, 'success');
-        playSound('success');
+        showToast('Pesquisa Completa', `${data.properties.length} imóveis encontrados`, 'success');
         
     } catch (error) {
         console.error('Search error:', error);
-        resultsDiv.innerHTML = '<p style="color:var(--color-error)">Erro na pesquisa. Tente novamente.</p>';
-        showToast('Erro', 'Falha na pesquisa', 'error');
+        resultsDiv.innerHTML = `
+            <div style="text-align:center;padding:2rem">
+                <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:var(--color-error);margin-bottom:1rem"></i>
+                <h3>Erro na Pesquisa</h3>
+                <p style="color:var(--text-secondary)">${error.message}</p>
+            </div>
+        `;
     }
 }
 
-// ============================================================================
-// MODULE 2: CASAFARI INTEGRATION + AI LEADS + COMMISSIONS
-// ============================================================================
+async function openVirtualStagingModule() {
+    showToast('Em Breve', 'Virtual Staging IA em desenvolvimento', 'info');
+}
+
+async function openAIPricingModule() {
+    showToast('Em Breve', 'IA Pricing Suggestion em desenvolvimento', 'info');
+}
+
+async function openAIStoriesModule() {
+    showToast('Em Breve', 'Stories Imobiliários IA em desenvolvimento', 'info');
+}
 
 async function openCasafariModule() {
-    // Check if user has premium
-    const hasPremium = await checkPremium();
-    if (!hasPremium) {
-        showPremiumRequired();
-        return;
-    }
-    
-    const modal = createModal('Casafari + IA Leads', `
-        <div class="tabs">
-            <button class="tab active" onclick="app.switchCasafariTab('properties')">Imóveis</button>
-            <button class="tab" onclick="app.switchCasafariTab('leads')">Leads IA</button>
-            <button class="tab" onclick="app.switchCasafariTab('commissions')">Comissões</button>
-        </div>
-        <div id="casafari-content"></div>
-    `);
-    
-    showModal(modal);
-    switchCasafariTab('properties');
+    showToast('Em Breve', 'Casafari integration em desenvolvimento', 'info');
 }
-
-async function switchCasafariTab(tab) {
-    const content = document.getElementById('casafari-content');
-    
-    // Update active tab
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    if (tab === 'properties') {
-        content.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A carregar...';
-        await loadCasafariProperties(content);
-    } else if (tab === 'leads') {
-        await loadAILeads(content);
-    } else if (tab === 'commissions') {
-        await loadCommissions(content);
-    }
-}
-
-async function loadCasafariProperties(container) {
-    try {
-        const { data, error } = await supabase.functions.invoke('sync-casafari', {
-            body: { action: 'get_properties' }
-        });
-        
-        if (error) throw error;
-        
-        container.innerHTML = data.properties.map(prop => `
-            <div class="property-card" onclick="app.viewCasafariProperty('${prop.id}')">
-                <img class="property-image" src="${prop.main_image}">
-                <div class="property-content">
-                    <div class="property-price">${prop.price.toLocaleString('pt-PT')}€</div>
-                    <div class="property-title">${prop.title}</div>
-                    <div class="property-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        ${prop.address}
-                    </div>
-                    <div class="property-features">
-                        <div class="property-feature">
-                            <i class="fas fa-bed"></i>
-                            ${prop.bedrooms}
-                        </div>
-                        <div class="property-feature">
-                            <i class="fas fa-ruler-combined"></i>
-                            ${prop.gross_area}m²
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Casafari error:', error);
-        container.innerHTML = '<p>Erro ao carregar imóveis Casafari</p>';
-    }
-}
-
-async function loadAILeads(container) {
-    container.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A analisar leads...';
-    
-    try {
-        const { data, error } = await supabase
-            .from('leads')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .order('ai_score', { ascending: false });
-        
-        if (error) throw error;
-        
-        container.innerHTML = `
-            <div style="margin-bottom:1rem">
-                <button class="btn btn-primary" onclick="app.scoreLeadsWithAI()">
-                    <i class="fas fa-brain"></i>
-                    Recalcular Scores IA
-                </button>
-            </div>
-            ${data.map(lead => `
-                <div class="property-card" style="margin-bottom:1rem">
-                    <div class="property-content">
-                        <div style="display:flex;justify-content:space-between;align-items:start">
-                            <div>
-                                <div class="property-title">${lead.name}</div>
-                                <div class="property-location">
-                                    <i class="fas fa-envelope"></i>
-                                    ${lead.email}
-                                </div>
-                                <div class="property-location">
-                                    <i class="fas fa-phone"></i>
-                                    ${lead.phone || 'N/A'}
-                                </div>
-                            </div>
-                            <div style="text-align:right">
-                                <div class="property-price">${lead.ai_score}/100</div>
-                                <div style="font-size:0.75rem;color:var(--text-secondary)">Score IA</div>
-                            </div>
-                        </div>
-                        <div style="margin-top:1rem">
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width:${lead.ai_score}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-top:1rem;font-size:0.875rem;color:var(--text-secondary)">
-                            ${lead.ai_analysis || 'Análise IA não disponível'}
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        `;
-        
-    } catch (error) {
-        console.error('Leads error:', error);
-        container.innerHTML = '<p>Erro ao carregar leads</p>';
-    }
-}
-
-async function scoreLeadsWithAI() {
-    const { data: leads } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('user_id', currentUser.id);
-    
-    for (const lead of leads) {
-        try {
-            const { data: score } = await supabase.functions.invoke('ai-gamification', {
-                body: {
-                    action: 'score_lead',
-                    lead: lead
-                }
-            });
-            
-            await supabase
-                .from('leads')
-                .update({
-                    ai_score: score.score,
-                    ai_analysis: score.analysis
-                })
-                .eq('id', lead.id);
-                
-        } catch (error) {
-            console.error('Error scoring lead:', error);
-        }
-    }
-    
-    showToast('Sucesso', 'Leads analisados com IA', 'success');
-    await loadAILeads(document.getElementById('casafari-content'));
-}
-
-async function loadCommissions(container) {
-    try {
-        const { data, error } = await supabase
-            .from('commissions')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-        
-        const total = data.reduce((sum, c) => sum + c.amount, 0);
-        
-        container.innerHTML = `
-            <div class="stat-card" style="margin-bottom:1.5rem">
-                <div class="stat-value">${total.toLocaleString('pt-PT')}€</div>
-                <div class="stat-label">Total Comissões</div>
-            </div>
-            ${data.map(comm => `
-                <div class="property-card" style="margin-bottom:1rem">
-                    <div class="property-content">
-                        <div style="display:flex;justify-content:space-between">
-                            <div>
-                                <div class="property-title">${comm.property_address}</div>
-                                <div class="property-location">
-                                    <i class="fas fa-calendar"></i>
-                                    ${new Date(comm.created_at).toLocaleDateString('pt-PT')}
-                                </div>
-                            </div>
-                            <div style="text-align:right">
-                                <div class="property-price">${comm.amount.toLocaleString('pt-PT')}€</div>
-                                <div style="font-size:0.75rem;color:${comm.status === 'paid' ? 'var(--color-success)' : 'var(--color-warning)'}">
-                                    ${comm.status === 'paid' ? 'Pago' : 'Pendente'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        `;
-        
-    } catch (error) {
-        console.error('Commissions error:', error);
-        container.innerHTML = '<p>Erro ao carregar comissões</p>';
-    }
-}
-
-// ============================================================================
-// MODULE 3: AI COACHING (SMART GOALS + GEMINI)
-// ============================================================================
 
 async function openCoachingModule() {
-    const modal = createModal('Coaching SMART IA', `
-        <div class="tabs">
-            <button class="tab active" onclick="app.switchCoachingTab('goals')">Metas SMART</button>
-            <button class="tab" onclick="app.switchCoachingTab('tasks')">Tarefas Diárias</button>
-            <button class="tab" onclick="app.switchCoachingTab('analysis')">Análise IA</button>
-        </div>
-        <div id="coaching-content"></div>
-    `);
-    
-    showModal(modal);
-    switchCoachingTab('goals');
+    showToast('Em Breve', 'Coaching SMART IA em desenvolvimento', 'info');
 }
-
-async function switchCoachingTab(tab) {
-    const content = document.getElementById('coaching-content');
-    
-    if (tab === 'goals') {
-        await loadSMARTGoals(content);
-    } else if (tab === 'tasks') {
-        await loadDailyTasks(content);
-    } else if (tab === 'analysis') {
-        await loadPerformanceAnalysis(content);
-    }
-}
-
-async function loadSMARTGoals(container) {
-    try {
-        const { data: goals } = await supabase
-            .from('goals')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .order('created_at', { ascending: false });
-        
-        container.innerHTML = `
-            <button class="btn btn-primary" onclick="app.createSMARTGoal()" style="margin-bottom:1.5rem">
-                <i class="fas fa-plus"></i>
-                Nova Meta SMART
-            </button>
-            ${goals?.map(goal => `
-                <div class="property-card" style="margin-bottom:1rem">
-                    <div class="property-content">
-                        <div class="property-title">${goal.title}</div>
-                        <div style="margin:1rem 0;font-size:0.875rem;color:var(--text-secondary)">
-                            ${goal.description}
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>Progresso</span>
-                                <span>${goal.progress}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width:${goal.progress}%"></div>
-                            </div>
-                        </div>
-                        <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
-                            <span style="font-size:0.75rem;background:rgba(212,175,55,0.2);padding:0.25rem 0.75rem;border-radius:50px">
-                                <i class="fas fa-calendar"></i>
-                                ${new Date(goal.deadline).toLocaleDateString('pt-PT')}
-                            </span>
-                            <span style="font-size:0.75rem;background:rgba(212,175,55,0.2);padding:0.25rem 0.75rem;border-radius:50px">
-                                <i class="fas fa-bullseye"></i>
-                                ${goal.metric}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<p>Nenhuma meta definida</p>'}
-        `;
-        
-    } catch (error) {
-        console.error('Goals error:', error);
-    }
-}
-
-async function createSMARTGoal() {
-    const modal = createModal('Nova Meta SMART', `
-        <div class="form-group">
-            <label class="form-label">Título da Meta</label>
-            <input type="text" id="goal-title" class="form-input" placeholder="Ex: Vender 5 imóveis de luxo">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Descrição (Específica e Mensurável)</label>
-            <textarea id="goal-description" class="form-textarea" placeholder="Descreva sua meta de forma SMART..."></textarea>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Métrica</label>
-            <input type="text" id="goal-metric" class="form-input" placeholder="Ex: 5 vendas, 100.000€ comissão">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Prazo</label>
-            <input type="date" id="goal-deadline" class="form-input">
-        </div>
-        <button class="btn btn-primary" onclick="app.saveSMARTGoal()">
-            <i class="fas fa-save"></i>
-            Criar Meta
-        </button>
-    `);
-    
-    showModal(modal);
-}
-
-async function saveSMARTGoal() {
-    const title = document.getElementById('goal-title').value;
-    const description = document.getElementById('goal-description').value;
-    const metric = document.getElementById('goal-metric').value;
-    const deadline = document.getElementById('goal-deadline').value;
-    
-    if (!title || !description || !metric || !deadline) {
-        showToast('Erro', 'Preencha todos os campos', 'error');
-        return;
-    }
-    
-    try {
-        const { error } = await supabase.from('goals').insert({
-            user_id: currentUser.id,
-            title,
-            description,
-            metric,
-            deadline,
-            progress: 0
-        });
-        
-        if (error) throw error;
-        
-        showToast('Sucesso', 'Meta SMART criada!', 'success');
-        playSound('success');
-        await addXP(CONFIG.XP_VALUES.MEETING_SCHEDULED);
-        closeModal();
-        
-        // Generate daily tasks with AI
-        await generateDailyTasksForGoal(title, description);
-        
-    } catch (error) {
-        console.error('Error saving goal:', error);
-        showToast('Erro', 'Falha ao criar meta', 'error');
-    }
-}
-
-async function generateDailyTasksForGoal(goalTitle, goalDescription) {
-    try {
-        const { data } = await supabase.functions.invoke('ai-coaching', {
-            body: {
-                action: 'generate_tasks',
-                goal_title: goalTitle,
-                goal_description: goalDescription
-            }
-        });
-        
-        // Save tasks to database
-        for (const task of data.tasks) {
-            await supabase.from('tasks').insert({
-                user_id: currentUser.id,
-                title: task.title,
-                description: task.description,
-                priority: task.priority,
-                due_date: task.due_date
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error generating tasks:', error);
-    }
-}
-
-async function loadDailyTasks(container) {
-    try {
-        const { data: tasks } = await supabase
-            .from('tasks')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .eq('completed', false)
-            .order('priority', { ascending: false });
-        
-        container.innerHTML = `
-            <button class="btn btn-primary" onclick="app.generateAITasks()" style="margin-bottom:1.5rem">
-                <i class="fas fa-robot"></i>
-                Gerar Tarefas com IA
-            </button>
-            ${tasks?.map(task => `
-                <div class="property-card" style="margin-bottom:1rem;cursor:pointer" onclick="app.completeTask('${task.id}')">
-                    <div class="property-content">
-                        <div style="display:flex;gap:1rem;align-items:start">
-                            <input type="checkbox" style="margin-top:0.25rem">
-                            <div style="flex:1">
-                                <div class="property-title">${task.title}</div>
-                                <div style="font-size:0.875rem;color:var(--text-secondary);margin-top:0.5rem">
-                                    ${task.description}
-                                </div>
-                                <div style="margin-top:0.5rem;font-size:0.75rem">
-                                    <span style="color:${task.priority === 'high' ? 'var(--color-error)' : task.priority === 'medium' ? 'var(--color-warning)' : 'var(--text-secondary)'}">
-                                        <i class="fas fa-flag"></i>
-                                        ${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<p>Nenhuma tarefa pendente</p>'}
-        `;
-        
-    } catch (error) {
-        console.error('Tasks error:', error);
-    }
-}
-
-async function completeTask(taskId) {
-    try {
-        await supabase
-            .from('tasks')
-            .update({ completed: true })
-            .eq('id', taskId);
-        
-        await addXP(CONFIG.XP_VALUES.LEAD_CONTACT);
-        showToast('Tarefa Concluída!', '+10 XP', 'success');
-        playSound('success');
-        
-        // Reload tasks
-        await loadDailyTasks(document.getElementById('coaching-content'));
-        
-    } catch (error) {
-        console.error('Error completing task:', error);
-    }
-}
-
-async function loadPerformanceAnalysis(container) {
-    container.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A analisar performance...';
-    
-    try {
-        const { data } = await supabase.functions.invoke('ai-coaching', {
-            body: {
-                action: 'analyze_performance',
-                user_id: currentUser.id
-            }
-        });
-        
-        container.innerHTML = `
-            <div class="chat-container">
-                <div class="chat-messages">
-                    <div class="chat-message">
-                        <img class="chat-avatar" src="https://ui-avatars.com/api/?name=AI+Coach&background=D4AF37&color=0A0E27">
-                        <div class="chat-bubble">
-                            ${data.analysis}
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-input-container">
-                    <input type="text" class="chat-input" id="coach-question" placeholder="Faça uma pergunta ao coach...">
-                    <button class="chat-send-btn" onclick="app.askCoach()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('Analysis error:', error);
-        container.innerHTML = '<p>Erro na análise de performance</p>';
-    }
-}
-
-// ============================================================================
-// MODULE 4: AI LEGAL ASSISTANT (RAG)
-// ============================================================================
 
 async function openLegalModule() {
-    const modal = createModal('Assistente Legal IA', `
-        <div class="chat-container">
-            <div class="chat-messages" id="legal-chat-messages">
-                <div class="chat-message">
-                    <img class="chat-avatar" src="https://ui-avatars.com/api/?name=Legal+AI&background=D4AF37&color=0A0E27">
-                    <div class="chat-bubble">
-                        Olá! Sou o seu assistente legal especializado em imobiliário português. 
-                        Posso ajudar com IMT, IMI, contratos, fiscalidade e legislação. Como posso ajudar?
-                    </div>
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" id="legal-question" placeholder="Ex: Como calcular IMT para imóvel de 500k?">
-                <button class="chat-send-btn" onclick="app.askLegalQuestion()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-        <div style="margin-top:1.5rem">
-            <h4 style="margin-bottom:1rem">Perguntas Frequentes:</h4>
-            <button class="btn btn-secondary" onclick="app.askLegalQuestion('Como calcular IMT?')" style="margin:0.5rem;font-size:0.75rem">
-                Cálculo IMT
-            </button>
-            <button class="btn btn-secondary" onclick="app.askLegalQuestion('Que documentos são necessários para venda?')" style="margin:0.5rem;font-size:0.75rem">
-                Documentos Venda
-            </button>
-            <button class="btn btn-secondary" onclick="app.askLegalQuestion('Impostos sobre ganhos de capital?')" style="margin:0.5rem;font-size:0.75rem">
-                Mais-Valias
-            </button>
-        </div>
-    `);
-    
-    showModal(modal);
+    showToast('Em Breve', 'Assistente Legal em desenvolvimento', 'info');
 }
-
-async function askLegalQuestion(predefinedQuestion) {
-    const input = document.getElementById('legal-question');
-    const question = predefinedQuestion || input.value;
-    
-    if (!question) return;
-    
-    const messagesContainer = document.getElementById('legal-chat-messages');
-    
-    // Add user message
-    const userMsg = document.createElement('div');
-    userMsg.className = 'chat-message user';
-    userMsg.innerHTML = `
-        <img class="chat-avatar" src="${document.getElementById('user-avatar').src}">
-        <div class="chat-bubble">${question}</div>
-    `;
-    messagesContainer.appendChild(userMsg);
-    
-    // Add loading message
-    const loadingMsg = document.createElement('div');
-    loadingMsg.className = 'chat-message';
-    loadingMsg.innerHTML = `
-        <img class="chat-avatar" src="https://ui-avatars.com/api/?name=Legal+AI&background=D4AF37&color=0A0E27">
-        <div class="chat-bubble">
-            <div class="loading-dots"><span></span><span></span><span></span></div>
-        </div>
-    `;
-    messagesContainer.appendChild(loadingMsg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    try {
-        const { data } = await supabase.functions.invoke('ai-assistant', {
-            body: {
-                action: 'legal_query',
-                question: question
-            }
-        });
-        
-        // Remove loading, add AI response
-        loadingMsg.remove();
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'chat-message';
-        aiMsg.innerHTML = `
-            <img class="chat-avatar" src="https://ui-avatars.com/api/?name=Legal+AI&background=D4AF37&color=0A0E27">
-            <div class="chat-bubble">${data.answer}</div>
-        `;
-        messagesContainer.appendChild(aiMsg);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        input.value = '';
-        await addXP(CONFIG.XP_VALUES.PROPERTY_VIEW);
-        
-    } catch (error) {
-        console.error('Legal query error:', error);
-        loadingMsg.remove();
-    }
-}
-
-// ============================================================================
-// MODULE 5: GAMIFICATION & TEAMS
-// ============================================================================
 
 async function openGamificationModule() {
-    const modal = createModal('Gamificação & Equipas', `
-        <div class="tabs">
-            <button class="tab active" onclick="app.switchGamificationTab('rankings')">Rankings</button>
-            <button class="tab" onclick="app.switchGamificationTab('championships')">Campeonatos</button>
-            <button class="tab" onclick="app.switchGamificationTab('badges')">Badges</button>
-            <button class="tab" onclick="app.switchGamificationTab('feed')">Feed Social</button>
-        </div>
-        <div id="gamification-content"></div>
-    `, '1200px');
-    
-    showModal(modal);
-    switchGamificationTab('rankings');
+    showToast('Em Breve', 'Gamificação Social em desenvolvimento', 'info');
 }
-
-async function switchGamificationTab(tab) {
-    const content = document.getElementById('gamification-content');
-    
-    if (tab === 'rankings') {
-        await loadRankings(content);
-    } else if (tab === 'championships') {
-        await loadChampionships(content);
-    } else if (tab === 'badges') {
-        await loadBadges(content);
-    } else if (tab === 'feed') {
-        await loadSocialFeed(content);
-    }
-}
-
-async function loadRankings(container) {
-    try {
-        const { data: rankings } = await supabase
-            .from('profiles')
-            .select('id, full_name, avatar_url, xp, level')
-            .order('xp', { ascending: false })
-            .limit(50);
-        
-        const userRank = rankings.findIndex(r => r.id === currentUser.id) + 1;
-        
-        container.innerHTML = `
-            <div class="stat-card" style="margin-bottom:1.5rem">
-                <div class="stat-value">#${userRank}</div>
-                <div class="stat-label">Sua Posição Global</div>
-            </div>
-            ${rankings.map((user, index) => `
-                <div class="leaderboard-item ${user.id === currentUser.id ? 'style="background:rgba(212,175,55,0.2)"' : ''}">
-                    <div class="leaderboard-rank ${index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : ''}">
-                        ${index + 1}
-                    </div>
-                    <img class="leaderboard-avatar" src="${user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}`}">
-                    <div class="leaderboard-info">
-                        <div class="leaderboard-name">${user.full_name}</div>
-                        <div class="leaderboard-stats">Nível ${user.level}</div>
-                    </div>
-                    <div class="leaderboard-score">${user.xp.toLocaleString('pt-PT')} XP</div>
-                </div>
-            `).join('')}
-        `;
-        
-    } catch (error) {
-        console.error('Rankings error:', error);
-    }
-}
-
-async function loadChampionships(container) {
-    const championships = Object.entries(CONFIG.CHAMPIONSHIPS);
-    
-    container.innerHTML = championships.map(([key, name]) => `
-        <div class="property-card" style="margin-bottom:1rem;cursor:pointer" onclick="app.viewChampionship('${key}')">
-            <div class="property-content">
-                <div class="property-title">${name}</div>
-                <div class="property-location">
-                    <i class="fas fa-users"></i>
-                    Ver classificação completa
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-async function loadBadges(container) {
-    try {
-        const { data: userBadges } = await supabase
-            .from('user_badges')
-            .select('badge_id')
-            .eq('user_id', currentUser.id);
-        
-        const unlockedIds = userBadges.map(b => b.badge_id);
-        
-        const { data: allBadges } = await supabase
-            .from('badges')
-            .select('*')
-            .order('rarity', { ascending: false });
-        
-        container.innerHTML = `
-            <div style="margin-bottom:1.5rem">
-                <div class="stat-value">${unlockedIds.length}/${allBadges.length}</div>
-                <div class="stat-label">Badges Desbloqueados</div>
-            </div>
-            <div class="badge-grid">
-                ${allBadges.map(badge => `
-                    <div class="badge-item ${!unlockedIds.includes(badge.id) ? 'locked' : ''}">
-                        <div class="badge-icon">${badge.icon}</div>
-                        <div class="badge-name">${badge.name}</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('Badges error:', error);
-    }
-}
-
-async function loadSocialFeed(container) {
-    try {
-        const { data: activities } = await supabase
-            .from('activity_feed')
-            .select(`
-                *,
-                profiles:user_id (full_name, avatar_url)
-            `)
-            .order('created_at', { ascending: false })
-            .limit(50);
-        
-        container.innerHTML = activities.map(activity => `
-            <div class="property-card" style="margin-bottom:1rem">
-                <div class="property-content">
-                    <div style="display:flex;gap:1rem;align-items:start">
-                        <img style="width:48px;height:48px;border-radius:50%" src="${activity.profiles.avatar_url}">
-                        <div style="flex:1">
-                            <div style="font-weight:600">${activity.profiles.full_name}</div>
-                            <div style="font-size:0.875rem;color:var(--text-secondary);margin-top:0.25rem">
-                                ${activity.description}
-                            </div>
-                            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem">
-                                ${new Date(activity.created_at).toLocaleString('pt-PT')}
-                            </div>
-                        </div>
-                        ${activity.xp ? `
-                            <div style="font-size:0.875rem;color:var(--gold)">
-                                +${activity.xp} XP
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Feed error:', error);
-    }
-}
-
-// ============================================================================
-// MODULE 6: IDEALISTA AD GENERATOR (GEMINI VISION)
-// ============================================================================
 
 async function openIdealistaModule() {
-    const modal = createModal('Gerador Anúncios Idealista IA', `
-        <div class="form-group">
-            <label class="form-label">Carregar Fotos do Imóvel</label>
-            <div class="file-upload" onclick="document.getElementById('property-images').click()">
-                <i class="fas fa-images"></i>
-                <div class="file-upload-text">Clique para selecionar fotos (máx 10)</div>
-                <input type="file" id="property-images" multiple accept="image/*" style="display:none" onchange="app.previewPropertyImages(event)">
-            </div>
-            <div id="image-previews" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:1rem;margin-top:1rem"></div>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Tipo de Imóvel</label>
-            <select id="idealista-property-type" class="form-select">
-                <option value="apartamento">Apartamento</option>
-                <option value="moradia">Moradia</option>
-                <option value="penthouse">Penthouse</option>
-                <option value="villa">Villa de Luxo</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Características Especiais</label>
-            <textarea id="idealista-features" class="form-textarea" placeholder="Ex: Vista mar, piscina infinity, acabamentos premium..."></textarea>
-        </div>
-        <button class="btn btn-primary" onclick="app.generateIdealistaAd()">
-            <i class="fas fa-magic"></i>
-            Gerar Anúncio com IA Vision
-        </button>
-        <div id="generated-ad" style="margin-top:2rem"></div>
-    `);
-    
-    showModal(modal);
+    showToast('Em Breve', 'Gerador Idealista em desenvolvimento', 'info');
 }
-
-function previewPropertyImages(event) {
-    const files = Array.from(event.target.files);
-    const container = document.getElementById('image-previews');
-    
-    container.innerHTML = files.map((file, index) => {
-        const url = URL.createObjectURL(file);
-        return `
-            <div style="position:relative">
-                <img src="${url}" style="width:100%;height:100px;object-fit:cover;border-radius:8px">
-                <div style="position:absolute;top:4px;right:4px;background:var(--color-error);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times" style="font-size:0.75rem"></i>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-async function generateIdealistaAd() {
-    const images = document.getElementById('property-images').files;
-    const propertyType = document.getElementById('idealista-property-type').value;
-    const features = document.getElementById('idealista-features').value;
-    
-    if (images.length === 0) {
-        showToast('Erro', 'Selecione pelo menos uma foto', 'error');
-        return;
-    }
-    
-    const resultDiv = document.getElementById('generated-ad');
-    resultDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A analisar imagens e gerar anúncio...';
-    
-    try {
-        // Convert images to base64
-        const imageData = [];
-        for (const image of images) {
-            const base64 = await fileToBase64(image);
-            imageData.push(base64);
-        }
-        
-        // Call Gemini Vision via Edge Function
-        const { data } = await supabase.functions.invoke('ai-idealista', {
-            body: {
-                images: imageData,
-                property_type: propertyType,
-                features: features
-            }
-        });
-        
-        resultDiv.innerHTML = `
-            <div class="property-card">
-                <div class="property-content">
-                    <h3 style="margin-bottom:1rem">Anúncio Gerado:</h3>
-                    <div class="form-group">
-                        <label class="form-label">Título</label>
-                        <input type="text" class="form-input" value="${data.title}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Descrição</label>
-                        <textarea class="form-textarea" style="min-height:200px" readonly>${data.description}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Destaques</label>
-                        <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
-                            ${data.highlights.map(h => `
-                                <span style="background:rgba(212,175,55,0.2);padding:0.5rem 1rem;border-radius:50px;font-size:0.75rem">
-                                    ${h}
-                                </span>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="app.copyToClipboard('${data.description.replace(/'/g, "\\'")}')">
-                        <i class="fas fa-copy"></i>
-                        Copiar Anúncio
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        await addXP(CONFIG.XP_VALUES.PROPOSAL_SENT);
-        showToast('Sucesso', 'Anúncio gerado com IA!', 'success');
-        
-    } catch (error) {
-        console.error('Idealista generation error:', error);
-        resultDiv.innerHTML = '<p style="color:var(--color-error)">Erro ao gerar anúncio</p>';
-    }
-}
-
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
-// ============================================================================
-// MODULE 7: DOCUMENT SCANNER (PDF + CAMERA)
-// ============================================================================
 
 async function openScannerModule() {
-    const modal = createModal('Scanner de Documentos', `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
-            <button class="btn btn-primary" onclick="app.startCameraCapture()">
-                <i class="fas fa-camera"></i>
-                Usar Câmara
-            </button>
-            <button class="btn btn-secondary" onclick="document.getElementById('pdf-upload').click()">
-                <i class="fas fa-file-pdf"></i>
-                Upload PDF
-            </button>
-        </div>
-        <input type="file" id="pdf-upload" accept="application/pdf,image/*" style="display:none" onchange="app.processScan nedDocument(event)">
-        <div id="scanner-preview"></div>
-        <div id="scanner-results"></div>
-    `);
-    
-    showModal(modal);
+    showToast('Em Breve', 'Scanner Documentos em desenvolvimento', 'info');
 }
-
-async function startCameraCapture() {
-    const preview = document.getElementById('scanner-preview');
-    
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment' } 
-        });
-        
-        preview.innerHTML = `
-            <video id="camera-stream" autoplay playsinline style="width:100%;border-radius:12px"></video>
-            <button class="btn btn-primary" onclick="app.capturePhoto()" style="margin-top:1rem">
-                <i class="fas fa-camera"></i>
-                Capturar
-            </button>
-            <button class="btn btn-secondary" onclick="app.stopCamera()" style="margin-top:1rem">
-                <i class="fas fa-times"></i>
-                Cancelar
-            </button>
-        `;
-        
-        document.getElementById('camera-stream').srcObject = stream;
-        
-    } catch (error) {
-        console.error('Camera error:', error);
-        showToast('Erro', 'Não foi possível aceder à câmara', 'error');
-    }
-}
-
-async function capturePhoto() {
-    const video = document.getElementById('camera-stream');
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0);
-    
-    const imageData = canvas.toDataURL('image/jpeg');
-    stopCamera();
-    
-    await processScannedImage(imageData);
-}
-
-function stopCamera() {
-    const video = document.getElementById('camera-stream');
-    if (video && video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-    }
-    document.getElementById('scanner-preview').innerHTML = '';
-}
-
-async function processScannedDocument(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const resultsDiv = document.getElementById('scanner-results');
-    resultsDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A processar documento...';
-    
-    try {
-        const base64 = await fileToBase64(file);
-        
-        // Process with Gemini Vision OCR
-        const { data } = await supabase.functions.invoke('ai-assistant', {
-            body: {
-                action: 'ocr_document',
-                image: base64,
-                document_type: 'contract' // Auto-detect
-            }
-        });
-        
-        resultsDiv.innerHTML = `
-            <div class="property-card">
-                <div class="property-content">
-                    <h4 style="margin-bottom:1rem">Dados Extraídos:</h4>
-                    <div style="background:rgba(26,34,71,0.6);padding:1rem;border-radius:8px;font-family:monospace;font-size:0.875rem;white-space:pre-wrap">
-${JSON.stringify(data.extracted_data, null, 2)}
-                    </div>
-                    <button class="btn btn-primary" onclick="app.saveDocumentData(${JSON.stringify(data.extracted_data)})" style="margin-top:1rem">
-                        <i class="fas fa-save"></i>
-                        Guardar Dados
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        await addXP(CONFIG.XP_VALUES.LEAD_CONTACT);
-        
-    } catch (error) {
-        console.error('OCR error:', error);
-        resultsDiv.innerHTML = '<p style="color:var(--color-error)">Erro ao processar documento</p>';
-    }
-}
-
-async function processScannedImage(imageData) {
-    const resultsDiv = document.getElementById('scanner-results');
-    resultsDiv.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> A processar imagem...';
-    
-    try {
-        const { data } = await supabase.functions.invoke('ai-assistant', {
-            body: {
-                action: 'ocr_document',
-                image: imageData.split(',')[1],
-                document_type: 'auto'
-            }
-        });
-        
-        resultsDiv.innerHTML = `
-            <div class="property-card">
-                <div class="property-content">
-                    <img src="${imageData}" style="width:100%;border-radius:8px;margin-bottom:1rem">
-                    <h4 style="margin-bottom:1rem">Texto Extraído:</h4>
-                    <div style="background:rgba(26,34,71,0.6);padding:1rem;border-radius:8px;font-size:0.875rem">
-                        ${data.text}
-                    </div>
-                </div>
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('OCR error:', error);
-    }
-}
-
-// ============================================================================
-// MODULE 8: STRIPE SUBSCRIPTION
-// ============================================================================
 
 async function openSubscriptionModule() {
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_tier, subscription_end_date')
-        .eq('id', currentUser.id)
-        .single();
-    
-    const isPremium = profile?.subscription_tier === 'premium';
-    
-    const modal = createModal('Assinatura Premium', `
-        <div style="text-align:center;margin-bottom:2rem">
-            ${isPremium ? `
-                <div class="premium-badge" style="font-size:1rem;padding:1rem 2rem">
-                    <i class="fas fa-gem"></i>
-                    PREMIUM ATIVO
-                </div>
-                <p style="margin-top:1rem;color:var(--text-secondary)">
-                    Válido até: ${new Date(profile.subscription_end_date).toLocaleDateString('pt-PT')}
+    const modal = createModal('Escolha seu Plano', `
+        <div class="pricing-section">
+            <div style="text-align:center;margin-bottom:3rem">
+                <h2 style="font-size:3rem;margin-bottom:1rem">Escolha seu Plano</h2>
+                <p style="font-size:1.125rem;color:var(--text-secondary)">
+                    Transforme seu negócio imobiliário com IA
                 </p>
-            ` : `
-                <div class="property-price" style="font-size:3rem">3,99€</div>
-                <div style="color:var(--text-secondary)">por mês</div>
-            `}
-        </div>
-        
-        <div class="property-card" style="margin-bottom:1rem">
-            <div class="property-content">
-                <h4 style="margin-bottom:1rem">Premium Inclui:</h4>
-                <div style="display:grid;gap:0.75rem">
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Acesso completo API Casafari</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Requests IA ilimitados (Gemini)</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Análise avançada de leads</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Coaching personalizado diário</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Geração ilimitada de anúncios</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Suporte prioritário 24/7</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem">
-                        <i class="fas fa-check" style="color:var(--gold)"></i>
-                        <span>Badge Premium no perfil</span>
-                    </div>
-                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem">
+                ${generatePricingCards(false)}
             </div>
         </div>
-        
-        ${!isPremium ? `
-            <button class="btn btn-primary" onclick="app.initStripeCheckout()" style="width:100%;font-size:1.125rem;padding:1.5rem">
-                <i class="fas fa-credit-card"></i>
-                Assinar Premium - 3,99€/mês
-            </button>
-            <p style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--text-secondary)">
-                Cancele quando quiser. Processamento seguro via Stripe.
-            </p>
-        ` : `
-            <button class="btn btn-secondary" onclick="app.manageBilling()" style="width:100%">
-                <i class="fas fa-cog"></i>
-                Gerir Assinatura
-            </button>
-        `}
-    `);
+    `, '1400px');
     
     showModal(modal);
 }
 
-async function initStripeCheckout() {
-    if (!CONFIG.STRIPE_PUBLISHABLE_KEY) {
-        showToast('Erro', 'Stripe não configurado', 'error');
-        return;
-    }
-    
-    try {
-        // Load Stripe
-        const script = document.createElement('script');
-        script.src = 'https://js.stripe.com/v3/';
-        script.onload = async () => {
-            const stripe = window.Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
-            
-            // Create checkout session
-            const { data } = await supabase.functions.invoke('create-checkout-session', {
-                body: {
-                    user_id: currentUser.id,
-                    email: currentUser.email
-                }
-            });
-            
-            // Redirect to Stripe checkout
-            await stripe.redirectToCheckout({
-                sessionId: data.session_id
-            });
-        };
-        document.head.appendChild(script);
-        
-    } catch (error) {
-        console.error('Stripe error:', error);
-        showToast('Erro', 'Falha ao iniciar pagamento', 'error');
-    }
-}
-
 // ============================================================================
-// GAMIFICATION SYSTEM
+// GAMIFICATION
 // ============================================================================
 
-async function addXP(xp) {
+async function addXP(amount) {
     if (!supabase || !currentUser) return;
     
     try {
-        // Get current profile
         const { data: profile } = await supabase
             .from('profiles')
             .select('xp, level')
             .eq('id', currentUser.id)
             .single();
         
-        const newXP = profile.xp + xp;
-        const newLevel = calculateLevel(newXP);
+        const newXP = profile.xp + amount;
+        const newLevel = CONFIG.LEVELS.reduce((acc, l) => {
+            return newXP >= l.xp ? l.level : acc;
+        }, 1);
+        
         const leveledUp = newLevel > profile.level;
         
-        // Update profile
         await supabase
             .from('profiles')
             .update({ xp: newXP, level: newLevel })
             .eq('id', currentUser.id);
         
-        // Update UI
-        document.getElementById('stat-xp').textContent = newXP;
-        updateUserLevel(newXP, newLevel);
-        
-        // Show level up animation
         if (leveledUp) {
-            showLevelUpAnimation(newLevel);
-            playSound('level-up');
             triggerConfetti();
-            
-            // Check for new badges
-            await checkBadgeUnlocks(newLevel, newXP);
+            playSound('level-up');
+            showToast('Level Up!', `Você chegou ao nível ${newLevel}!`, 'success');
         }
         
-        // Add to activity feed
-        await supabase.from('activity_feed').insert({
-            user_id: currentUser.id,
-            description: `Ganhou ${xp} XP`,
-            xp: xp
-        });
+        document.getElementById('user-xp').textContent = `${newXP} XP`;
+        document.getElementById('user-level').textContent = `Nível ${newLevel}`;
+        
+        const levelProgress = calculateLevelProgress(newXP, newLevel);
+        document.getElementById('xp-progress-bar').style.width = `${levelProgress}%`;
         
     } catch (error) {
-        console.error('XP error:', error);
+        console.error('XP add error:', error);
     }
-}
-
-function calculateLevel(xp) {
-    for (let i = CONFIG.LEVELS.length - 1; i >= 0; i--) {
-        if (xp >= CONFIG.LEVELS[i].xp) {
-            return CONFIG.LEVELS[i].level;
-        }
-    }
-    return 1;
-}
-
-function showLevelUpAnimation(level) {
-    const levelConfig = CONFIG.LEVELS.find(l => l.level === level);
-    
-    showToast(
-        '🎉 LEVEL UP!',
-        `Nível ${level}: ${levelConfig.title}`,
-        'success'
-    );
-}
-
-async function checkBadgeUnlocks(level, xp) {
-    const badges = [];
-    
-    // Level-based badges
-    if (level === 5) badges.push('specialist');
-    if (level === 10) badges.push('diamond_agent');
-    
-    // XP-based badges
-    if (xp >= 1000) badges.push('thousand_xp');
-    if (xp >= 10000) badges.push('ten_thousand_xp');
-    
-    for (const badgeId of badges) {
-        // Check if already unlocked
-        const { data: existing } = await supabase
-            .from('user_badges')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .eq('badge_id', badgeId)
-            .single();
-        
-        if (!existing) {
-            await supabase.from('user_badges').insert({
-                user_id: currentUser.id,
-                badge_id: badgeId
-            });
-            
-            showBadgeUnlock(badgeId);
-        }
-    }
-}
-
-function showBadgeUnlock(badgeId) {
-    showToast(
-        '🏆 Badge Desbloqueado!',
-        `Novo badge: ${badgeId}`,
-        'success'
-    );
-    triggerConfetti();
 }
 
 // ============================================================================
-// CONFETTI ANIMATION
+// UI UTILITIES
 // ============================================================================
 
-function triggerConfetti() {
-    const canvas = document.getElementById('confetti-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    const particles = [];
-    const colors = ['#D4AF37', '#F4D03F', '#8B5CF6', '#10B981'];
-    
-    for (let i = 0; i < 100; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: -10,
-            vx: (Math.random() - 0.5) * 4,
-            vy: Math.random() * 3 + 2,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 8 + 4
-        });
-    }
-    
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach((p, index) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.1; // Gravity
-            
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-            
-            if (p.y > canvas.height) {
-                particles.splice(index, 1);
-            }
-        });
-        
-        if (particles.length > 0) {
-            requestAnimationFrame(animate);
-        } else {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    }
-    
-    animate();
-}
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
-function createModal(title, content, maxWidth = '900px') {
-    return `
-        <div class="modal" style="max-width:${maxWidth}">
+function createModal(title, content, width = '800px') {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-backdrop" onclick="app.closeModal()"></div>
+        <div class="modal-content" style="max-width:${width}">
             <div class="modal-header">
-                <div class="modal-title">${title}</div>
-                <div class="modal-close" onclick="app.closeModal()">
+                <h2>${title}</h2>
+                <button class="modal-close" onclick="app.closeModal()">
                     <i class="fas fa-times"></i>
-                </div>
+                </button>
             </div>
             <div class="modal-body">
                 ${content}
             </div>
         </div>
     `;
+    return modal;
 }
 
-function showModal(modalHTML) {
-    const overlay = document.getElementById('modal-overlay');
-    overlay.innerHTML = modalHTML;
-    overlay.classList.add('active');
+function showModal(modal) {
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('active'), 10);
 }
 
 function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('active');
-    setTimeout(() => {
-        document.getElementById('modal-overlay').innerHTML = '';
-    }, 300);
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    });
 }
 
 function showToast(title, message, type = 'info') {
-    const toast = document.getElementById('toast');
-    
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
     toast.innerHTML = `
+        <div class="toast-icon">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        </div>
         <div class="toast-content">
-            <div class="toast-icon">
-                <i class="fas ${icons[type]}"></i>
-            </div>
-            <div class="toast-text">
-                <h4>${title}</h4>
-                <p>${message}</p>
-            </div>
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
         </div>
     `;
     
-    toast.classList.add('show');
-    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('active'), 10);
     setTimeout(() => {
-        toast.classList.remove('show');
-    }, 4000);
+        toast.classList.remove('active');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
-function playSound(type) {
-    const sound = document.getElementById(`sound-${type}`);
-    if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log('Audio play failed:', e));
-    }
-}
-
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Copiado!', 'Texto copiado para clipboard', 'success');
-    });
-}
-
-async function checkPremium() {
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_tier')
-        .eq('id', currentUser.id)
-        .single();
-    
-    return profile?.subscription_tier === 'premium';
-}
-
-function showPremiumRequired() {
-    const modal = createModal('Premium Necessário', `
-        <div style="text-align:center;padding:2rem">
-            <div class="premium-badge" style="font-size:1.5rem;padding:1.5rem 3rem;margin-bottom:2rem">
-                <i class="fas fa-gem"></i>
-                PREMIUM
-            </div>
-            <p style="margin-bottom:2rem;font-size:1.125rem">
-                Esta funcionalidade requer assinatura Premium
-            </p>
-            <button class="btn btn-primary" onclick="app.openModule('subscription')" style="font-size:1.125rem;padding:1.5rem 3rem">
-                <i class="fas fa-star"></i>
-                Ver Planos Premium
-            </button>
-        </div>
-    `);
-    
-    showModal(modal);
-}
-
-// ============================================================================
-// APP INITIALIZATION & GLOBAL OBJECT
-// ============================================================================
-
-const app = {
-    showDashboard: () => {
-        closeModal();
-        loadDashboard();
-    },
-    
-    openModule: (module) => {
-        const modules = {
-            'ai-search': openAISearchModule,
-            'casafari': openCasafariModule,
-            'coaching': openCoachingModule,
-            'legal': openLegalModule,
-            'gamification': openGamificationModule,
-            'idealista': openIdealistaModule,
-            'scanner': openScannerModule,
-            'subscription': openSubscriptionModule
+function playSound(soundName) {
+    try {
+        const sounds = {
+            'success': 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3',
+            'level-up': 'https://assets.mixkit.co/sfx/preview/mixkit-video-game-win-2016.mp3',
+            'error': 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'
         };
         
-        if (modules[module]) {
-            modules[module]();
-        }
-    },
+        const audio = new Audio(sounds[soundName]);
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+    } catch (error) {
+        // Silent fail
+    }
+}
+
+function triggerConfetti() {
+    if (typeof confetti === 'undefined') return;
     
+    const count = 100;
+    const defaults = {
+        origin: { y: 0.7 }
+    };
+    
+    function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+        }));
+    }
+    
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+}
+
+function showView(viewName) {
+    document.querySelectorAll('[id$="-view"]').forEach(view => {
+        view.classList.add('hidden');
+    });
+    
+    const view = document.getElementById(`${viewName}-view`);
+    if (view) {
+        view.classList.remove('hidden');
+    }
+}
+
+function updateLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        el.textContent = t(key);
+    });
+}
+
+// ============================================================================
+// GLOBAL APP OBJECT
+// ============================================================================
+
+window.app = {
+    // Auth
+    loginWithGoogle,
+    logout,
+    
+    // Subscription
+    validateVoucher,
+    activateVoucher,
+    skipVoucher,
+    checkSubscriptionExpiry,
+    selectPlan,
+    continueWithFree,
+    checkFeatureAccess,
+    
+    // OAuth
+    initiateGoogleOAuthForGemini,
+    hasGeminiOAuth,
+    
+    // Geolocation
+    getUserLocation,
+    
+    // Modules
+    openModule,
+    executeAISearch,
+    
+    // Dashboard
+    loadDashboard,
+    
+    // Gamification
+    addXP,
+    
+    // UI
+    createModal,
+    showModal,
     closeModal,
     showToast,
-    playSound,
-    executeAISearch,
-    switchCasafariTab,
-    scoreLeadsWithAI,
-    switchCoachingTab,
-    createSMARTGoal,
-    saveSMARTGoal,
-    completeTask,
-    askLegalQuestion,
-    switchGamificationTab,
-    generateIdealistaAd,
-    previewPropertyImages,
-    startCameraCapture,
-    capturePhoto,
-    stopCamera,
-    processScannedDocument,
-    initStripeCheckout,
-    copyToClipboard,
-    
-    toggleNotifications: () => {
-        showToast('Notificações', 'Sem novas notificações', 'info');
-    },
-    
-    toggleSettings: () => {
-        showToast('Configurações', 'Em desenvolvimento', 'info');
-    },
-    
-    toggleProfile: () => {
-        showToast('Perfil', 'Em desenvolvimento', 'info');
-    }
+    showView,
+    updateLanguage
 };
 
-// Make app globally available
-window.app = app;
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    loadConfig();
-    initSupabase();
-    initGoogleAuth();
-    
-    // Setup Google login button
-    document.getElementById('google-login-btn').addEventListener('click', signInWithGoogle);
-    
-    // Setup global search
-    document.getElementById('global-search').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            const query = e.target.value;
-            if (query) {
-                showToast('Pesquisa', `A pesquisar: ${query}`, 'info');
-            }
-        }
-    });
-});
+console.log('✅ LuxeAgent Pro app.js loaded successfully');
