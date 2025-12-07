@@ -283,10 +283,6 @@ function t(key) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 LuxeAgent Pro - Initializing...');
 
-        // Processa OAuth callback se houver tokens no hash
-    if (handleOAuthCallback()) {
-        return; // Se processou OAuth, para aqui
-    }
     
     try {
         // Check if Supabase library is loaded
@@ -317,6 +313,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             CONFIG.SUPABASE_URL,
             CONFIG.SUPABASE_ANON_KEY
         );
+
+            console.log('✅ Supabase client initialized');
+
+    // Processa OAuth callback se houver tokens no hash
+    if (handleOAuthCallback()) {
+        return; // Se processou OAuth, para aqui
+    }
         
         console.log('✅ Supabase client initialized');
         
