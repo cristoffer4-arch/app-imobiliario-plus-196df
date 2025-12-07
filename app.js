@@ -7,8 +7,8 @@
 
 const CONFIG = {
     // Supabase Configuration
-    SUPABASE_URL: '',  // SET IN .env
-    SUPABASE_ANON_KEY: '', // SET IN .env
+    SUPABASE_URL: 'https://ebuktnhikkttcmxrbbhk.supabase.co',  // SET IN .env
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVidWt0bmhpa2t0dGNteHJiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2NTEwMTQsImV4cCI6MjA0OTIyNzAxNH0.s1K5cDOF8dP9X1jHZO6EXtWQ7S8YpE_8T0mBaQwkN8M', // SET IN .env
     
     // API Keys
     CASAFARI_API_KEY: '', // SET IN .env
