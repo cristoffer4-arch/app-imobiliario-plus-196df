@@ -196,7 +196,7 @@ const app = {
     }
 };
 
-function sendMessage() {
+async function sendMessage() {
     const input = document.getElementById('chatInput');
     const messagesContainer = document.getElementById('chatMessages');
     
@@ -210,19 +210,19 @@ function sendMessage() {
     
     input.value = '';
     
-    setTimeout(() => {
-        const responses = [
-            'Entendo sua questão. Posso ajudar com análise de mercado.',
-            'Excelente pergunta! Recomendo focar em bairros em crescimento.',
-            'Baseado nos dados, sugiro propriedades na zona de Lisboa.',
-            'Posso gerar um relatório detalhado sobre isso.',
-            'Essa é uma ótima estratégia. Vamos explorar mais opções.'
-        ];
-        const response = responses[Math.floor(Math.random() * responses.length)];
-        
-        messagesContainer.innerHTML += `
-            <div class="message bot">${response}</div>
-        `;
+    // Chama o Gemini AI para resposta real
+        try {
+            const aiResponse = await window.kpisGemini.askGeminiForKPIs(userMessage);
+            
+            messagesContainer.innerHTML += `
+                <div class="message bot">${aiResponse}</div>
+            `;
+        } catch (error) {
+            console.error('Erro ao consultar Gemini AI:', error);
+            messagesContainer.innerHTML += `
+                <div class="message bot">Desculpe, não consegui processar sua pergunta no momento. Por favor, tente novamente.</div>
+            `;
+        }
         
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }, 1000);
