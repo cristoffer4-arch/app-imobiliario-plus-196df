@@ -223,8 +223,7 @@ function handleOAuthCallback() {
                     
                     // Esconde loading e mostra dashboard
                     hideLoadingScreen();
-                    showScreen('dashboard');
-                })
+                        showView('dashboard');                })
                 .catch(err => {
                     console.error('Erro no setSession:', err);
                 });
@@ -320,9 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (handleOAuthCallback()) {
         return; // Se processou OAuth, para aqui
     }
-        
-        console.log('✅ Supabase client initialized');
-        
+                
         // Check session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
