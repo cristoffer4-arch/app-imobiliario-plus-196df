@@ -227,6 +227,8 @@ function handleOAuthCallback() {
                 })
                 .catch(err => {
                     console.error('Erro no setSession:', err);
+                                        hideLoadingScreen();
+                    showAuthScreen();
                 });
                 
             return true;
@@ -317,10 +319,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✅ Supabase client initialized');
 
     // Processa OAuth callback se houver tokens no hash
-    if (handleOAuthCallback()) {
-        return; // Se processou OAuth, para aqui
-    }
-        
+        const hasOAuthCallback = await handleOAuthCallback();
+                
+        if (hasOAuthCallback) {
+            console.log('✅ OAuth callback processed');
+            return;
+            }
+}
         console.log('✅ Supabase client initialized');
         
         // Check session
@@ -473,6 +478,8 @@ async function initializeUserData(user) {
         
     } catch (error) {
         console.error('Error initializing user data:', error);
+                hideLoadingScreen();
+        showAuthScreen();
     }
 }
 
