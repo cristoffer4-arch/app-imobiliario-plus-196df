@@ -89,11 +89,7 @@ function initSupabase() {
         return null;
     }
     
-      const { createClient } = supabase;
-    supabase = createClient(
-        CONFIG.SUPABASE_URL,
-        CONFIG.SUPABASE_ANON_KEY
-    );
+      supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
     
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
