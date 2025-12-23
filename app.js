@@ -178,7 +178,7 @@ const CONFIG = {
 // ============================================================================
 
 // Processa tokens OAuth do hash da URL após redirect do Google
-async function processOAuthTokens( {
+async function processOAuthTokens() {
     const hash = window.location.hash;
     
     if (hash && hash.includes('access_token')) {
