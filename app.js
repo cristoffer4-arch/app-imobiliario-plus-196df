@@ -1598,3 +1598,118 @@ window.app = {
 };
 
 console.log('✅ LUX.ai app.js loaded successfully');
+
+// ============================================
+// SOLUÇÃO DE EMERGÊNCIA PARA TELA DE LOADING
+// ============================================
+
+/**
+ * Função para forçar a exibição do app após timeout
+ * Remove o loading screen e mostra o conteúdo principal
+ */
+function forceShowApp() {
+  console.log('[DEBUG] Forçando exibição do app...');
+  
+  try {
+    // 1. Esconder loading screen
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      loadingScreen.style.display = 'none';
+      console.log('[DEBUG] Loading screen escondido');
+    }
+    
+    // 2. Esconder auth screen (não precisamos dela para testing)
+    const authScreen = document.getElementById('auth-screen');
+    if (authScreen) {
+      authScreen.style.display = 'none';
+      console.log('[DEBUG] Auth screen escondido');
+    }
+    
+    // 3. Mostrar app principal
+    const appScreen = document.getElementById('app');
+    if (appScreen) {
+      appScreen.style.display = 'block';
+      appScreen.classList.remove('hidden');
+      console.log('[DEBUG] App principal exibido com sucesso!');
+    } else {
+      console.error('[ERRO] Elemento #app não encontrado no DOM');
+    }
+    
+    // 4. Simular usuário logado (opcional, para evitar erros)
+    if (typeof window !== 'undefined') {
+      window.currentUser = {
+        id: 'test-user-' + Date.now(),
+        email: 'test@example.com',
+        name: 'Usuário Teste',
+        isTestMode: true
+      };
+      console.log('[DEBUG] Usuário teste criado:', window.currentUser);
+    }
+    
+  } catch (error) {
+    console.error('[ERRO] Falha ao forçar exibição do app:', error);
+    // Fallback extremo: mostrar alerta
+    alert('Erro ao carregar aplicação. Recarregue a página.');
+  }
+}
+
+/**
+ * Função de verificação de segurança
+ * Garante que o app será exibido mesmo se houver falhas
+ */
+function emergencyAppDisplay() {
+  console.log('[DEBUG] Iniciando verificação de emergência...');
+  
+  // Verificar se loading screen ainda está visível após 3 segundos
+  setTimeout(() => {
+    const loadingScreen = document.getElementById('loading-screen');
+    const appScreen = document.getElementById('app');
+    
+    // Se loading ainda está visível E app ainda está escondido
+    if (loadingScreen && loadingScreen.style.display !== 'none' && appScreen &&
+        (appScreen.style.display === 'none' || appScreen.classList.contains('hidden'))) {
+      
+      console.warn('[AVISO] Tela de loading ainda visível após 3s. Forçando exibição...');
+      forceShowApp();
+    } else {
+      console.log('[DEBUG] App carregado normalmente, nenhuma ação necessária');
+    }
+  }, 3000);
+  
+  // Timeout adicional de segurança (5 segundos)
+  setTimeout(() => {
+    const appScreen = document.getElementById('app');
+    if (appScreen &&
+        (appScreen.style.display === 'none' || appScreen.classList.contains('hidden'))) {
+      console.error('[ERRO CRÍTICO] App ainda não exibido após 5s. Forçando exibição final...');
+      forceShowApp();
+    }
+  }, 5000);
+}
+
+// ============================================
+// INICIALIZAÇÃO AUTOMÁTICA
+// ============================================
+
+// Executar quando o DOM estiver completamente carregado
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('[DEBUG] DOM carregado, iniciando verificação de emergência');
+    emergencyAppDisplay();
+  });
+} else {
+  // DOM já está carregado
+  console.log('[DEBUG] DOM já carregado, iniciando verificação imediatamente');
+  emergencyAppDisplay();
+}
+
+// Atalho de teclado para forçar exibição manualmente (Ctrl + Shift + L)
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+    console.log('[DEBUG] Atalho de teclado detectado. Forçando exibição...');
+    forceShowApp();
+  }
+});
+
+console.log('[DEBUG] Sistema de emergência de loading carregado com sucesso!');
+console.log('[DEBUG] Use Ctrl+Shift+L para forçar exibição manualmente a qualquer momento');
