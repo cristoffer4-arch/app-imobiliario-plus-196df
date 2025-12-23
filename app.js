@@ -10,11 +10,11 @@
 const CONFIG = {
     // Supabase - CONFIGURE SUAS CREDENCIAIS AQUI
     SUPABASE_URL: 'https://ebuktnhikkttcmxrbbhk.supabase.co',  // https://seu-projeto.supabase.co
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVidWt0bmhpa2t0dGNteHJiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2NTEwMTQsImV4cCI6MjA0OTIyNzAxNH0.s1K5cDOF8dP9X1jHZO6EXtWQ7S8YpE_8T0mBaQwkN8M',  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVidWt0bmhpa2t0dGNteHJiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2NTEwMTQsImV4cCI6MjA0OTIyNzAxNH0.s1K5cDO[...]'
     
     // Google OAuth
-    GOOGLE_CLIENT_ID: '',
-    GOOGLE_OAUTH_SCOPES: [
+    ,GOOGLE_CLIENT_ID: ''
+    ,GOOGLE_OAUTH_SCOPES: [
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/generative-language.retriever'
@@ -209,27 +209,23 @@ async function processOAuthTokens() {
             };
             
             // Define a sessão no Supabase
-            window.supabase.auth.setSession(session)
-                .then(({ data, error }) => {
-                    if (error) {
-                        console.error('Erro ao definir sessão:', error);
-                        return;
-                    }
-                    
-                    console.log('Sessão OAuth definida com sucesso:', data);
-                    
-                    // Limpa o hash da URL
-                    window.history.replaceState(null, '', window.location.pathname);
-                    
-                    // Esconde loading e mostra dashboard
-                    hideLoadingScreen();
-                    showScreen('dashboard');
-                })
-                .catch(err => {
-                    console.error('Erro no setSession:', err);
-                });
-                
-            return true;
+            try {
+                const { data, error } = await window.supabase.auth.setSession(session);
+                if (error) {
+                    console.error('Erro ao definir sessão:', error);
+                    return false;
+                }
+                console.log('Sessão OAuth definida com sucesso:', data);
+                // Limpa o hash da URL
+                window.history.replaceState(null, '', window.location.pathname);
+                // Esconde loading e mostra dashboard
+                hideLoadingScreen();
+                showScreen && showScreen('dashboard');
+                return true;
+            } catch (err) {
+                console.error('Erro no setSession:', err);
+                return false;
+            }
         }
     }
     
@@ -239,7 +235,6 @@ async function processOAuthTokens() {
 // ============================================================================
 // GLOBALS
 // ============================================================================
-
 let supabase = null;
 let currentUser = null;
 let currentLanguage = 'pt-PT';
@@ -247,7 +242,6 @@ let currentLanguage = 'pt-PT';
 // ============================================================================
 // TRANSLATIONS
 // ============================================================================
-
 const TRANSLATIONS = {
     'pt-PT': {
         welcome: 'Bem-vindo',
@@ -279,11 +273,9 @@ function t(key) {
 // ============================================================================
 // INITIALIZATION (FIXED)
 // ============================================================================
-
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 LUX.ai - Initializing...');
 
-    
     try {
         // Check if Supabase library is loaded
         if (typeof window.supabase === 'undefined') {
@@ -314,23 +306,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             CONFIG.SUPABASE_ANON_KEY
         );
 
-            console.log('✅ Supabase client initialized');
-
-    // Processa OAuth callback se houver tokens no hash
-        if (await processOAuthTokens()) {        return; // Se processou OAuth, para aqui
-                                                     
-    }
-        
         console.log('✅ Supabase client initialized');
 
-                // BYPASS TEMPORÁRIO - Remover autenticação para testar
-                console.log('⚠️ BYPASS: Pulando autenticação para teste');
-                hideLoadingScreen();
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                setupEventListeners();
-                return; // Sai da função sem verificar sessão
-        
+        // Processa OAuth callback se houver tokens no hash
+        if (await processOAuthTokens()) {
+            return; // Se processou OAuth, termina aqui
+        }
+
+        // NOTE: Havia um BYPASS TEMPORÁRIO para pular autenticação. Mantido comentado para segurança de produção.
+        /*
+        console.log('⚠️ BYPASS: Pulando autenticação para teste');
+        hideLoadingScreen();
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        setupEventListeners();
+        return; // Sai da função sem verificar sessão
+        */
+
         // Check session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -357,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('❌ Initialization error:', error);
         hideLoadingScreen();
         showAuthScreen();
-        showToast('Erro', 'Falha na inicialização: ' + error.message, 'error');
+        showToast('Erro', 'Falha na inicialização: ' + (error && error.message ? error.message : error), 'error');
     }
 });
 
@@ -653,7 +645,9 @@ function generatePricingCards(compactMode = false) {
                      position:relative;
                  ">
                 ${plan.popular ? `
-                    <div style="position:absolute;top:1rem;right:-2rem;background:var(--gold);color:var(--bg-primary);padding:0.5rem 3rem;transform:rotate(45deg);font-size:0.75rem;font-weight:700;text-transform:uppercase;">Popular</div>
+                    <div style="position:absolute;top:1rem;right:-2rem;background:var(--gold);color:var(--bg-primary);padding:0.5rem 3rem;transform:rotate(45deg);font-size:0.75rem;font-weight:700">
+                    POPULAR
+                    </div>
                 ` : ''}
                 
                 <div style="text-align:center">
@@ -755,7 +749,7 @@ function updatePlanBadge(planId) {
     if (!badge || !nameEl) return;
     
     badge.className = `plan-badge ${planId}`;
-    nameEl.textContent = planId.charAt(0).toUpperCase() + planId.slice(1);
+    nameEl.textContent = (planId || '').charAt(0).toUpperCase() + (planId || '').slice(1);
 }
 
 // ============================================================================
@@ -778,7 +772,7 @@ async function initiateGoogleOAuthForGemini() {
         `scope=${encodeURIComponent(scopes)}&` +
         `access_type=offline&` +
         `prompt=consent&` +
-        `state=${currentUser.id}`;
+        `state=${currentUser?.id || ''}`;
     
     const width = 500;
     const height = 600;
@@ -791,10 +785,13 @@ async function initiateGoogleOAuthForGemini() {
         `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    window.addEventListener('message', processOAuthMessage);}
+    // Ensure the message handler is registered
+    window.addEventListener('message', processOAuthMessage);
+}
 
+// Handler for messages coming from the OAuth popup (POST_MESSAGE)
 async function processOAuthMessage(event) {
-    if (event.data.type !== 'oauth_success') return;
+    if (!event || event.data?.type !== 'oauth_success') return;
     
     const { code } = event.data;
     
@@ -904,7 +901,7 @@ function showVoucherModal() {
                 >
             </div>
             
-            <button class="btn btn-primary" onclick="app.activateVoucher()" style="margin-bottom:1rem">
+            <button class="btn btn-primary" onclick="app.activateVoucher(event)" style="margin-bottom:1rem">
                 <i class="fas fa-gift"></i> Ativar Voucher
             </button>
             
@@ -917,18 +914,24 @@ function showVoucherModal() {
     showModal(modal);
     
     setTimeout(() => {
-        document.getElementById('voucher-input').focus();
+        const input = document.getElementById('voucher-input');
+        if (input) input.focus();
     }, 300);
     
-    document.getElementById('voucher-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            activateVoucher();
-        }
-    });
+    const inputEl = document.getElementById('voucher-input');
+    if (inputEl) {
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                // Call activateVoucher without relying on global event; function handles missing event
+                activateVoucher();
+            }
+        });
+    }
 }
 
-async function activateVoucher() {
+async function activateVoucher(event) {
     const input = document.getElementById('voucher-input');
+    if (!input) return;
     const code = input.value.trim();
     
     if (!code) {
@@ -938,9 +941,12 @@ async function activateVoucher() {
     }
     
     input.disabled = true;
-    const btn = event.target;
-    btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-    btn.disabled = true;
+    // Support both event-based calls and programmatic calls (event may be undefined)
+    const btn = event?.target || document.querySelector('.modal.active .btn.btn-primary') || document.querySelector('button.btn-primary');
+    if (btn) {
+        btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+        btn.disabled = true;
+    }
     
     try {
         const result = await validateVoucher(code);
@@ -967,10 +973,12 @@ async function activateVoucher() {
         
     } catch (error) {
         input.disabled = false;
-        btn.innerHTML = '<i class="fas fa-gift"></i> Ativar Voucher';
-        btn.disabled = false;
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-gift"></i> Ativar Voucher';
+            btn.disabled = false;
+        }
         
-        showToast('Erro', error.message, 'error');
+        showToast('Erro', error.message || error, 'error');
         input.focus();
         input.select();
     }
@@ -993,9 +1001,11 @@ async function getUserLocation() {
         }
         
         const locationInput = document.getElementById('search-location');
-        const originalPlaceholder = locationInput.placeholder;
-        locationInput.placeholder = '📍 A detetar localização...';
-        locationInput.disabled = true;
+        const originalPlaceholder = locationInput ? locationInput.placeholder : '';
+        if (locationInput) {
+            locationInput.placeholder = '📍 A detetar localização...';
+            locationInput.disabled = true;
+        }
         
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -1004,9 +1014,11 @@ async function getUserLocation() {
                 try {
                     const address = await reverseGeocode(latitude, longitude);
                     
-                    locationInput.value = address;
-                    locationInput.disabled = false;
-                    locationInput.placeholder = originalPlaceholder;
+                    if (locationInput) {
+                        locationInput.value = address;
+                        locationInput.disabled = false;
+                        locationInput.placeholder = originalPlaceholder;
+                    }
                     
                     showToast('Localização Detetada', `${address}`, 'success');
                     playSound('success');
@@ -1014,14 +1026,18 @@ async function getUserLocation() {
                     resolve({ latitude, longitude, address });
                     
                 } catch (error) {
-                    locationInput.disabled = false;
-                    locationInput.placeholder = originalPlaceholder;
+                    if (locationInput) {
+                        locationInput.disabled = false;
+                        locationInput.placeholder = originalPlaceholder;
+                    }
                     reject(error);
                 }
             },
             (error) => {
-                locationInput.disabled = false;
-                locationInput.placeholder = originalPlaceholder;
+                if (locationInput) {
+                    locationInput.disabled = false;
+                    locationInput.placeholder = originalPlaceholder;
+                }
                 
                 let errorMessage = 'Erro ao obter localização';
                 switch(error.code) {
@@ -1555,7 +1571,6 @@ function updateLanguage() {
 // ============================================================================
 // GLOBAL APP OBJECT
 // ============================================================================
-
 window.app = {
     // Auth
     loginWithGoogle,
@@ -1601,7 +1616,6 @@ console.log('✅ LUX.ai app.js loaded successfully');
 // ============================================
 // SOLUÇÃO DE EMERGÊNCIA PARA TELA DE LOADING
 // ============================================
-
 /**
  * Função para forçar a exibição do app após timeout
  * Remove o loading screen e mostra o conteúdo principal
@@ -1636,13 +1650,13 @@ function forceShowApp() {
     
     // 4. Simular usuário logado (opcional, para evitar erros)
     if (typeof window !== 'undefined') {
-      window.currentUser = {
+      currentUser = {
         id: 'test-user-' + Date.now(),
         email: 'test@example.com',
         name: 'Usuário Teste',
         isTestMode: true
       };
-      console.log('[DEBUG] Usuário teste criado:', window.currentUser);
+      console.log('[DEBUG] Usuário teste criado:', currentUser);
     }
     
   } catch (error) {
