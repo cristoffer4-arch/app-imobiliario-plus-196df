@@ -317,8 +317,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✅ Supabase client initialized');
 
     // Processa OAuth callback se houver tokens no hash
-    if (processOAuthTokens))
-        return; // Se processou OAuth, para aqui
+        if (await processOAuthTokens()) {        return; // Se processou OAuth, para aqui
+                                                     
     }
         
         console.log('✅ Supabase client initialized');
@@ -791,10 +791,9 @@ async function initiateGoogleOAuthForGemini() {
         `width=${width},height=${height},left=${left},top=${top}`
     );
     
-    window.addEventListener('message', processOAuthTokens);
-}
+    window.addEventListener('message', processOAuthMessage);}
 
-async function processOAuthTokense(event) {
+async function processOAuthMessage(event) {
     if (event.data.type !== 'oauth_success') return;
     
     const { code } = event.data;
