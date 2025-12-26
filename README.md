@@ -84,7 +84,7 @@ npm start
 - **Componentes:** Shadcn/ui + Radix UI
 - **IA:** OpenAI GPT-4o
 - **Database:** Supabase (configurado)
-- **Deploy:** Vercel (recomendado)
+- **Deploy:** Netlify (recomendado)
 
 ## 📁 Estrutura do Projeto
 
@@ -207,17 +207,17 @@ server {
 
 ## ☁️ Deploy
 
-### Vercel (Recomendado)
+### Netlify (Recomendado)
 
 ```bash
 # Instalar CLI
-npm install -g vercel
+npm install -g Netlify
 
 # Deploy
-vercel --prod
+Netlify --prod
 
 # Configurar variáveis no dashboard
-# https://vercel.com/seu-projeto/settings/environment-variables
+# https://Netlify.com/seu-projeto/settings/environment-variables
 ```
 
 ### Outras Plataformas
