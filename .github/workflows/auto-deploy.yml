@@ -17,7 +17,7 @@ on:
 jobs:
   auto-implementation:
     runs-on: ubuntu-latest
-    if: github.event.inputs.confirm == 'SIM'
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'SIM') || github.event_name == 'push'
     
     steps:
       - name: 📥 Checkout
