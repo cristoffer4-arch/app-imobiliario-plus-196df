@@ -8,6 +8,10 @@ on:
         required: true
         default: 'SIM'
 
+        permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   auto-implementation:
     runs-on: ubuntu-latest
