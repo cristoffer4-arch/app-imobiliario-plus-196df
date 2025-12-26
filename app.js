@@ -248,7 +248,7 @@ async function processOAuthTokens() {
             
             // Define a sessão no Supabase
             try {
-                const { data, error } = await window.supabase.auth.setSession(session);
+                const { data, error } = await supabase.auth.setSession(session);
                 if (error) {
                     console.error('Erro ao definir sessão:', error);
                     return false;
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Check if Supabase library is loaded
-        if (typeof window.supabase === 'undefined') {
+        if (typeof supabase === 'undefined') {
             console.error('❌ Supabase library not loaded!');
             hideLoadingScreen();
             showAuthScreen();
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('✅ Credentials configured');
         
         // Initialize Supabase (FIXED)
-        supabase = window.supabase.createClient(
+        supabase = supabase.createClient(
             CONFIG.SUPABASE_URL,
             CONFIG.SUPABASE_ANON_KEY
         );
