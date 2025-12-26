@@ -8,6 +8,17 @@
         if (fallbackExecuted) return;
         fallbackExecuted = true;
         
+    function forcedFallback() {
+        // FIXED: Não executar se houver tokens OAuth no hash
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+            console.log('[FALLBACK] OAuth detectado, cancelando fallback');
+            return;
+        }
+        
+        if (fallbackExecuted) return;
+        fallbackExecuted = true;
+        
         console.log('[FALLBACK] Forçando exibição após timeout');
         
         const loading = document.getElementById('loading-screen');
@@ -20,17 +31,13 @@
         }
     }
     
-    // Timeout de 2 segundos
-    setTimeout(forcedFallback, 2000);
+    // FIXED: Aumentar timeout para 5 segundos para dar tempo ao OAuth
     
     // Backup no evento load
-    window.addEventListener('load', function() {
-        setTimeout(forcedFallback, 1000);
-    });
-})();
-
-// ============================================================================
-// LUX.ai - COMPLETE APPLICATION LOGIC
+    // FIXED: Remover backup load - conflita com OAuth
+    // window.addEventListener('load', function() {
+    //     setTimeout(forcedFallback, 1000);
+    // });UX.ai - COMPLETE APPLICATION LOGIC
 // Version: 2.0.1 (FIXED - Loading Screen & Initialization)
 // ============================================================================
 
@@ -1963,7 +1970,14 @@ function forceShowApp() {
  */
 function emergencyAppDisplay() {
   console.log('[DEBUG] Iniciando verificação de emergência...');
-  
+
+        
+    // FIXED: Não executar se houver OAuth redirect
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+        console.log('[DEBUG] OAuth redirect detectado, cancelando emergency display');
+        return;
+    }
   // Verificar se loading screen ainda está visível após 3 segundos
   setTimeout(() => {
     const loadingScreen = document.getElementById('loading-screen');
