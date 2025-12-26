@@ -7,8 +7,7 @@ class KPIsGemini {
     // IMPORTANTE: Usar uma das suas API Keys do Gemini
     // Opção 1: recrutamento3 (AIzaSy...gQz8)
     // Opção 2: App recrutamento (AIzaSy...Fv0Q)
-    this.geminiApiKey = 'AIzaSyBLkH1KoS-OywmD59D4w01vRDbV8cVgQz8'; // recrutamento3
-    this.geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    this.geminiApiKey = process.env.GEMINI_API_KEY; // variável de ambiente do Netlify    this.geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
     this.maxRetries = 3;
