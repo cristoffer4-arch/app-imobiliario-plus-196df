@@ -83,7 +83,12 @@ jobs:
         run: |
           echo "# Sistema Completo Implementado" > IMPLEMENTATION.md
           echo "Todos os 40+ arquivos foram criados automaticamente" >> IMPLEMENTATION.md
-          
+
+
+              - name: 📝 Create .gitignore
+      run: |
+        echo "node_modules/" > .gitignore
+        echo ".next/" >> .gitignore
       - name: 💾 Commit Changes
         run: |
           git config user.name "GitHub Actions Bot"
