@@ -1968,7 +1968,7 @@ function forceShowApp() {
  * Função de verificação de segurança
  * Garante que o app será exibido mesmo se houver falhas
  */
-// function emergencyAppDisplay() {
+function emergencyAppDisplay() {
   console.log('[DEBUG] Iniciando verificação de emergência...');
 
         
