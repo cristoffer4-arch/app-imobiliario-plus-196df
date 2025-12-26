@@ -9,8 +9,8 @@ on:
         default: 'SIM'
 
         permissions:
-  contents: write
-  pull-requests: write
+contents: write
+  ll-requests: write
 
 jobs:
   auto-implementation:
