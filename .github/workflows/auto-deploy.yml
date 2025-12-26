@@ -12,7 +12,7 @@ on:
 
         permissions:
 contents: write
-  ll-requests: write
+  pulll-requests: write
 
 jobs:
   auto-implementation:
