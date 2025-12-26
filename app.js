@@ -251,8 +251,7 @@ async function processOAuthTokens() {
                 window.history.replaceState(null, '', window.location.pathname);
                 // Esconde loading e mostra dashboard
                 hideLoadingScreen();
-                showScreen && showScreen('dashboard');
-                return true;
+                        showView('dashboard');                return true;
             } catch (err) {
                 console.error('Erro no setSession:', err);
                 return false;
