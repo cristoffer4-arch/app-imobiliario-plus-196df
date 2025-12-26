@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Check if Supabase library is loaded
-        if (typeof supabase === 'undefined') {
+        if (typeof window.supabase === 'undefined') {
             console.error('❌ Supabase library not loaded!');
             hideLoadingScreen();
             showAuthScreen();
