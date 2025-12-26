@@ -1,4 +1,35 @@
 // ============================================================================
+// FALLBACK DE EMERGÊNCIA - NUNCA DEIXA O APP TRAVADO
+// ============================================================================
+(function() {
+    let fallbackExecuted = false;
+    
+    function forcedFallback() {
+        if (fallbackExecuted) return;
+        fallbackExecuted = true;
+        
+        console.log('[FALLBACK] Forçando exibição após timeout');
+        
+        const loading = document.getElementById('loading-screen');
+        const auth = document.getElementById('auth-screen');
+        
+        if (loading) loading.style.display = 'none';
+        if (auth) {
+            auth.classList.remove('hidden');
+            auth.style.display = 'flex';
+        }
+    }
+    
+    // Timeout de 2 segundos
+    setTimeout(forcedFallback, 2000);
+    
+    // Backup no evento load
+    window.addEventListener('load', function() {
+        setTimeout(forcedFallback, 1000);
+    });
+})();
+
+// ============================================================================
 // LUX.ai - COMPLETE APPLICATION LOGIC
 // Version: 2.0.1 (FIXED - Loading Screen & Initialization)
 // ============================================================================
@@ -275,6 +306,13 @@ function t(key) {
 // ============================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 LUX.ai - Initializing...');
+        
+    // Timeout de segurança - será cancelado se inicialização for bem-sucedida
+    const emergencyTimeout = setTimeout(() => {
+        console.warn('[TIMEOUT] Inicialização demorou muito, mostrando tela de autenticação');
+        hideLoadingScreen();
+        showAuthScreen();
+    }, 3000);
 
     try {
         // Check if Supabase library is loaded
@@ -283,6 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideLoadingScreen();
             showAuthScreen();
             showToast('Erro', 'Biblioteca Supabase não carregada', 'error');
+            clearTimeout(emergencyTimeout);
             return;
         }
         
@@ -295,6 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideLoadingScreen();
             showAuthScreen();
             showToast('Configuração', 'Configure as credenciais do Supabase', 'warning');
+            clearTimeout(emergencyTimeout);
             return;
         }
         
@@ -310,6 +350,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Processa OAuth callback se houver tokens no hash
         if (await processOAuthTokens()) {
+            clearTimeout(emergencyTimeout);
             return; // Se processou OAuth, termina aqui
         }
 
@@ -330,6 +371,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('❌ Session check error:', sessionError);
             hideLoadingScreen();
             showAuthScreen();
+            clearTimeout(emergencyTimeout);
             return;
         }
         
@@ -338,15 +380,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             await handleAuthSuccess(session.user);
         } else {
             console.log('ℹ️  No session, showing login screen');
-            hideLoadingScreen();
+                        clearTimeout(emergencyTimeout);
+hideLoadingScreen();
             showAuthScreen();
         }
         
         // Setup event listeners
         setupEventListeners();
+                
+        // Cancela o timeout de emergência pois tudo correu bem
+        clearTimeout(emergencyTimeout);
         
     } catch (error) {
         console.error('❌ Initialization error:', error);
+                clearTimeout(emergencyTimeout);
         hideLoadingScreen();
         showAuthScreen();
         showToast('Erro', 'Falha na inicialização: ' + (error && error.message ? error.message : error), 'error');
