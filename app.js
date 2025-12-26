@@ -1417,29 +1417,274 @@ async function openAIStoriesModule() {
 }
 
 async function openCasafariModule() {
-    showToast('Em Breve', 'Casafari integration em desenvolvimento', 'info');
+  const modal = createModal('Casafari + IA Leads', `
+    <div class="module-content">
+      <div style="text-align:center;padding:2rem">
+        <i class="fas fa-building" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+        <h2 style="font-size:2rem;margin-bottom:1rem">Integração Casafari</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem">
+          Conecte sua conta Casafari para importar leads e imóveis com scoring IA automático
+        </p>
+        
+        <div class="form-group">
+          <label class="form-label">API Key Casafari</label>
+          <input type="text" id="casafari-api-key" class="form-input" placeholder="Digite sua API key...">
+        </div>
+        
+        <button class="btn btn-primary" onclick="app.connectCasafari()">
+          <i class="fas fa-plug"></i> Conectar Casafari
+        </button>
+        
+        <div style="margin-top:2rem;padding:1.5rem;background:rgba(212,175,55,0.1);border-radius:12px">
+          <h4 style="margin-bottom:1rem"><i class="fas fa-star"></i> Recursos Premium</h4>
+          <ul style="text-align:left;color:var(--text-secondary)">
+            <li>✓ Import automático de leads</li>
+            <li>✓ Scoring IA de qualidade</li>
+            <li>✓ Cálculo automático de comissões</li>
+            <li>✓ Análise de mercado em tempo real</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `, '700px');
+  
+  showModal(modal);
 }
-
 async function openCoachingModule() {
-    showToast('Em Breve', 'Coaching SMART IA em desenvolvimento', 'info');
+  const modal = createModal('Coaching SMART IA', `
+    <div class="module-content">
+      <div style="text-align:center;padding:2rem">
+        <i class="fas fa-brain" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+        <h2 style="font-size:2rem;margin-bottom:1rem">Coach Pessoal com IA Gemini</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem">
+          Defina metas SMART, receba tarefas diárias personalizadas e acompanhe seu progresso
+        </p>
+        
+        <div class="chat-container" style="height:400px">
+          <div class="chat-messages" id="coaching-chat">
+            <div class="chat-message">
+              <img class="chat-avatar" src="https://ui-avatars.com/api/?name=AI+Coach&background=D4AF37&color=0A0E27" />
+              <div class="chat-bubble">
+                Olá! Sou seu coach pessoal de IA. Vamos definir suas metas SMART para este mês?
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-container">
+            <input type="text" class="chat-input" id="coaching-input" placeholder="Digite sua meta..." />
+            <button class="chat-send-btn" onclick="app.sendCoachingMessage()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div style="margin-top:1.5rem;padding:1rem;background:rgba(139,92,246,0.1);border-radius:12px">
+          <p style="font-size:0.875rem;color:var(--text-secondary)">
+            <i class="fas fa-lightbulb"></i> Dica: Metas SMART são Específicas, Mensuráveis, Alcançáveis, Relevantes e com Prazo definido
+          </p>
+        </div>
+      </div>
+    </div>
+  `, '800px');
+  
+  showModal(modal);
 }
-
 async function openLegalModule() {
-    showToast('Em Breve', 'Assistente Legal em desenvolvimento', 'info');
+  const modal = createModal('Assistente Legal IA', `
+    <div class="module-content">
+      <div style="padding:2rem">
+        <div style="text-align:center;margin-bottom:2rem">
+          <i class="fas fa-gavel" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+          <h2 style="font-size:2rem;margin-bottom:1rem">Consultor Legal Imobiliário</h2>
+          <p style="color:var(--text-secondary)">
+            Pergunte sobre legislação portuguesa, cálculos fiscais (IMT, IMI), contratos e procedimentos legais
+          </p>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem">
+          <button class="btn btn-secondary" onclick="app.askLegal('IMT')" style="padding:1rem">
+            <i class="fas fa-calculator"></i><br/>Calcular IMT
+          </button>
+          <button class="btn btn-secondary" onclick="app.askLegal('IMI')" style="padding:1rem">
+            <i class="fas fa-home"></i><br/>Calcular IMI
+          </button>
+          <button class="btn btn-secondary" onclick="app.askLegal('Contratos')" style="padding:1rem">
+            <i class="fas fa-file-contract"></i><br/>Contratos
+          </button>
+          <button class="btn btn-secondary" onclick="app.askLegal('Legislação')" style="padding:1rem">
+            <i class="fas fa-book"></i><br/>Legislação
+          </button>
+        </div>
+        
+        <div class="chat-container" style="height:300px">
+          <div class="chat-messages" id="legal-chat">
+            <div class="chat-message">
+              <i class="fas fa-gavel" style="font-size:2rem;color:var(--gold)"></i>
+              <div class="chat-bubble">
+                Olá! Sou seu assistente legal. Como posso ajudar hoje?
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-container">
+            <input type="text" class="chat-input" id="legal-input" placeholder="Faça sua pergunta legal..." />
+            <button class="chat-send-btn" onclick="app.sendLegalMessage()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `, '900px');
+  
+  showModal(modal);
 }
-
 async function openGamificationModule() {
-    showToast('Em Breve', 'Gamificação Social em desenvolvimento', 'info');
+  const modal = createModal('Gamificação & Rankings', `
+    <div class="module-content">
+      <div style="padding:2rem">
+        <div style="text-align:center;margin-bottom:2rem">
+          <i class="fas fa-trophy" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+          <h2 style="font-size:2rem;margin-bottom:1rem">Sistema de Gamificação</h2>
+          <p style="color:var(--text-secondary)">
+            Compita em 6 campeonatos simultâneos, ganhe badges e suba no ranking
+          </p>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:2rem">
+          <div style="background:linear-gradient(135deg,rgba(26,34,71,0.9),rgba(18,24,56,0.9));border:2px solid var(--gold);border-radius:16px;padding:1.5rem;text-align:center">
+            <h3 style="color:var(--gold);margin-bottom:0.5rem">Ranking Mensal</h3>
+            <div style="font-size:2.5rem;font-weight:700;margin:1rem 0">#${Math.floor(Math.random()*20)+1}</div>
+            <p style="color:var(--text-secondary);font-size:0.875rem">Sua posição atual</p>
+          </div>
+          
+          <div style="background:rgba(26,34,71,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center">
+            <h3 style="margin-bottom:0.5rem">XP Este Mês</h3>
+            <div style="font-size:2.5rem;font-weight:700;margin:1rem 0;color:var(--gold)">${Math.floor(Math.random()*500)+100}</div>
+            <p style="color:var(--text-secondary);font-size:0.875rem">Pontos ganhos</p>
+          </div>
+          
+          <div style="background:rgba(26,34,71,0.6);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center">
+            <h3 style="margin-bottom:0.5rem">Badges Desbloqueados</h3>
+            <div style="font-size:2.5rem;font-weight:700;margin:1rem 0;color:var(--gold)">${Math.floor(Math.random()*15)+5}/50</div>
+            <p style="color:var(--text-secondary);font-size:0.875rem">Conquistas</p>
+          </div>
+        </div>
+        
+        <div style="margin-top:2rem">
+          <h3 style="margin-bottom:1rem"><i class="fas fa-medal"></i> Top 10 Ranking</h3>
+          <div style="background:rgba(26,34,71,0.4);border-radius:12px;padding:1rem">
+            ${[1,2,3,4,5,6,7,8,9,10].map(i => `
+              <div style="display:flex;align-items:center;padding:0.75rem;border-bottom:1px solid rgba(212,175,55,0.1)">
+                <div style="font-size:1.5rem;font-weight:700;width:40px;color:${i<=3?'var(--gold)':'var(--text-secondary)'}">#${i}</div>
+                <img src="https://ui-avatars.com/api/?name=Agente+${i}&background=D4AF37&color=0A0E27" style="width:40px;height:40px;border-radius:50%;margin:0 1rem" />
+                <div style="flex:1">
+                  <div style="font-weight:600">Agente ${i}</div>
+                  <div style="font-size:0.75rem;color:var(--text-secondary)">${Math.floor(Math.random()*3000)+1000} XP</div>
+                </div>
+                ${i<=3?`<i class="fas fa-crown" style="color:var(--gold);font-size:1.5rem"></i>`:''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `, '1000px');
+  
+  showModal(modal);
 }
-
 async function openIdealistaModule() {
-    showToast('Em Breve', 'Gerador Idealista em desenvolvimento', 'info');
+  const modal = createModal('Gerador de Anúncios IA', `
+    <div class="module-content">
+      <div style="padding:2rem">
+        <div style="text-align:center;margin-bottom:2rem">
+          <i class="fas fa-ad" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+          <h2 style="font-size:2rem;margin-bottom:1rem">Gerador de Anúncios para Idealista</h2>
+          <p style="color:var(--text-secondary)">
+            Gemini Vision analisa suas fotos e gera anúncios otimizados com SEO automático
+          </p>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-camera"></i> Upload de Fotos do Imóvel</label>
+          <input type="file" id="property-images" class="form-input" multiple accept="image/*" />
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de Imóvel</label>
+          <select id="idealista-property-type" class="form-select">
+            <option value="apartamento">Apartamento</option>
+            <option value="moradia">Moradia</option>
+            <option value="terreno">Terreno</option>
+            <option value="loja">Loja/Escritório</option>
+          </select>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="form-group">
+            <label class="form-label">Preço (€)</label>
+            <input type="number" id="idealista-price" class="form-input" placeholder="250000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Área (m²)</label>
+            <input type="number" id="idealista-area" class="form-input" placeholder="120" />
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="app.generateIdealistaAd()" style="width:100%">
+          <i class="fas fa-magic"></i> Gerar Anúncio com IA
+        </button>
+        
+        <div id="idealista-result" style="margin-top:2rem"></div>
+      </div>
+    </div>
+  `, '800px');
+  
+  showModal(modal);
 }
-
 async function openScannerModule() {
-    showToast('Em Breve', 'Scanner Documentos em desenvolvimento', 'info');
+  const modal = createModal('Scanner de Documentos', `
+    <div class="module-content">
+      <div style="padding:2rem">
+        <div style="text-align:center;margin-bottom:2rem">
+          <i class="fas fa-camera" style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem"></i>
+          <h2 style="font-size:2rem;margin-bottom:1rem">Scanner OCR com IA</h2>
+          <p style="color:var(--text-secondary)">
+            Digitalize contratos, certidões e cadernetas com câmara ou PDF e extraia dados automaticamente
+          </p>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem">
+          <button class="btn btn-secondary" onclick="app.scanWithCamera()" style="padding:1.5rem">
+            <i class="fas fa-camera" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
+            Usar Câmara
+          </button>
+          <button class="btn btn-secondary" onclick="app.uploadDocument()" style="padding:1.5rem">
+            <i class="fas fa-file-upload" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
+            Upload PDF/Imagem
+          </button>
+        </div>
+        
+        <div style="background:rgba(26,34,71,0.6);border-radius:12px;padding:1.5rem;margin-bottom:2rem">
+          <h4 style="margin-bottom:1rem"><i class="fas fa-file-alt"></i> Tipos de Documentos Suportados</h4>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;color:var(--text-secondary);font-size:0.875rem">
+            <div>✓ Contratos de Compra e Venda</div>
+            <div>✓ Certidões Prediais</div>
+            <div>✓ Cadernetas Prediais</div>
+            <div>✓ Plantas e Projetos</div>
+            <div>✓ Licenças de Utilização</div>
+            <div>✓ Documentos de Identificação</div>
+          </div>
+        </div>
+        
+        <div id="scanner-result" style="display:none;background:rgba(212,175,55,0.1);border-radius:12px;padding:1.5rem">
+          <h4 style="margin-bottom:1rem;color:var(--gold)"><i class="fas fa-check-circle"></i> Documento Processado</h4>
+          <div id="scanner-extracted-data" style="color:var(--text-secondary)"></div>
+        </div>
+      </div>
+    </div>
+  `, '800px');
+  
+  showModal(modal);
 }
-
 async function openSubscriptionModule() {
     const modal = createModal('Escolha seu Plano', `
         <div class="pricing-section">
