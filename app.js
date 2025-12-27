@@ -25,7 +25,7 @@ const CONFIG = {
     ],
     
     // APIs
-    GEMINI_API_KEY: '',
+    GEMINI_API_KEY: 'AIzaSyAzwRzv-xcPsoCJdgk4skIzYezc0GTzni8',
     GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta',
     CASAFARI_API_KEY: '',
     STRIPE_PUBLISHABLE_KEY: '',
