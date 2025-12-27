@@ -5,7 +5,6 @@ import Script from "next/script";
 import "./globals.css";
 // Import all available fonts for AI usage
 import "../lib/fonts";
-import { OAuthHandler } from '@/components/oauth-handler';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
