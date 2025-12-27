@@ -372,11 +372,50 @@ hideLoadingScreen();
     }
 });
 
-function setupEventListeners() {
+256
+    () {
     const googleLoginBtn = document.getElementById('google-login-btn');
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', loginWithGoogle);
     }
+
+        // Event listeners para os module cards
+        const moduleCards = document.querySelectorAll('.module-card');
+        moduleCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                                    const moduleName = card.dataset.module;
+                                    if (moduleName) {
+                                                        openModule(moduleName);
+                                                    }
+                                });
+                });
+
+        // Event listeners para ícones do header
+        const notificationIcon = document.getElementById('notification-icon');
+        if (notificationIcon) {
+                    notificationIcon.addEventListener('click', () => {
+                                    showToast('Notificações', 'Sistema de notificações em desenvolvimento', 'info');
+                                });
+                }
+
+        const rankingIcon = document.getElementById('ranking-icon');
+        if (rankingIcon) {
+                    rankingIcon.addEventListener('click', () => openModule('gamification'));
+                }
+
+        const settingsIcon = document.getElementById('settings-icon');
+        if (settingsIcon) {
+                    settingsIcon.addEventListener('click', () => {
+                                    showToast('Configurações', 'Painel de configurações em desenvolvimento', 'info');
+                                });
+                }
+
+        const userAvatar = document.getElementById('user-avatar');
+        if (userAvatar) {
+                    userAvatar.addEventListener('click', () => {
+                                    showToast('Perfil', 'Painel de usuário em desenvolvimento', 'info');
+                                });
+                }
     
     const languageBtns = document.querySelectorAll('[data-language]');
     languageBtns.forEach(btn => {
