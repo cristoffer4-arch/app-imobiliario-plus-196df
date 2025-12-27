@@ -26,6 +26,8 @@ const CONFIG = {
     
     // APIs
     GEMINI_API_KEY: 'AIzaSyAzwRzv-xcPsoCJdgk4skIzYezc0GTzni8',
+        AI_SEARCH_FUNCTION: 'https://ebuktnhikkttcmxrbbhk.supabase.co/functions/v1/ai-search',
+        GEMINI_CHAT_FUNCTION: 'https://ebuktnhikkttcmxrbbhk.supabase.co/functions/v1/gemini-chat',
     GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta',
     CASAFARI_API_KEY: '',
     STRIPE_PUBLISHABLE_KEY: '',
