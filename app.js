@@ -1,37 +1,3 @@
-// ============================================================================ [BUILD FIX]
-// FALLBACK DE EMERGÊNCIA - NUNCA DEIXA O APP TRAVADO
-// ============================================================================
-(function() {
-    let fallbackExecuted = false;
-    
-    function forcedFallback() {
-        if (fallbackExecuted) return;
-        fallbackExecuted = true;
-        
-    function forcedFallback() {
-        // FIXED: Não executar se houver tokens OAuth no hash
-        const hash = window.location.hash;
-        if (hash && hash.includes('access_token')) {
-            console.log('[FALLBACK] OAuth detectado, cancelando fallback');
-            return;
-        }
-        
-        if (fallbackExecuted) return;
-        fallbackExecuted = true;
-        
-        console.log('[FALLBACK] Forçando exibição após timeout');
-        
-        const loading = document.getElementById('loading-screen');
-        const auth = document.getElementById('auth-screen');
-        
-        if (loading) loading.style.display = 'none';
-        if (auth) {
-            auth.classList.remove('hidden');
-            auth.style.display = 'flex';
-        }
-    }
-    
-    // FIXED: Aumentar timeout para 5 segundos para dar tempo ao OAuth
     
     // Backup no evento load
     // FIXED: Remover backup load - conflita com OAuth
