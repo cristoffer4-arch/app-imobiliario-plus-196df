@@ -382,7 +382,30 @@ function setupEventListeners    () {
 
         // Event listeners para os module cards
         const moduleCards = document.querySelectorAll('.module-card');
-        moduleCards.forEach(card => {
+    
+    // FIXED: Adiciona data-module aos cards automaticamente baseado no título
+    const cardTitles = {
+        'Busca Multi-Portal IA': 'ai-search',
+        'Casafari + IA Leads': 'casafari',
+        'Coaching SMART IA': 'coaching',
+        'Assistente Legal IA': 'legal',
+        'Gamificação': 'gamification',
+        'Gerador Anúncios IA': 'idealista',
+        'Scanner OCR': 'scanner',
+        'Pricing IA': 'ai-pricing',
+        'Virtual Staging': 'virtual-staging',
+        'Stories IA': 'ai-stories'
+    };
+    
+    moduleCards.forEach(card => {
+        const title = card.querySelector('h3')?.textContent?.trim();
+        if (title && cardTitles[title] && !card.dataset.module) {
+            card.dataset.module = cardTitles[title];
+            console.log(`✅ data-module='${cardTitles[title]}' adicionado ao card: ${title}`);
+        }
+    });
+
+    moduleCards.forEach(card => {
                     card.addEventListener('click', () => {
                                     const moduleName = card.dataset.module;
                                     if (moduleName) {
