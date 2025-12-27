@@ -372,8 +372,7 @@ hideLoadingScreen();
     }
 });
 
-256
-    () {
+function setupEventListeners    () {
     const googleLoginBtn = document.getElementById('google-login-btn');
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', loginWithGoogle);
