@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false, // Remove widget de desenvolvimento Next.js
+    reactStrictMode: true, // Enable React Strict Mode to detect issues
   
   // Ignorar erros durante build (compatibilidade Vercel)
   eslint: {
