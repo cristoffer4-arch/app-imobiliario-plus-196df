@@ -9,17 +9,17 @@ export async function GET(request: NextRequest) {
   if (code) {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-    
+
     try {
       // Exchange code for session
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-      
+
       if (error) {
         console.error('Error exchanging code for session:', error);
         // Redirect to home with error
         return NextResponse.redirect(`${requestUrl.origin}/?error=auth_failed`);
       }
-      
+
       if (data?.session) {
         console.log('Session created successfully for user:', data.session.user.email);
         // Successful authentication - redirect to dashboard
