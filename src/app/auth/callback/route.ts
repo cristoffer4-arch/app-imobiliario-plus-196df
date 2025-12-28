@@ -21,6 +21,23 @@ export async function GET(request: NextRequest) {
       }
 
       if (data?.session) {
+              
+      // Get selected plan from URL params
+      const plan = requestUrl.searchParams.get('plan') || 'professional';
+      
+      // Store the selected plan in user metadata or profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: data.session.user.id,
+          subscription_tier: plan,
+          email: data.session.user.email,
+          updated_at: new Date().toISOString()
+        });
+
+      if (updateError) {
+        console.error('Error updating profile with plan:', updateError);
+      }
         console.log('Session created successfully for user:', data.session.user.email);
         // Successful authentication - redirect to dashboard
         return NextResponse.redirect(`https://app-imobiliario-plus.netlify.app/imoveis`);
