@@ -642,3 +642,14 @@
 **Próximo Marco:** Implementar filtros avançados e upload de imagens antes de avançar para funcionalidades de pagamento e IA.
 
 **Pronto para:** Testes, deploy e adição de novas features incrementais.
+
+
+### 7. Chat com IA - Gemini
+- [x] Gemini AI client (src/lib/gemini-client.ts)
+- [x] Chat API endpoint (/api/chat)
+- [x] ChatInterface component
+- [x] Chat page route (/chat)
+- [x] Context-aware conversations
+- [x] Property analysis
+- [x] Description generation
+- [x] Conversation history
