@@ -8,156 +8,165 @@ import type { Session } from '@supabase/supabase-js';
 export default function ImoveisPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkCount, setCheckCount] = useState(0);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    // Verificar sessão
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
+    // Aguardar um pouco após callback antes de verificar sessão
+    const checkSession = async () => {
+      console.log('Checking session, attempt:', checkCount);
       
-      // Se não estiver logado, redirecionar para home
-      if (!session) {
-        router.push('/');
-      }
-    });
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log('Session data:', currentSession);
+      
+      setSession(currentSession);
+      setLoading(false);
 
-    // Escutar mudanças na autenticação
+      // Se não tiver sessão após algumas tentativas, redirecionar
+      if (!currentSession && checkCount > 2) {
+        console.log('No session after multiple attempts, redirecting to home');
+        router.push('/');
+      } else if (!currentSession) {
+        // Tentar novamente em 500ms
+        setTimeout(() => setCheckCount(prev => prev + 1), 500);
+      }
+    };
+
+    checkSession();
+  }, [checkCount, supabase.auth, router]);
+
+  // Escutar mudanças na autenticação
+  useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session);
       setSession(session);
-      if (!session) {
-        router.push('/');
-      }
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase, router]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
+  }, [supabase.auth]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
-          <p className="text-slate-400 font-light tracking-wide">Carregando...</p>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500 mx-auto"></div>
+          <p className="mt-4 text-gray-300">Carregando dashboard...</p>
         </div>
       </div>
     );
   }
 
   if (!session) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-300">Redirecionando...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Navbar */}
-      <nav className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <svg className="w-6 h-6 text-slate-950" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 3L4 9V21H9V14H15V21H20V9L12 3Z"/>
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent">
-                  Lux.ai
-                </h1>
-                <p className="text-xs text-slate-500">Dashboard</p>
-              </div>
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <header className="border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-yellow-500 p-2 rounded-lg">
+              <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+              </svg>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-slate-300">{session.user.email}</p>
-                <p className="text-xs text-slate-500">Autenticado</p>
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm"
-              >
-                Sair
-              </button>
+            <div>
+              <h1 className="text-xl font-bold text-yellow-500">Lux.ai</h1>
+              <p className="text-xs text-gray-400">GESTÃO IMOBILIÁRIA</p>
             </div>
           </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-400">{session.user.email}</span>
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm"
+            >
+              Sair
+            </button>
+          </div>
         </div>
-      </nav>
+      </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Welcome Section */}
-        <div className="mb-12">
-          <h2 className="text-4xl font-bold text-white mb-2">
-            Bem-vindo ao Dashboard
-          </h2>
-          <p className="text-slate-400">
-            Gerencie seus imóveis e propriedades de forma inteligente
-          </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {[
-            { label: 'Total de Imóveis', value: '0', icon: '🏠', color: 'from-blue-500 to-blue-600' },
-            { label: 'Imóveis Ativos', value: '0', icon: '✅', color: 'from-green-500 to-green-600' },
-            { label: 'Visitas Agendadas', value: '0', icon: '📅', color: 'from-amber-500 to-amber-600' },
-            { label: 'Propostas Pendentes', value: '0', icon: '📝', color: 'from-purple-500 to-purple-600' },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-300"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-3xl">{stat.icon}</span>
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} opacity-20`} />
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-3xl font-bold mb-8">Dashboard Lux.ai</h2>
+        
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gray-800 p-6 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Total de Imóveis</p>
+                <p className="text-2xl font-bold text-yellow-500">0</p>
               </div>
-              <h3 className="text-3xl font-bold text-white mb-2">{stat.value}</h3>
-              <p className="text-sm text-slate-400">{stat.label}</p>
+              <div className="bg-yellow-500/10 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+              </div>
             </div>
-          ))}
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Clientes Ativos</p>
+                <p className="text-2xl font-bold text-green-500">0</p>
+              </div>
+              <div className="bg-green-500/10 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm">Transações Mês</p>
+                <p className="text-2xl font-bold text-blue-500">0</p>
+              </div>
+              <div className="bg-blue-500/10 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
+                  <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-white mb-6">Ações Rápidas</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { label: 'Adicionar Imóvel', icon: '➕', description: 'Cadastre um novo imóvel' },
-              { label: 'Ver Relatórios', icon: '📊', description: 'Análise e estatísticas' },
-              { label: 'Gerenciar Clientes', icon: '👥', description: 'CRM integrado' },
-            ].map((action, index) => (
-              <button
-                key={index}
-                className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/30 rounded-xl p-6 text-left transition-all duration-300 group"
-              >
-                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">
-                  {action.icon}
-                </div>
-                <h4 className="text-lg font-semibold text-white mb-1">{action.label}</h4>
-                <p className="text-sm text-slate-400">{action.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="mt-12 bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-white mb-6">Atividades Recentes</h3>
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🏡</div>
-            <p className="text-slate-400 mb-2">Nenhuma atividade ainda</p>
-            <p className="text-sm text-slate-500">
-              Suas atividades e atualizações aparecerão aqui
-            </p>
+        <div className="bg-gray-800 p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4">Ações Rápidas</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-center transition">
+              <div className="text-2xl mb-2">🏠</div>
+              <div className="text-sm">Adicionar Imóvel</div>
+            </button>
+            <button className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-center transition">
+              <div className="text-2xl mb-2">👥</div>
+              <div className="text-sm">Novo Cliente</div>
+            </button>
+            <button className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-center transition">
+              <div className="text-2xl mb-2">📊</div>
+              <div className="text-sm">Relatórios</div>
+            </button>
+            <button className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-center transition">
+              <div className="text-2xl mb-2">⚙️</div>
+              <div className="text-sm">Configurações</div>
+            </button>
           </div>
         </div>
       </main>
