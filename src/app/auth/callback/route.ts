@@ -10,9 +10,27 @@ export async function GET(request: NextRequest) {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     
-    await supabase.auth.exchangeCodeForSession(code);
+    try {
+      // Exchange code for session
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('Error exchanging code for session:', error);
+        // Redirect to home with error
+        return NextResponse.redirect(`${requestUrl.origin}/?error=auth_failed`);
+      }
+      
+      if (data?.session) {
+        console.log('Session created successfully for user:', data.session.user.email);
+        // Successful authentication - redirect to dashboard
+        return NextResponse.redirect(`${requestUrl.origin}/imoveis`);
+      }
+    } catch (err) {
+      console.error('Unexpected error during OAuth callback:', err);
+      return NextResponse.redirect(`${requestUrl.origin}/?error=unexpected`);
+    }
   }
 
-  // URL para redirecionar após login bem-sucedido
-  return NextResponse.redirect(`${requestUrl.origin}/imoveis`);
+  // No code provided or session creation failed
+  return NextResponse.redirect(requestUrl.origin);
 }
