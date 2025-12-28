@@ -57,12 +57,29 @@
 - [ ] Webhooks de pagamento
 
 ### 2. CRUD de Imóveis
-- [ ] Tabelas Supabase
-- [ ] API routes (create, read, update, delete)
-- [ ] Interface de gestão
-- [ ] Upload de imagens
+- [[x] Tabelas Supabaseelas Supabase
+- [[x] API routes (create, read, update, delete) routes (create, read, update, delete)
+[x] Interface de gestãoInterface de gestão
+[x] Upload de imagens (estrutura pronta)Upload de imagens
 
 ### 3. Sistema de Busca Avançada
+
+### 4. Testes & Qualidade
+- [x] Jest configuration
+- [x] Jest setup file
+- [x] Playwright configuration
+- [x] E2E test (home page)
+- [x] API unit tests (properties)
+
+### 5. SEO & Otimização
+- [x] Sitemap generator
+- [x] Robots.txt configuration
+
+### 6. Componentes UI
+- [x] PropertyForm (CRUD form)
+- [x] PropertyList (dashboard table)
+- [x] PropertyCard (listing card)
+- [x] Dashboard page (admin panel)
 - [ ] Filtros dinâmicos
 - [ ] Mapas interativos
 - [ ] Resultados em tempo real
