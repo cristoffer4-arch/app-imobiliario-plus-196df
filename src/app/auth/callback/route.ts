@@ -17,20 +17,20 @@ export async function GET(request: NextRequest) {
       if (error) {
         console.error('Error exchanging code for session:', error);
         // Redirect to home with error
-        return NextResponse.redirect(`${requestUrl.origin}/?error=auth_failed`);
+        return NextResponse.redirect(`https://app-imobiliario-plus.netlify.app/?error=auth_failed`);
       }
 
       if (data?.session) {
         console.log('Session created successfully for user:', data.session.user.email);
         // Successful authentication - redirect to dashboard
-        return NextResponse.redirect(`${requestUrl.origin}/imoveis`);
+        return NextResponse.redirect(`https://app-imobiliario-plus.netlify.app/imoveis`);
       }
     } catch (err) {
       console.error('Unexpected error during OAuth callback:', err);
-      return NextResponse.redirect(`${requestUrl.origin}/?error=unexpected`);
+      return NextResponse.redirect(`https://app-imobiliario-plus.netlify.app/?error=unexpected`);
     }
   }
 
   // No code provided or session creation failed
-  return NextResponse.redirect(requestUrl.origin);
+  return NextResponse.redirect('https://app-imobiliario-plus.netlify.app');
 }
