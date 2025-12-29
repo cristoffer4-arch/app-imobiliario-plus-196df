@@ -23,7 +23,12 @@ CREATE POLICY "Users can view own properties"
     USING (auth.uid() = user_id);
 
 -- Add policy for anonymous property insertion (for testing/demo purposes)
--- WARNING: In production, you may want to remove this or add more restrictions
+-- ⚠️ SECURITY WARNING: This policy allows ANYONE to insert properties without authentication
+-- 🚨 FOR PRODUCTION: Remove this policy and require authentication
+-- In production, replace with:
+--   CREATE POLICY "Authenticated users can insert properties"
+--   ON properties FOR INSERT
+--   WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
 DROP POLICY IF EXISTS "Anyone can insert properties" ON properties;
 
 CREATE POLICY "Anyone can insert properties"

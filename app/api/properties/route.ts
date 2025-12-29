@@ -5,6 +5,15 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
+// Helper for conditional logging (only in development)
+const isDevelopment = process.env.NODE_ENV === 'development';
+const log = (...args: any[]) => {
+  if (isDevelopment) console.log(...args);
+};
+const logError = (...args: any[]) => {
+  if (isDevelopment) console.error(...args);
+};
+
 // GET /api/properties - List properties with filters
 export async function GET(request: NextRequest) {
   try {
@@ -22,7 +31,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
 
-    console.log('API /api/properties - Query params:', {
+    log('API /api/properties - Query params:', {
       propertyType,
       minPrice,
       maxPrice,
@@ -55,11 +64,11 @@ export async function GET(request: NextRequest) {
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('Supabase query error:', error);
+      logError('Supabase query error:', error);
       throw error;
     }
 
-    console.log('Query successful - Found', count, 'properties');
+    log('Query successful - Found', count, 'properties');
 
     return NextResponse.json({
       data,
@@ -71,9 +80,9 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error: any) {
-    console.error('API /api/properties error:', error);
+    logError('API /api/properties error:', error);
     return NextResponse.json(
-      { error: error.message, details: error },
+      { error: error.message, details: isDevelopment ? error : undefined },
       { status: 500 }
     );
   }
@@ -133,16 +142,16 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Insert error:', error);
+      logError('Insert error:', error);
       throw error;
     }
 
-    console.log('Property created successfully:', data?.id);
+    log('Property created successfully:', data?.id);
     return NextResponse.json(data, { status: 201 });
   } catch (error: any) {
-    console.error('API /api/properties POST error:', error);
+    logError('API /api/properties POST error:', error);
     return NextResponse.json(
-      { error: error.message, details: error },
+      { error: error.message, details: isDevelopment ? error : undefined },
       { status: 500 }
     );
   }
