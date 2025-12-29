@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Property Context, ChatMessage } from '@/lib/gemini-client'
 
 interface ChatInterfaceProps {
-  propertyContext?: PropertyContext
+  propertyContext?: PropertyContext,
 }
 
 export default function ChatInterface({ propertyContext }: ChatInterfaceProps) {
