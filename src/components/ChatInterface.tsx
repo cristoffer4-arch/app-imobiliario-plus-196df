@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Property Context, ChatMessage } from '@/lib/gemini-client'
+import { PropertyContext, ChatMessage } from '@/lib/gemini-client'
 
 interface ChatInterfaceProps {
   propertyContext?: PropertyContext,
