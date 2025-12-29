@@ -197,6 +197,12 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
   
+  // Compression
+  compress: true,
+  
+  // Power-saving mode in production
+  poweredByHeader: false,
+  
   // Headers CORS para permitir acesso da plataforma Lasy
   async headers() {
     return [
