@@ -68,23 +68,55 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 ## ✅ Soluções Implementadas
 
-### 1. Correção do Cliente Supabase
+### 1. Correção do Cliente Supabase e Melhorias de Segurança
 
 **Arquivo:** `app/api/properties/route.ts`
 
-**Mudanças:**
-```typescript
-// ❌ ANTES (errado)
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-const supabase = createRouteHandlerClient({ cookies });
+**Mudanças principais:**
 
-// ✅ DEPOIS (correto)
+**GET endpoint (acesso público):**
+```typescript
+// ✅ CORRETO - usa anon key para acesso público via RLS
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 ```
+
+**POST endpoint (autenticação recomendada):**
+```typescript
+// Usa auth-helpers para suporte a autenticação
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+const supabase = createRouteHandlerClient({ cookies });
+
+// Extração segura de usuário (sem destructuring que pode causar erro)
+let user = null;
+try {
+  const authResponse = await supabase.auth.getUser();
+  if (authResponse.data?.user) {
+    user = authResponse.data.user;
+  }
+} catch (authError) {
+  logError('Auth check failed:', authError);
+}
+
+// user_id pode ser null - RLS determina se insert é permitido
+const propertyData = {
+  user_id: user?.id || null,
+  // ...
+};
+```
+
+**Melhorias de validação e segurança:**
+- ✅ Validação Zod para POST com mensagens claras de erro
+- ✅ parseInt(..., 10) com Number.isFinite para todos parâmetros numéricos
+- ✅ Retorno 400 com mensagens claras para parâmetros inválidos
+- ✅ Paginação aplicada ANTES da execução (.range(from, to))
+- ✅ Aceita 'type' e 'property_type' para compatibilidade retroativa
+- ✅ Logs apenas em dev (log()), mas erros sempre no console (logError())
+- ✅ Detalhes de erro expostos apenas em desenvolvimento
+- ⚠️ Comentários claros: NUNCA expor service_role key no código client
 
 ### 2. Correção dos Nomes de Colunas
 
@@ -106,26 +138,31 @@ console.log('Query successful - Found', count, 'properties');
 console.error('Supabase query error:', error);
 ```
 
-### 4. Nova Política RLS para Acesso Público
+### 4. Políticas RLS Seguras e Atualizadas
 
 **Arquivo:** `supabase-rls-fix.sql`
 
 ```sql
--- Permite visualização pública de propriedades ativas
+-- Permite visualização pública de propriedades ativas (seguro)
 CREATE POLICY "Public can view active properties"
     ON properties FOR SELECT
     USING (status = 'active');
 
--- Permite inserção pública (para teste/demo)
-CREATE POLICY "Anyone can insert properties"
+-- Requer autenticação para inserção (PRODUÇÃO - SEGURO)
+CREATE POLICY "Authenticated users can insert properties"
     ON properties FOR INSERT
-    WITH CHECK (true);
+    WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
 
 -- Mantém política para usuários autenticados verem suas propriedades
 CREATE POLICY "Users can view own properties"
     ON properties FOR SELECT
     USING (auth.uid() = user_id);
 ```
+
+**Mudanças de Segurança:**
+- ❌ Removida política insegura de INSERT público
+- ✅ Adicionada política segura que requer autenticação
+- ✅ Validação de user_id para prevenir escalação de privilégios
 
 ### 5. Dados de Teste (Seed Data)
 
@@ -146,7 +183,7 @@ CREATE POLICY "Users can view own properties"
 
 ## 🚀 Instruções de Deploy
 
-### Passo 1: Aplicar Correção RLS
+### Passo 1: Aplicar Políticas RLS de Produção
 
 1. Acesse [Supabase Dashboard](https://app.supabase.com)
 2. Selecione projeto: `ebuktnhikkttcmxrbbhk`
@@ -155,12 +192,22 @@ CREATE POLICY "Users can view own properties"
 5. Cole e clique em **Run**
 6. Aguarde confirmação de sucesso
 
-### Passo 2: Inserir Dados de Teste
+**O que isso faz:**
+- ✅ Habilita SELECT público para propriedades ativas (seguro)
+- ✅ Habilita INSERT autenticado com validação de user_id (seguro)
+- ✅ Mantém UPDATE/DELETE apenas para proprietários
+- ❌ NÃO habilita INSERT público (boa prática de segurança)
+
+### Passo 2: Inserir Dados de Teste (APENAS DEV/LOCAL)
+
+⚠️ **IMPORTANTE:** Execute isso APENAS em ambiente de desenvolvimento/teste, NUNCA em produção!
 
 1. No mesmo **SQL Editor**
 2. Copie todo o conteúdo de `supabase-seed-data.sql`
 3. Cole e clique em **Run**
 4. Aguarde confirmação (8 propriedades inseridas)
+
+**Nota:** Se precisar testar criação de propriedades sem autenticação em dev local, veja a seção de "Política de Inserção - DESENVOLVIMENTO/TESTE" acima.
 
 ### Passo 3: Verificar Dados
 
@@ -232,30 +279,39 @@ curl "https://luxeagent.netlify.app/api/properties?city=Lisboa&minPrice=400000&m
 2. **Dados não sensíveis:** Informações de propriedades são destinadas a serem públicas
 3. **Usuários autenticados têm mais poder:** Podem editar/deletar suas próprias propriedades
 
-### Política de Inserção Pública
+### Política de Inserção - PRODUÇÃO vs DESENVOLVIMENTO
 
-⚠️ **ATENÇÃO:** A política `"Anyone can insert properties"` foi adicionada **APENAS PARA TESTE/DEMO**.
+⚠️ **IMPORTANTE:** A política de inserção foi atualizada para segurança em produção.
 
-**Para produção, você deve:**
+**✅ PRODUÇÃO (RECOMENDADO):**
+A política padrão no arquivo `supabase-rls-fix.sql` agora requer autenticação:
 
-1. **Remover a política pública de inserção:**
-```sql
-DROP POLICY "Anyone can insert properties" ON properties;
-```
-
-2. **Criar política restrita:**
 ```sql
 CREATE POLICY "Authenticated users can insert properties"
     ON properties FOR INSERT
     WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
 ```
 
+**Esta é a política SEGURA que deve ser usada em produção.**
+
+**⚠️ DESENVOLVIMENTO/TESTE (OPCIONAL):**
+Se você precisar testar criação de propriedades sem autenticação em ambiente de desenvolvimento local, existe uma política comentada no arquivo que pode ser descomentada APENAS PARA DEV/TESTE LOCAL:
+
+```sql
+-- NUNCA use isso em produção!
+CREATE POLICY "Anyone can insert properties"
+    ON properties FOR INSERT
+    WITH CHECK (true);
+```
+
+**🚨 NUNCA descomente ou aplique esta política em produção!** Ela permite que qualquer pessoa insira dados sem autenticação, criando uma grave vulnerabilidade de segurança.
+
 ### Variáveis de Ambiente
 
 ✅ Todas as variáveis estão configuradas corretamente no Netlify:
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- Outras variáveis sensíveis (não expostas publicamente)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Usado para acesso público via RLS
+- ❌ `SUPABASE_SERVICE_ROLE_KEY` - NUNCA exponha no código client-side! Service role bypassa RLS.
 
 ---
 
