@@ -1,38 +1,129 @@
 // API Route: /api/properties
-// GET: List properties with filters
-// POST: Create new property
+// GET: List properties with filters (public access)
+// POST: Create new property (authenticated users)
 
+import { createClient } from '@supabase/supabase-js';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import type { Property, CreatePropertyInput, PropertyFilters } from '@/lib/types/property';
+import { z } from 'zod';
 
-// GET /api/properties - List properties
+// Environment check
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Logging helpers
+function log(...args: unknown[]) {
+  if (isDevelopment) {
+    console.log(...args);
+  }
+}
+
+function logError(...args: unknown[]) {
+  console.error(...args);
+}
+
+// Zod validation schema for POST requests
+const createPropertySchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  description: z.string().optional(),
+  property_type: z.enum(['apartment', 'house', 'villa', 'commercial', 'land'], {
+    errorMap: () => ({ message: 'Invalid property type' }),
+  }),
+  price: z.number().positive('Price must be greater than 0'),
+  location: z.string().min(1, 'Location is required'),
+  bedrooms: z.number().int().nonnegative().optional(),
+  bathrooms: z.number().int().nonnegative().optional(),
+  area: z.number().positive().optional(),
+  images: z.array(z.string()).optional(),
+  status: z.enum(['available', 'sold', 'rented', 'pending']).optional(),
+});
+
+// GET /api/properties - List properties (public access with anon key)
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    // Use public anon key for GET requests to allow public access via RLS policies
+    // IMPORTANT: Never expose service_role key in client-accessible code - it bypasses RLS
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
     
-    // Check authentication
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      logError('Missing Supabase environment variables');
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'Server configuration error' },
+        { status: 500 }
       );
     }
 
-    // Parse query parameters for filters
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    // Parse query parameters for filters and pagination
     const searchParams = request.nextUrl.searchParams;
-    const filters: PropertyFilters = {
-      property_type: searchParams.get('property_type') as any,
-      status: searchParams.get('status') as any,
-      min_price: searchParams.get('min_price') ? Number(searchParams.get('min_price')) : undefined,
-      max_price: searchParams.get('max_price') ? Number(searchParams.get('max_price')) : undefined,
-      min_bedrooms: searchParams.get('min_bedrooms') ? Number(searchParams.get('min_bedrooms')) : undefined,
-      max_bedrooms: searchParams.get('max_bedrooms') ? Number(searchParams.get('max_bedrooms')) : undefined,
-      location: searchParams.get('location') || undefined,
-      user_id: searchParams.get('user_id') || session.user.id,
-    };
+    
+    // Parse pagination params with safe numeric parsing
+    const pageParam = searchParams.get('page');
+    const limitParam = searchParams.get('limit');
+    
+    const page = pageParam ? parseInt(pageParam, 10) : 1;
+    const limit = limitParam ? parseInt(limitParam, 10) : 10;
+    
+    // Validate numeric parameters
+    if (!Number.isFinite(page) || page < 1) {
+      return NextResponse.json(
+        { error: 'Invalid page parameter - must be a positive integer' },
+        { status: 400 }
+      );
+    }
+    
+    if (!Number.isFinite(limit) || limit < 1 || limit > 100) {
+      return NextResponse.json(
+        { error: 'Invalid limit parameter - must be between 1 and 100' },
+        { status: 400 }
+      );
+    }
+
+    // Parse price filters with safe numeric parsing
+    const minPriceParam = searchParams.get('minPrice') || searchParams.get('min_price');
+    const maxPriceParam = searchParams.get('maxPrice') || searchParams.get('max_price');
+    
+    let minPrice: number | undefined;
+    let maxPrice: number | undefined;
+    
+    if (minPriceParam) {
+      minPrice = parseInt(minPriceParam, 10);
+      if (!Number.isFinite(minPrice) || minPrice < 0) {
+        return NextResponse.json(
+          { error: 'Invalid minPrice parameter - must be a non-negative number' },
+          { status: 400 }
+        );
+      }
+    }
+    
+    if (maxPriceParam) {
+      maxPrice = parseInt(maxPriceParam, 10);
+      if (!Number.isFinite(maxPrice) || maxPrice < 0) {
+        return NextResponse.json(
+          { error: 'Invalid maxPrice parameter - must be a non-negative number' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Accept both 'type' and 'property_type' for backward compatibility
+    const propertyType = searchParams.get('property_type') || searchParams.get('type');
+    const status = searchParams.get('status');
+    const location = searchParams.get('location');
+    const userId = searchParams.get('user_id');
+    
+    log('API /api/properties GET - Query params:', { 
+      page, 
+      limit, 
+      propertyType, 
+      status, 
+      minPrice, 
+      maxPrice, 
+      location,
+      userId
+    });
 
     // Build query
     let query = supabase
@@ -40,107 +131,137 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact' });
 
     // Apply filters
-    if (filters.user_id) {
-      query = query.eq('user_id', filters.user_id);
+    if (userId) {
+      query = query.eq('user_id', userId);
     }
-    if (filters.property_type) {
-      query = query.eq('property_type', filters.property_type);
+    if (propertyType) {
+      query = query.eq('property_type', propertyType);
     }
-    if (filters.status) {
-      query = query.eq('status', filters.status);
+    if (status) {
+      query = query.eq('status', status);
     }
-    if (filters.min_price) {
-      query = query.gte('price', filters.min_price);
+    if (minPrice !== undefined) {
+      query = query.gte('price', minPrice);
     }
-    if (filters.max_price) {
-      query = query.lte('price', filters.max_price);
+    if (maxPrice !== undefined) {
+      query = query.lte('price', maxPrice);
     }
-    if (filters.min_bedrooms) {
-      query = query.gte('bedrooms', filters.min_bedrooms);
+    if (location) {
+      query = query.ilike('location', `%${location}%`);
     }
-    if (filters.max_bedrooms) {
-      query = query.lte('bedrooms', filters.max_bedrooms);
-    }
-    if (filters.location) {
-      query = query.ilike('location', `%${filters.location}%`);
-    }
+
+    // Apply pagination BEFORE executing the query
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    query = query.range(from, to);
 
     // Execute query with ordering
     const { data, error, count } = await query
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching properties:', error);
+      logError('Error fetching properties:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch properties', details: error.message },
+        { error: 'Failed to fetch properties', ...(isDevelopment && { details: error.message }) },
         { status: 500 }
       );
     }
 
+    log('Query successful - Found', count, 'total properties, returning page', page);
+
     return NextResponse.json({
       data,
       count,
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: count ? Math.ceil(count / limit) : 0,
+      },
       message: 'Properties retrieved successfully'
     });
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    logError('Unexpected error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', ...(isDevelopment && { details: error instanceof Error ? error.message : 'Unknown error' }) },
       { status: 500 }
     );
   }
 }
 
-// POST /api/properties - Create new property
+// POST /api/properties - Create new property (authenticated users recommended)
 export async function POST(request: NextRequest) {
   try {
+    // Use auth-helpers client for authenticated requests
     const supabase = createRouteHandlerClient({ cookies });
     
-    // Check authentication
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Safely extract user without destructuring (avoids runtime errors)
+    let user = null;
+    try {
+      const authResponse = await supabase.auth.getUser();
+      if (authResponse.data?.user) {
+        user = authResponse.data.user;
+      }
+    } catch (authError) {
+      logError('Auth check failed:', authError);
+      // Continue without user - RLS will enforce policy
     }
+
+    log('API /api/properties POST - User:', user?.id || 'anonymous');
 
     // Parse request body
-    const body: CreatePropertyInput = await request.json();
-
-    // Validate required fields
-    if (!body.title || !body.property_type || !body.price || !body.location) {
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
       return NextResponse.json(
-        { error: 'Missing required fields: title, property_type, price, location' },
+        { error: 'Invalid JSON in request body' },
         { status: 400 }
       );
     }
 
-    // Validate price
-    if (body.price <= 0) {
+    // Validate input with Zod schema
+    const validationResult = createPropertySchema.safeParse(body);
+    
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map(err => ({
+        field: err.path.join('.'),
+        message: err.message,
+      }));
+      
+      log('Validation failed:', errors);
+      
       return NextResponse.json(
-        { error: 'Price must be greater than 0' },
+        { 
+          error: 'Validation failed',
+          details: errors,
+        },
         { status: 400 }
       );
     }
 
-    // Prepare property data
+    const validatedData = validationResult.data;
+
+    // Prepare property data with user_id (can be null if unauthenticated)
+    // RLS policies will determine if insert is allowed
     const propertyData = {
-      user_id: session.user.id,
-      title: body.title,
-      description: body.description || null,
-      property_type: body.property_type,
-      price: body.price,
-      location: body.location,
-      bedrooms: body.bedrooms || null,
-      bathrooms: body.bathrooms || null,
-      area: body.area || null,
-      images: body.images || null,
-      status: body.status || 'available',
+      user_id: user?.id || null,
+      title: validatedData.title,
+      description: validatedData.description || null,
+      property_type: validatedData.property_type,
+      price: validatedData.price,
+      location: validatedData.location,
+      bedrooms: validatedData.bedrooms || null,
+      bathrooms: validatedData.bathrooms || null,
+      area: validatedData.area || null,
+      images: validatedData.images || null,
+      status: validatedData.status || 'available',
     };
 
-    // Insert property
+    log('Inserting property:', { ...propertyData, user_id: propertyData.user_id || 'null' });
+
+    // Insert property (RLS policies will enforce access control)
     const { data, error } = await supabase
       .from('properties')
       .insert([propertyData])
@@ -148,22 +269,30 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating property:', error);
+      logError('Error creating property:', error);
       return NextResponse.json(
-        { error: 'Failed to create property', details: error.message },
+        { 
+          error: 'Failed to create property',
+          ...(isDevelopment && { details: error.message })
+        },
         { status: 500 }
       );
     }
+
+    log('Property created successfully:', data?.id);
 
     return NextResponse.json({
       data,
       message: 'Property created successfully'
     }, { status: 201 });
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    logError('Unexpected error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(isDevelopment && { details: error instanceof Error ? error.message : 'Unknown error' })
+      },
       { status: 500 }
     );
   }
