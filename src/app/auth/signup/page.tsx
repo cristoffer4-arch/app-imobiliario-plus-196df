@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { createClient } from '@/lib/supabase';
+import { buildAbsoluteUrl } from '@/lib/site-url';
 
 const PLAN_NAMES: Record<string, string> = {
   starter: 'Starter',
@@ -12,10 +13,10 @@ const PLAN_NAMES: Record<string, string> = {
   premium: 'Premium'
 };
 
-export default function SignupPage() {
+function SignupForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [selectedPlan, setSelectedPlan] = useState<string>('professional');
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?plan=${selectedPlan}`,
+          redirectTo: buildAbsoluteUrl(`/auth/callback?plan=${selectedPlan}`),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -116,5 +117,13 @@ export default function SignupPage() {
         </p>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }

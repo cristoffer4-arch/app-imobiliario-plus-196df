@@ -40,6 +40,11 @@ OPENAI_API_KEY="sua-chave-openai"
 NEXT_PUBLIC_SUPABASE_URL="https://seu-projeto.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="sua-chave-anon"
 SUPABASE_SERVICE_ROLE_KEY="sua-chave-service"
+
+# URL pública do site (usada nos redirects OAuth)
+NEXT_PUBLIC_SITE_URL="https://luxeagent.netlify.app"
+# Opcional: URL de preview/local (ex.: $DEPLOY_PRIME_URL no Netlify)
+NEXT_PUBLIC_DEPLOY_URL="http://localhost:3001"
 ```
 
 ### Rodando na porta 3001 por padrão
