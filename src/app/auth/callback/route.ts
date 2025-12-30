@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     const redirectUrl = plan
       ? buildRedirect(`/pricing?plan=${encodeURIComponent(plan)}`)
-      : buildRedirect('/imoveis');
+      : buildRedirect('/dashboard');
 
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
