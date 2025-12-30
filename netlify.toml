@@ -3,5 +3,19 @@
 [build]
   command = "npm run build"
 
+[build.environment]
+  NEXT_PUBLIC_SITE_URL = "https://luxeagent.netlify.app"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[context.production.environment]
+  NEXT_PUBLIC_SITE_URL = "https://luxeagent.netlify.app"
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+  NEXT_PUBLIC_DEPLOY_URL = "$DEPLOY_PRIME_URL"
+
+[context.branch-deploy.environment]
+  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+  NEXT_PUBLIC_DEPLOY_URL = "$DEPLOY_PRIME_URL"

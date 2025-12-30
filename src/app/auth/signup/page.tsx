@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase';
+import { buildAbsoluteUrl } from '@/lib/site-url';
 
 const PLAN_NAMES: Record<string, string> = {
   starter: 'Starter',
@@ -30,7 +31,7 @@ function SignupForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?plan=${selectedPlan}`,
+          redirectTo: buildAbsoluteUrl(`/auth/callback?plan=${selectedPlan}`),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
