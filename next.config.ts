@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const allowedOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://app-imobiliario-plus.netlify.app';
+
 const nextConfig: NextConfig = {
   devIndicators: false, // Remove widget de desenvolvimento Next.js
     reactStrictMode: true, // Enable React Strict Mode to detect issues
@@ -194,7 +196,7 @@ const nextConfig: NextConfig = {
   
   // Configuração experimental para melhor performance
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react'],
   },
   
   // Headers CORS para permitir acesso da plataforma Lasy
@@ -205,7 +207,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*'
+            value: allowedOrigin,
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -218,6 +220,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Access-Control-Allow-Credentials',
             value: 'true'
+          },
+          {
+            key: 'Vary',
+            value: 'Origin'
           }
         ]
       }
