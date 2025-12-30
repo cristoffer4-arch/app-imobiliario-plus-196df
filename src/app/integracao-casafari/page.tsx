@@ -17,6 +17,25 @@ interface SyncStatus {
   atualizados: number;
 }
 
+const colorStyles = {
+  blue: {
+    bg: 'bg-blue-100 dark:bg-blue-900/30',
+    text: 'text-blue-600 dark:text-blue-400',
+  },
+  green: {
+    bg: 'bg-green-100 dark:bg-green-900/30',
+    text: 'text-green-600 dark:text-green-400',
+  },
+  purple: {
+    bg: 'bg-purple-100 dark:bg-purple-900/30',
+    text: 'text-purple-600 dark:text-purple-400',
+  },
+  gray: {
+    bg: 'bg-gray-100 dark:bg-gray-900/30',
+    text: 'text-gray-600 dark:text-gray-400',
+  },
+} as const;
+
 export default function IntegracaoCasafariPage() {
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
@@ -352,27 +371,31 @@ export default function IntegracaoCasafariPage() {
                 { tipo: 'Leads', acao: '23 leads atualizados', tempo: '10 min atrás', icon: TrendingUp, color: 'green' },
                 { tipo: 'Contatos', acao: '8 contatos sincronizados', tempo: '1 hora atrás', icon: Users, color: 'purple' },
                 { tipo: 'Sistema', acao: 'Sincronização automática ativada', tempo: '2 horas atrás', icon: CheckCircle2, color: 'gray' }
-              ].map((atividade, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div className={`p-2 rounded-lg bg-${atividade.color}-100 dark:bg-${atividade.color}-900/30`}>
-                    <atividade.icon className={`w-4 h-4 text-${atividade.color}-600 dark:text-${atividade.color}-400`} />
+              ].map((atividade, idx) => {
+                const style = colorStyles[atividade.color as keyof typeof colorStyles] ?? colorStyles.gray;
+
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <div className={`p-2 rounded-lg ${style.bg}`}>
+                      <atividade.icon className={`w-4 h-4 ${style.text}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {atividade.tipo}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {atividade.acao}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {atividade.tempo}
+                    </span>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                      {atividade.tipo}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {atividade.acao}
-                    </p>
-                  </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {atividade.tempo}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
