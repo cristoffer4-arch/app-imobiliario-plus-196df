@@ -1,9 +1,18 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseDatabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_DATABASE_URL || supabaseUrl;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey);
+
+export function createClient() {
+  return createBrowserClient(
+    supabaseDatabaseUrl,
+    supabaseAnonKey
+  );
+}
 
 // Tipos do banco de dados
 export interface Imovel {
