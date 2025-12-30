@@ -7,33 +7,57 @@
 -- IMPORTANT: Run this on your Supabase instance to fix the empty API response
 -- ============================================================================
 
--- Add public read policy for properties (allows anyone to view active properties)
+-- ============================================================================
+-- PUBLIC READ POLICIES
+-- ============================================================================
+
+-- Allow public viewing of active properties
 DROP POLICY IF EXISTS "Public can view active properties" ON properties;
 
 CREATE POLICY "Public can view active properties"
     ON properties FOR SELECT
     USING (status = 'active');
 
--- Optional: Keep the existing policy for users to view their own properties
--- This allows authenticated users to see ALL their properties (including inactive ones)
+-- Allow authenticated users to view their own properties (including inactive)
 DROP POLICY IF EXISTS "Users can view own properties" ON properties;
 
 CREATE POLICY "Users can view own properties"
     ON properties FOR SELECT
     USING (auth.uid() = user_id);
 
--- Add policy for anonymous property insertion (for testing/demo purposes)
--- ⚠️ SECURITY WARNING: This policy allows ANYONE to insert properties without authentication
--- 🚨 FOR PRODUCTION: Remove this policy and require authentication
--- In production, replace with:
---   CREATE POLICY "Authenticated users can insert properties"
---   ON properties FOR INSERT
---   WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
-DROP POLICY IF EXISTS "Anyone can insert properties" ON properties;
+-- ============================================================================
+-- AUTHENTICATED INSERT POLICY (PRODUCTION SAFE)
+-- ============================================================================
+-- Requires:
+-- 1. User must be authenticated (auth.uid() IS NOT NULL)
+-- 2. user_id in the insert must match the authenticated user
+-- This prevents users from inserting properties for other users
 
-CREATE POLICY "Anyone can insert properties"
+DROP POLICY IF EXISTS "Authenticated users can insert properties" ON properties;
+
+CREATE POLICY "Authenticated users can insert properties"
     ON properties FOR INSERT
-    WITH CHECK (true);
+    WITH CHECK (
+      auth.uid() IS NOT NULL 
+      AND auth.uid() = user_id
+    );
+
+-- ============================================================================
+-- DEV-ONLY: UNRESTRICTED INSERT (FOR TESTING/DEVELOPMENT)
+-- ============================================================================
+-- ⚠️ SECURITY WARNING: NEVER use this policy in production
+-- This allows unrestricted property insertion for testing purposes
+-- To enable during development:
+-- 1. Uncomment the code below
+-- 2. Deploy to development database only
+-- 3. Delete this policy before production release
+-- 4. Ensure authenticated policy above is active
+--
+-- DROP POLICY IF EXISTS "Dev: Anyone can insert properties" ON properties;
+--
+-- CREATE POLICY "Dev: Anyone can insert properties"
+--     ON properties FOR INSERT
+--     WITH CHECK (true);
 
 -- Keep existing policies for authenticated users to manage their own properties
 DROP POLICY IF EXISTS "Users can update own properties" ON properties;
