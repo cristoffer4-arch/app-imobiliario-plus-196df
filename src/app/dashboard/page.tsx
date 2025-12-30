@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase'
 import PropertyForm from '@/components/Dashboard/PropertyForm'
 import PropertyList from '@/components/Dashboard/PropertyList'
 import { Property } from '@/types/property'
@@ -8,26 +10,50 @@ import { Property } from '@/types/property'
 export default function DashboardPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingProperty, setEditingProperty] = useState<Property | undefined>()
+  const router = useRouter()
+  const supabase = useMemo(() => createClient(), [])
 
-  useEffect(() => {
-    fetchProperties()
-  }, [])
-
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
-      const response = await fetch('/api/properties')
-      if (response.ok) {
-        const data = await response.json()
-        setProperties(data)
+      setError(null)
+      const response = await fetch('/api/properties', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Falha ao carregar imóveis: ${response.status}`)
       }
+
+      const data = await response.json()
+      // API returns { data, pagination }, fall back gracefully
+      const list = Array.isArray(data) ? data : data.data || []
+      setProperties(list)
     } catch (error) {
       console.error('Error fetching properties:', error)
+      setError('Erro ao carregar imóveis. Tente novamente em instantes.')
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const ensureSession = async () => {
+      const { data } = await supabase.auth.getSession()
+      const hasSession = Boolean(data.session)
+      if (!hasSession) {
+        router.replace('/auth/login')
+        return
+      }
+      fetchProperties()
+    }
+
+    ensureSession()
+  }, [fetchProperties, router, supabase])
 
   const handleCreate = async (data: Partial<Property>) => {
     try {
@@ -96,6 +122,20 @@ export default function DashboardPage() {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-lg">Carregando...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <p className="text-lg text-red-600">{error}</p>
+        <button
+          onClick={fetchProperties}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Tentar novamente
+        </button>
       </div>
     )
   }

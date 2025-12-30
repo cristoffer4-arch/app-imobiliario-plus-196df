@@ -3,13 +3,22 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const publicPaths = ['/', '/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback'];
+  const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback'];
+  const hasSession = request.cookies.has('sb-access-token');
+
+  if (pathname === '/') {
+    const target = hasSession ? '/dashboard' : '/auth/login';
+    return NextResponse.redirect(new URL(target, request.url));
+  }
 
   if (publicPaths.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // TODO: Implement real session check with Supabase; allow all for now to avoid redirect loops
+  if (!hasSession) {
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
   return NextResponse.next();
 }
 
