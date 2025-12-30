@@ -66,6 +66,76 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 ---
 
+## 🔐 Security Improvements (PR #10 Code Review)
+
+### Security Fixes Applied
+
+#### 1. **Removed Insecure Public INSERT Policy**
+- **Issue**: The `"Anyone can insert properties"` policy allowed unauthenticated users to create properties
+- **Risk**: Data poisoning, spam, unauthorized resource creation
+- **Fix**: Removed and replaced with authenticated-only policy
+
+#### 2. **Implemented Authenticated INSERT Policy**
+- **Policy**: Users can only insert properties where `user_id` matches their authenticated session
+- **Enforcement**: Uses RLS check: `auth.uid() = user_id`
+- **Benefit**: Prevents privilege escalation and unauthorized property creation
+
+#### 3. **Safe Authentication Handling**
+- **Before**: Unsafe destructuring of session object could fail silently
+- **After**: Uses optional chaining and explicit Bearer token validation
+- **Improvement**: Validates auth header before processing requests
+
+#### 4. **Robust Numeric Parsing**
+- **Implementation**: All numeric parameters use `parseInt(x, 10)` with `Number.isFinite()` checks
+- **Benefit**: Prevents NaN injection, type coercion attacks
+- **Example**: `const num = parseInt(value, 10); if (!Number.isFinite(num)) return undefined;`
+
+#### 5. **Input Validation with Zod**
+- **Schema**: Complete POST request validation using Zod
+- **Coverage**: Type checking, enum validation, range limits (e.g., `price > 0`, `area > 0`)
+- **Response**: Clear 400 errors with validation details
+- **Example**:
+  ```typescript
+  const validationResult = CreatePropertySchema.safeParse(body);
+  if (!validationResult.success) {
+    return NextResponse.json({ error: 'Validation failed', ... }, { status: 400 });
+  }
+  ```
+
+#### 6. **Improved Logging Strategy**
+- **Error Logging**: Always use `console.error()` for errors
+- **Dev-Only Details**: Stack traces and sensitive information logged only in development
+- **Production Safety**: No error details exposed to clients in production
+- **Example**:
+  ```typescript
+  console.error('Error message'); // Always logged
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Details:', error.message); // Dev only
+  }
+  ```
+
+#### 7. **Clarified Client Initialization**
+- **Anon Key**: Uses public anon key for client-side operations
+  - Allows public reads (respects RLS)
+  - Validates auth tokens
+  - No admin/service_role capabilities
+- **Service Role**: Reserved for admin operations (server-only, never exposed)
+- **Comment**: Clarifies intent: `// Initialize Supabase client with anon key (public read access)`
+
+#### 8. **Pagination Implementation**
+- **Parameters**: `page` and `limit` query parameters
+- **Safety**: Validates ranges (page ≥ 1, limit between 1-100)
+- **Implementation**: Uses `.range(from, to)` for efficient database slicing
+- **Response**: Returns pagination metadata (`page`, `pageSize`, `total`, `pages`)
+
+### Remaining Development Considerations
+
+- **DEV-Only Block**: Commented code in `supabase-rls-fix.sql` allows temporary unrestricted INSERT for development testing
+- **Bearer Token Auth**: POST requests require `Authorization: Bearer <token>` header
+- **User ID Binding**: Authenticated users can only create properties for themselves (enforced by RLS)
+
+---
+
 ## ✅ Soluções Implementadas
 
 ### 1. Correção do Cliente Supabase
