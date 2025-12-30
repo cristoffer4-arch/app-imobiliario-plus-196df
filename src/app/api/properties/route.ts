@@ -7,6 +7,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import type { Property } from '@/lib/types/property';
 
 // Environment check
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -23,6 +24,7 @@ function logError(...args: unknown[]) {
 }
 
 // Zod validation schema for POST requests
+// Note: property_type and status values match Property interface type definitions
 const createPropertySchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   description: z.string().optional(),
