@@ -2,9 +2,9 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { createClient } from '@/lib/supabase';
 
 const PLAN_NAMES: Record<string, string> = {
   starter: 'Starter',
@@ -15,7 +15,7 @@ const PLAN_NAMES: Record<string, string> = {
 function SignupForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [selectedPlan, setSelectedPlan] = useState<string>('professional');
 
   useEffect(() => {

@@ -3,9 +3,9 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/'];
+  const publicPaths = ['/', '/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback'];
 
-  if (publicPaths.some(path => pathname === path || pathname.startsWith(path))) {
+  if (publicPaths.includes(pathname)) {
     return NextResponse.next();
   }
 

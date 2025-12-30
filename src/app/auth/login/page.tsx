@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,13 +18,44 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // TODO: Implement Supabase auth
-      // Temporary: redirect directly
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError('Erro ao fazer login');
+        console.error('Login error:', signInError);
+        return;
+      }
+
       router.push('/imoveis');
     } catch (err) {
       setError('Erro ao fazer login');
+      console.error('Unexpected login error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const supabase = createClient();
+      const { error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (googleError) {
+        setError('Erro ao iniciar login com Google');
+        console.error('Google login error:', googleError);
+      }
+    } catch (err) {
+      setError('Erro ao iniciar login com Google');
+      console.error('Unexpected Google login error:', err);
     }
   };
 
@@ -74,6 +106,16 @@ export default function LoginPage() {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {loading ? 'Entrando...' : 'Entrar'}
+            </button>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <span>Continuar com Google</span>
             </button>
           </div>
 
