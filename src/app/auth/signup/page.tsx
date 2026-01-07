@@ -7,8 +7,8 @@ import { Card } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
-const PLAN_NAMES: Record<string, string> = 
-  free: 'Free',{
+const PLAN_NAMES: Record<string, string> = { 
+  free: 'Free',
   starter: 'Starter',
   professional: 'Professional',
   premium: 'Premium'
