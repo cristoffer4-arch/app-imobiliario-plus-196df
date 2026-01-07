@@ -19,6 +19,8 @@ function SignupForm() {
   const router = useRouter();
   const supabase = createClient();
   const [selectedPlan, setSelectedPlan] = useState<string>('free');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   useEffect(() => {
     const plan = searchParams.get('plan');
@@ -47,6 +49,26 @@ function SignupForm() {
     }
   };
 
+  const handleEmailSignup = async () => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { plan: selectedPlan }
+        }
+      });
+
+      if (error) throw error;
+      
+      alert('Conta criada! Verifique seu email para confirmar.');
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Error signing up:', error);
+      alert('Erro ao criar conta. Tente novamente.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center py-12 px-4">
       <Card className="max-w-md w-full p-8">
@@ -60,6 +82,37 @@ function SignupForm() {
         </div>
 
         <div className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <Button
+            onClick={handleEmailSignup}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            size="lg"
+          >
+            Criar Conta
+          </Button>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">ou</span>
+            </div>
+          </div>
           <Button
             onClick={handleGoogleSignup}
             className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
