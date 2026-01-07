@@ -7,7 +7,8 @@ import { Card } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
-const PLAN_NAMES: Record<string, string> = {
+const PLAN_NAMES: Record<string, string> = 
+  free: 'Free',{
   starter: 'Starter',
   professional: 'Professional',
   premium: 'Premium'
@@ -17,7 +18,7 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
-  const [selectedPlan, setSelectedPlan] = useState<string>('professional');
+  const [selectedPlan, setSelectedPlan] = useState<string>('free');
 
   useEffect(() => {
     const plan = searchParams.get('plan');
