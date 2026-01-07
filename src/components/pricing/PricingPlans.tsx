@@ -18,6 +18,21 @@ interface PricingPlan {
 
 const plans: PricingPlan[] = [
   {
+        id: 'free',
+    name: 'Free',
+    price: 0,
+    period: '/mês',
+    description: 'Para começar a explorar propriedades',
+    features: [
+      'Até 5 propriedades salvas',
+      'Pesquisa básica',
+      'Visualização de mapas',
+      '3 consultas IA/dia',
+      'Suporte por email'
+    ],
+    cta: 'Começar Grátis'
+  },
+  {
     id: 'starter',
     name: 'Starter',
     price: 29,
