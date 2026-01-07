@@ -3,22 +3,19 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback'];
-  const hasSession = request.cookies.has('sb-access-token');
+  const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback', '/pricing', '/termos', '/privacidade'];
 
-  if (pathname === '/') {
-    const target = hasSession ? '/dashboard' : '/auth/login';
-    return NextResponse.redirect(new URL(target, request.url));
-  }
-
+  // Permitir acesso a rotas públicas
   if (publicPaths.includes(pathname)) {
     return NextResponse.next();
   }
 
-  if (!hasSession) {
+  // Redirecionar root para login (depois o usuário será redirecionado pelo cliente)
+  if (pathname === '/') {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
+  // Permitir acesso a todas as outras rotas (verificação de autenticação será feita no cliente)
   return NextResponse.next();
 }
 
