@@ -79,6 +79,7 @@ export default function HomePage() {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       
+      {/* Main content area with left margin matching sidebar width (w-64 = 256px) */}
       <main className="flex-1 ml-64">
         {/* Top Bar with Stats */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
