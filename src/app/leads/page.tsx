@@ -110,7 +110,7 @@ export default function LeadsPage() {
         leads={leads}
         total={total}
         page={page}
-        limit=20}
+        limit={20}
         onPageChange={handlePageChange}
         onDelete={handleDelete}
       />

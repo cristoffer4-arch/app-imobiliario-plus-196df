@@ -48,7 +48,7 @@ export interface Property {
   area?: number;
   bedrooms?: number;
   bathrooms?: number;
-  features?: Record<string, any>;
+  features?: Record<string, unknown>;
   images?: string[];
   virtual_tour_url?: string;
   status: PropertyStatus;
@@ -70,13 +70,15 @@ export interface PropertyCreateInput {
   area?: number;
   bedrooms?: number;
   bathrooms?: number;
-  features?: Record<string, any>;
+  features?: Record<string, unknown>;
   images?: string[];
   virtual_tour_url?: string;
   status?: PropertyStatus;
 }
 
-export interface PropertyUpdateInput extends Partial<PropertyCreateInput> {}
+export interface PropertyUpdateInput extends Partial<PropertyCreateInput> {
+  status?: PropertyStatus;
+}
 
 export interface PropertyFilterParams {
   property_type?: PropertyType;
@@ -111,7 +113,7 @@ export interface Lead {
   message?: string;
   source?: LeadSource;
   ai_score?: number;
-  ai_analysis?: Record<string, any>;
+  ai_analysis?: Record<string, unknown>;
   status: LeadStatus;
   priority: LeadPriority;
   created_at: string;
@@ -132,7 +134,7 @@ export interface LeadCreateInput {
 
 export interface LeadUpdateInput extends Partial<LeadCreateInput> {
   ai_score?: number;
-  ai_analysis?: Record<string, any>;
+  ai_analysis?: Record<string, unknown>;
   last_contacted_at?: string;
 }
 
@@ -174,7 +176,7 @@ export interface Badge {
   name: string;
   description?: string;
   icon?: string;
-  criteria: Record<string, any>;
+  criteria: Record<string, unknown>;
   rarity: BadgeRarity;
   xp_reward: number;
   created_at: string;
@@ -227,7 +229,7 @@ export interface UserOAuthToken {
 
 export interface GeminiGenerateRequest {
   prompt: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   max_tokens?: number;
 }
 
