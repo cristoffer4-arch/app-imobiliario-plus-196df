@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import { 
   Camera, Upload, Download, Mail, Cloud, FileText, 
   Check, X, Maximize2, RotateCw, ZoomIn, ZoomOut,
-  Home, HardDrive, Share2, Save, Trash2,
-  ChevronLeft, Loader2, AlertCircle
+  HardDrive, Share2, Save, Trash2,
+  Loader2, AlertCircle
 } from 'lucide-react';
 
 interface ScannedDocument {
@@ -170,11 +170,7 @@ export default function ScannerDocumentos() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/">
-                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                  <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-                </button>
-              </Link>
+              <BackButton />
               <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-2 rounded-xl">
                 <Camera className="w-6 h-6 text-white" />
               </div>

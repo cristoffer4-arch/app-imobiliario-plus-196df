@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import { 
-  Home, RefreshCw, CheckCircle2, AlertCircle, Clock, 
+  RefreshCw, CheckCircle2, AlertCircle, Clock, 
   Database, Users, Building2, Settings, Download, Upload,
   Zap, Activity, TrendingUp, ArrowRight, Key, Link2
 } from 'lucide-react';
@@ -162,11 +162,7 @@ export default function IntegracaoCasafariPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/">
-                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                  <Home className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                </button>
-              </Link>
+              <BackButton />
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-2 rounded-xl">
                   <Link2 className="w-6 h-6 text-white" />

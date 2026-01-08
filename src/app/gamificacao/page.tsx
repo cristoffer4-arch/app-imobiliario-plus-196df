@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import { 
-  ChevronLeft, Trophy, Target, Users, Crown, Star,
+  Trophy, Target, Users, Crown, Star,
   TrendingUp, Award, Zap, Medal, Flame, Gift, Plus
 } from 'lucide-react';
 import { sistemaCentralIA } from '@/lib/ai-services';
@@ -71,11 +71,7 @@ export default function GamificacaoPage() {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/">
-                <button className="w-9 h-9 flex items-center justify-center active:bg-gray-100 dark:active:bg-gray-800 rounded-full transition-colors">
-                  <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                </button>
-              </Link>
+              <BackButton />
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
                   <Trophy className="w-5 h-5 text-white" />
