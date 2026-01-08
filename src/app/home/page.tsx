@@ -13,7 +13,8 @@ import {
   ExternalLink,
   TrendingUp,
   Activity,
-  CheckCircle
+  CheckCircle,
+  Calculator
 } from 'lucide-react'
 
 const modules = [
@@ -64,6 +65,12 @@ const modules = [
     icon: ExternalLink,
     href: '/integracao-casafari',
     gradient: 'bg-gradient-to-br from-teal-600 to-teal-400'
+  },
+  {
+    title: 'Investidor PT',
+    icon: Calculator,
+    href: '/investidor',
+    gradient: 'bg-gradient-to-br from-emerald-600 to-emerald-400'
   }
 ]
 
