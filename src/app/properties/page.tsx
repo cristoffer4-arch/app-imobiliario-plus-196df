@@ -4,35 +4,35 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import LeadList from '@/components/LeadList';
+import PropertyList from '@/components/PropertyList';
 import { Plus } from 'lucide-react';
-import type { Lead, ApiListResponse } from '@/types/index';
+import type { Property, ApiListResponse } from '@/types/index';
 
-export default function LeadsPage() {
+export default function PropertiesPage() {
   const router = useRouter();
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLeads = async (currentPage: number) => {
+  const fetchProperties = async (currentPage: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/leads?page=${currentPage}&limit=20`);
+      const response = await fetch(`/api/properties?page=${currentPage}&limit=20`);
       
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/auth/login');
           return;
         }
-        throw new Error('Failed to fetch leads');
+        throw new Error('Failed to fetch properties');
       }
 
-      const data: ApiListResponse<Lead> = await response.json();
-      setLeads(data.data);
+      const data: ApiListResponse<Property> = await response.json();
+      setProperties(data.data);
       setTotal(data.pagination.total);
     } catch (err: any) {
       setError(err.message);
@@ -42,7 +42,7 @@ export default function LeadsPage() {
   };
 
   useEffect(() => {
-    fetchLeads(page);
+    fetchProperties(page);
   }, [page]);
 
   const handlePageChange = (newPage: number) => {
@@ -51,25 +51,26 @@ export default function LeadsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/leads/${id}`, {
+      const response = await fetch(`/api/properties/${id}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete lead');
+        throw new Error('Failed to delete property');
       }
 
-      fetchLeads(page);
+      // Refresh the list
+      fetchProperties(page);
     } catch (err: any) {
-      alert(`Erro ao eliminar lead: ${err.message}`);
+      alert(`Erro ao eliminar propriedade: ${err.message}`);
     }
   };
 
-  if (loading && leads.length === 0) {
+  if (loading && properties.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-lg text-gray-500">A carregar leads...</div>
+          <div className="text-lg text-gray-500">A carregar propriedades...</div>
         </div>
       </div>
     );
@@ -79,15 +80,15 @@ export default function LeadsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Leads</h1>
+          <h1 className="text-3xl font-bold">Propriedades</h1>
           <p className="text-gray-600 mt-1">
-            Gerencie todos os seus leads em um só lugar
+            Gerencie todas as suas propriedades em um só lugar
           </p>
         </div>
-        <Link href="/leads/new">
+        <Link href="/properties/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Novo Lead
+            Nova Propriedade
           </Button>
         </Link>
       </div>
@@ -98,7 +99,7 @@ export default function LeadsPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => fetchLeads(page)}
+            onClick={() => fetchProperties(page)}
             className="mt-2"
           >
             Tentar novamente
@@ -106,8 +107,8 @@ export default function LeadsPage() {
         </div>
       )}
 
-      <LeadList
-        leads={leads}
+      <PropertyList
+        properties={properties}
         total={total}
         page={page}
         limit={20}
