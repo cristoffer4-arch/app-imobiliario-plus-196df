@@ -1,5 +1,5 @@
 /**
- * 🎨 Font Configuration for Lasy AI Templates
+  * 🎨 Font Configuration
  * 
  * All fonts are installed via @fontsource packages and ready to use.
  * Import any font you need in your components or layout.
