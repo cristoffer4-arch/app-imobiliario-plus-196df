@@ -4,33 +4,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { calculateLevel, calculateNextLevelXP } from '@/lib/gamification-constants';
 import type { GamificationStats } from '@/types/index';
-
-// Badge criteria definitions
-const BADGE_CRITERIA = {
-  first_property: { type: 'property_count', threshold: 1, xp: 50 },
-  '10_properties': { type: 'property_count', threshold: 10, xp: 100 },
-  '50_properties': { type: 'property_count', threshold: 50, xp: 250 },
-  '100_properties': { type: 'property_count', threshold: 100, xp: 500 },
-  first_lead: { type: 'lead_count', threshold: 1, xp: 25 },
-  '10_leads': { type: 'lead_count', threshold: 10, xp: 75 },
-  '50_leads': { type: 'lead_count', threshold: 50, xp: 200 },
-  '100_leads': { type: 'lead_count', threshold: 100, xp: 400 },
-  level_5: { type: 'level', threshold: 5, xp: 100 },
-  level_10: { type: 'level', threshold: 10, xp: 250 },
-  level_25: { type: 'level', threshold: 25, xp: 500 },
-  level_50: { type: 'level', threshold: 50, xp: 1000 },
-};
-
-// Calculate level from XP (100 XP per level)
-function calculateLevel(xp: number): number {
-  return Math.floor(xp / 100) + 1;
-}
-
-// Calculate XP needed for next level
-function calculateNextLevelXP(currentLevel: number): number {
-  return currentLevel * 100;
-}
 
 // GET /api/gamification - Get user's gamification stats
 export async function GET(request: NextRequest) {

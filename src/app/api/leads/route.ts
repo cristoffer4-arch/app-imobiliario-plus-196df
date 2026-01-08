@@ -5,6 +5,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { XP_REWARDS } from '@/lib/gamification-constants';
 import type { LeadCreateInput, LeadFilterParams } from '@/types/index';
 
 // Zod schema for POST validation
@@ -191,7 +192,7 @@ export async function POST(request: NextRequest) {
     try {
       const { error: xpError } = await supabase.rpc('award_xp', {
         p_user_id: session.user.id,
-        p_xp_amount: 5,
+        p_xp_amount: XP_REWARDS.LEAD_CREATED,
         p_activity_type: 'lead_created',
         p_description: `Lead criado: ${validatedData.name}`
       });

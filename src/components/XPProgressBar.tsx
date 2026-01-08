@@ -3,6 +3,7 @@
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, Zap } from 'lucide-react';
+import { XP_PER_LEVEL } from '@/lib/gamification-constants';
 
 interface XPProgressBarProps {
   xp: number;
@@ -17,7 +18,7 @@ export default function XPProgressBar({
   nextLevelXP,
   progressToNextLevel,
 }: XPProgressBarProps) {
-  const currentLevelXP = (level - 1) * 100;
+  const currentLevelXP = (level - 1) * XP_PER_LEVEL;
   const xpInCurrentLevel = xp - currentLevelXP;
 
   return (
@@ -39,7 +40,7 @@ export default function XPProgressBar({
             <div className="flex items-center gap-2 text-yellow-300">
               <Zap className="h-5 w-5" />
               <span className="text-lg font-semibold">
-                {xpInCurrentLevel}/{100}
+                {xpInCurrentLevel}/{XP_PER_LEVEL}
               </span>
             </div>
             <p className="text-xs text-white/70">XP para próximo nível</p>

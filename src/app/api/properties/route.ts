@@ -5,20 +5,21 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import type { Property, CreatePropertyInput, PropertyFilters } from '@/lib/types/property';
+import { XP_REWARDS } from '@/lib/gamification-constants';
+import type { PropertyCreateInput, PropertyFilterParams } from '@/types/index';
 
 // Zod schema for POST validation
 const CreatePropertySchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
   description: z.string().optional(),
-  property_type: z.enum(['apartment', 'house', 'villa', 'townhouse', 'land', 'commercial']),
+  property_type: z.enum(['apartment', 'house', 'condo', 'land', 'commercial']),
   price: z.number().positive('Price must be greater than 0'),
   location: z.string().min(1, 'Location is required'),
   bedrooms: z.number().int().nonnegative().optional(),
   bathrooms: z.number().int().nonnegative().optional(),
   area: z.number().positive().optional(),
   images: z.array(z.string()).optional(),
-  status: z.enum(['available', 'inactive']).optional(),
+  status: z.enum(['active', 'pending', 'sold', 'rented']).optional(),
 });
 
 type CreatePropertyPayload = z.infer<typeof CreatePropertySchema>;
@@ -218,7 +219,7 @@ export async function POST(request: NextRequest) {
     try {
       const { error: xpError } = await supabase.rpc('award_xp', {
         p_user_id: session.user.id,
-        p_xp_amount: 10,
+        p_xp_amount: XP_REWARDS.PROPERTY_CREATED,
         p_activity_type: 'property_created',
         p_description: `Propriedade criada: ${validatedData.title}`
       });

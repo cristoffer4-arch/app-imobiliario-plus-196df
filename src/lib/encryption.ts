@@ -1,5 +1,25 @@
 /**
  * Encryption utilities for OAuth tokens
+ * 
+ * SECURITY NOTE: The XOR encryption used here is provided to match the
+ * specification requirements, but is NOT cryptographically secure for
+ * production use. XOR encryption with a repeating key is vulnerable to:
+ * - Frequency analysis attacks
+ * - Known-plaintext attacks
+ * - Pattern detection
+ * 
+ * For production deployments, replace this with a proper encryption
+ * algorithm such as AES-256-GCM from Node.js crypto module:
+ * 
+ * import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+ * 
+ * function aesEncrypt(plaintext: string, key: Buffer): string {
+ *   const iv = randomBytes(16);
+ *   const cipher = createCipheriv('aes-256-gcm', key, iv);
+ *   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+ *   const tag = cipher.getAuthTag();
+ *   return Buffer.concat([iv, tag, encrypted]).toString('base64');
+ * }
  */
 
 /**
