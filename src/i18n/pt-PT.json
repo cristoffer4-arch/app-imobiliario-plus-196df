@@ -1,0 +1,29 @@
+{
+  "property": {
+    "tipologia": "Tipologia",
+    "certificado": "Certificado Energético",
+    "distrito": "Distrito",
+    "concelho": "Concelho",
+    "freguesia": "Freguesia",
+    "condominio": "Condomínio",
+    "al_license": "Licença AL",
+    "elevador": "Elevador",
+    "garagem": "Lugares de Garagem",
+    "arrecadacao": "Arrecadação",
+    "varanda": "Varanda"
+  },
+  "taxes": {
+    "imi": "IMI - Imposto Municipal sobre Imóveis",
+    "imt": "IMT - Imposto Municipal sobre Transmissões",
+    "selo": "Imposto do Selo",
+    "escritura": "Escritura",
+    "registo": "Registo Predial"
+  },
+  "investment": {
+    "roi": "ROI - Retorno sobre Investimento",
+    "payback": "Período de Retorno",
+    "arrendamento": "Arrendamento Tradicional",
+    "al": "Alojamento Local",
+    "rentabilidade": "Rentabilidade"
+  }
+}
