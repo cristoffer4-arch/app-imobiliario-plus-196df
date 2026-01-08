@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import type { Session } from '@supabase/supabase-js';
+import BackButton from '@/components/BackButton';
 
 export default function ImoveisPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -66,26 +67,29 @@ export default function ImoveisPage() {
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
       <header className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-yellow-500 p-2 rounded-lg">
-              <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-              </svg>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <BackButton />
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-2">
+              <div className="bg-yellow-500 p-2 rounded-lg">
+                <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-yellow-500">Lux.ai</h1>
+                <p className="text-xs text-gray-400">GESTÃO IMOBILIÁRIA</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-yellow-500">Lux.ai</h1>
-              <p className="text-xs text-gray-400">GESTÃO IMOBILIÁRIA</p>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-400">{session.user.email}</span>
+              <button
+                onClick={() => supabase.auth.signOut()}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm"
+              >
+                Sair
+              </button>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">{session.user.email}</span>
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm"
-            >
-              Sair
-            </button>
           </div>
         </div>
       </header>

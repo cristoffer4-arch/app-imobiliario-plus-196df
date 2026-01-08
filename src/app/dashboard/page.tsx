@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase'
 import PropertyForm from '@/components/Dashboard/PropertyForm'
 import PropertyList from '@/components/Dashboard/PropertyList'
 import { Property } from '@/types/property'
+import BackButton from '@/components/BackButton'
 
 export default function DashboardPage() {
   const [properties, setProperties] = useState<Property[]>([])
@@ -142,7 +143,8 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+      <BackButton />
+      <div className="flex justify-between items-center mb-8 mt-4">
         <h1 className="text-3xl font-bold">Painel de Imóveis</h1>
         {!showForm && (
           <button
