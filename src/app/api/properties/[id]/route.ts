@@ -3,8 +3,7 @@
 // PUT: Update property by ID
 // DELETE: Delete property by ID
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createServerSupabaseClient } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import type { UpdatePropertyInput } from '@/lib/types/property';
 
@@ -18,7 +17,7 @@ export async function GET(
   { params }: RouteContext
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createServerSupabaseClient();
     
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
@@ -80,7 +79,7 @@ export async function PUT(
   { params }: RouteContext
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createServerSupabaseClient();
     
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
@@ -176,7 +175,7 @@ export async function DELETE(
   { params }: RouteContext
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createServerSupabaseClient();
     
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
