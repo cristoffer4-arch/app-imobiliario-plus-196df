@@ -2,17 +2,10 @@
 // GET: List properties with filters and pagination
 // POST: Create new property (authenticated users only)
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import type { Property, CreatePropertyInput, PropertyFilters } from '@/lib/types/property';
-
-// Initialize Supabase client with anon key (public read access)
-// NOTE: anon key allows public reads; service_role key would bypass RLS for admin ops
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 // Zod schema for POST validation
 const CreatePropertySchema = z.object({
@@ -33,6 +26,17 @@ type CreatePropertyPayload = z.infer<typeof CreatePropertySchema>;
 // GET /api/properties - List properties with filters and pagination
 export async function GET(request: NextRequest) {
   try {
+    const supabase = await createClient();
+    
+    // Check authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     // Parse query parameters safely
     const searchParams = request.nextUrl.searchParams;
     
@@ -54,17 +58,13 @@ export async function GET(request: NextRequest) {
     const minBedrooms = parseNumeric(searchParams.get('min_bedrooms'));
     const maxBedrooms = parseNumeric(searchParams.get('max_bedrooms'));
 
-    // Build query
+    // Build query - only fetch user's own properties
     let query = supabase
       .from('properties')
-      .select('*', { count: 'exact' });
+      .select('*', { count: 'exact' })
+      .eq('user_id', session.user.id);
 
     // Apply filters
-    const userIdParam = searchParams.get('user_id');
-    if (userIdParam) {
-      query = query.eq('user_id', userIdParam);
-    }
-
     const propertyType = searchParams.get('property_type');
     if (propertyType) {
       query = query.eq('property_type', propertyType);
@@ -88,9 +88,15 @@ export async function GET(request: NextRequest) {
       query = query.lte('bedrooms', maxBedrooms);
     }
 
-    const location = searchParams.get('location');
-    if (location) {
-      query = query.ilike('location', `%${location}%`);
+    const city = searchParams.get('city');
+    if (city) {
+      query = query.ilike('city', `%${city}%`);
+    }
+
+    // Search across multiple fields
+    const search = searchParams.get('search');
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,city.ilike.%${search}%`);
     }
 
     // Apply pagination and ordering
@@ -135,10 +141,11 @@ export async function GET(request: NextRequest) {
 // POST /api/properties - Create new property (authenticated users only)
 export async function POST(request: NextRequest) {
   try {
-    // Note: Authentication is handled via Supabase auth header from client
-    // Safe auth: Avoid destructuring session directly; use optional chaining
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    const supabase = await createClient();
+    
+    // Check authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -174,9 +181,9 @@ export async function POST(request: NextRequest) {
 
     const validatedData = validationResult.data;
 
-    // Extract user_id from auth header (this would normally come from Supabase JWT)
-    // For this implementation, RLS will enforce that user_id matches authenticated user
+    // Prepare property data
     const propertyData = {
+      user_id: session.user.id,
       title: validatedData.title,
       description: validatedData.description || null,
       property_type: validatedData.property_type,
@@ -187,7 +194,6 @@ export async function POST(request: NextRequest) {
       area: validatedData.area || null,
       images: validatedData.images || null,
       status: validatedData.status || 'available',
-      // Note: user_id should be set by RLS policy (use service_role for admin creation)
     };
 
     // Insert property using authenticated context
@@ -206,6 +212,24 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to create property' },
         { status: 500 }
       );
+    }
+
+    // Award XP for creating a property (10 XP)
+    try {
+      const { error: xpError } = await supabase.rpc('award_xp', {
+        p_user_id: session.user.id,
+        p_xp_amount: 10,
+        p_activity_type: 'property_created',
+        p_description: `Propriedade criada: ${validatedData.title}`
+      });
+
+      if (xpError) {
+        console.error('Error awarding XP:', xpError);
+        // Don't fail the request if XP award fails
+      }
+    } catch (xpError) {
+      console.error('Error awarding XP:', xpError);
+      // Don't fail the request if XP award fails
     }
 
     return NextResponse.json(
