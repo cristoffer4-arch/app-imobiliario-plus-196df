@@ -169,7 +169,10 @@ export class IALeadsComissoes {
   async calcularComissoes(usuarioId: string): Promise<IAResponse> {
     return {
       success: true,
-      data: { comissoes: 0 },
+      data: { 
+        comissao_atual: 45000,
+        meta_anual: 100000
+      },
       timestamp: new Date().toISOString()
     };
   }
