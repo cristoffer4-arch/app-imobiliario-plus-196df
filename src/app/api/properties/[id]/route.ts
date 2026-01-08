@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { UpdatePropertyInput } from '@/lib/types/property';
 
 type RouteContext = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 // GET /api/properties/[id] - Get single property
@@ -28,7 +28,7 @@ export async function GET(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Fetch property
     const { data, error } = await supabase
@@ -90,7 +90,7 @@ export async function PUT(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Parse request body
     const body: UpdatePropertyInput = await request.json();
@@ -186,7 +186,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if property exists and user owns it
     const { data: existingProperty, error: fetchError } = await supabase
