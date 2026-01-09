@@ -7,7 +7,7 @@ import { useSupabase } from '@/app/providers';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
-function LoginPageContent() {function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = useSupabase();
@@ -108,6 +108,7 @@ function LoginPageContent() {function LoginPage() {
       </div>
     </div>
   );
+  }
 
 export default function LoginPage() {
   return (
@@ -115,5 +116,5 @@ export default function LoginPage() {
       <LoginPageContent />
     </Suspense>
   );
-}
+
 }
