@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import ImageUpload from '@/components/ImageUpload';
+import ImageUploadAdvanced from '@/components/ImageUploadAdvanced';
+import LocationPicker from '@/components/LocationPicker';
 import {
   Select,
   SelectContent,
@@ -41,7 +42,9 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
     bedrooms: property?.bedrooms || undefined,
     bathrooms: property?.bathrooms || undefined,
     status: property?.status || 'active',
-        images: property?.images || [],
+    images: property?.images || [],
+    latitude: property?.latitude || undefined,
+    longitude: property?.longitude || undefined,
   });
 
   const handleChange = (field: string, value: any) => {
@@ -260,15 +263,30 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
             </div>
           </div>
 
+          {/* Image Upload Section */}
+          <ImageUploadAdvanced
+            images={formData.images || []}
+            onChange={(images) => handleChange('images', images)}
+            maxImages={10}
+          />
+
+          {/* Location Picker Section */}
+          <LocationPicker
+            address={formData.address}
+            latitude={formData.latitude}
+            longitude={formData.longitude}
+            onLocationChange={(location) => {
+              handleChange('latitude', location.latitude);
+              handleChange('longitude', location.longitude);
+              if (location.address) {
+                handleChange('address', location.address);
+              }
+            }}
+          />
+
           <div className="flex gap-3 justify-end">
             {onCancel && (
               <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-
-                          <ImageUpload
-            images={formData.images || []}
-            onChange={(images) => handleChange('images', images)}
-            maxImages={5}
-          />
                 Cancelar
               </Button>
             )}
