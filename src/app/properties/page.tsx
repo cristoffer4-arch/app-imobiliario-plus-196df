@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import PropertyList from '@/components/PropertyList';
+import PropertyFiltersComponent, { PropertyFilters } from '@/components/PropertyFilters';
 import { Plus } from 'lucide-react';
 import type { Property, ApiListResponse } from '@/types/index';
 
@@ -15,13 +16,14 @@ export default function PropertiesPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+    const [filters, setFilters] = useState<PropertyFilters>({});
 
   const fetchProperties = async (currentPage: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/properties?page=${currentPage}&limit=20`);
+      
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -43,10 +45,15 @@ export default function PropertiesPage() {
 
   useEffect(() => {
     fetchProperties(page);
-  }, [page]);
+  }, [page], filters);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
+  };
+
+    const handleFilterChange = (newFilters: PropertyFilters) => {
+    setFilters(newFilters);
+    setPage(1); // Reset to first page when filters change
   };
 
   const handleDelete = async (id: string) => {
@@ -92,6 +99,11 @@ export default function PropertiesPage() {
           </Button>
         </Link>
       </div>
+
+            <PropertyFiltersComponent
+        onFilterChange={handleFilterChange}
+        initialFilters={filters}
+      />
 
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
