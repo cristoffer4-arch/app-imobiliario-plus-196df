@@ -25,13 +25,9 @@ export default function GoogleSignInButton({
 
     try {
       // Build the callback URL with optional redirect target
-      let callbackUrl: string;
-      
-      if (typeof window !== 'undefined' && redirectTo) {
-        callbackUrl = buildAbsoluteUrl(`/auth/callback?next=${encodeURIComponent(redirectTo)}`);
-      } else {
-        callbackUrl = buildAbsoluteUrl('/auth/callback');
-      }
+      const callbackUrl = redirectTo
+        ? buildAbsoluteUrl(`/auth/callback?next=${encodeURIComponent(redirectTo)}`)
+        : buildAbsoluteUrl('/auth/callback');
 
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',

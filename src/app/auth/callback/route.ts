@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(errorUrl);
     }
 
-    let supabaseResponse = NextResponse.next({
+    let response = NextResponse.next({
       request,
     });
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
               request.cookies.set(name, value);
-              supabaseResponse.cookies.set(name, value, options);
+              response.cookies.set(name, value, options);
             });
           },
         },
