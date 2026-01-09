@@ -44,8 +44,8 @@ export async function middleware(request: NextRequest) {
   // Refresh session if expired - required for Server Components
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Protect /dashboard routes - redirect unauthenticated users to /login
-  if (pathname.startsWith('/dashboard') && !user) {
+  // Pprotected routes - redirect unauthenticated users to /login
+  if (pathname.startsWith('/dashboard') startsWith('/dashboard') || pathname.startsWith('/gamificacao') || pathname.startsWith('/scanner-documentos')) && !user) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('redirectedFrom', pathname);
     return NextResponse.redirect(loginUrl);
