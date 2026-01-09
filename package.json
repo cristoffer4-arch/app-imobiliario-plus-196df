@@ -71,9 +71,15 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "leaflet.markercluster": "^1.5.3",
+    "browser-image-compression": "^2.0.2"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.12",
+    "@types/leaflet.markercluster": "^1.5.4",
     "@eslint/eslintrc": "^3",
     "@netlify/plugin-nextjs": "^5.0.0",
     "@tailwindcss/postcss": "^4",

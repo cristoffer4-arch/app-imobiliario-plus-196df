@@ -19,6 +19,8 @@ export interface Property {
   state: string;
   zip_code: string;
   neighborhood?: string;
+  latitude?: number;
+  longitude?: number;
   
   // Property details
   bedrooms?: number;
@@ -29,6 +31,10 @@ export interface Property {
   // Features
   features?: string[];
   amenities?: string[];
+  has_pool?: boolean;
+  has_garage?: boolean;
+  has_elevator?: boolean;
+  has_air_conditioning?: boolean;
   
   // Media
   images?: string[];
