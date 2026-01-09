@@ -24,38 +24,6 @@ export interface UserProfile {
   updated_at: string;
 }
 
-// Payment & Subscription Types
-export interface SubscriptionDetails {
-  id: string;
-  user_id: string;
-  plan: SubscriptionPlan;
-  status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'expired';
-  current_period_start: string;
-  current_period_end: string;
-  cancel_at_period_end: boolean;
-  stripe_subscription_id?: string;
-  stripe_customer_id?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PaymentTransaction {
-  id: string;
-  user_id: string;
-  subscription_id?: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  payment_method: 'credit_card' | 'debit_card' | 'paypal' | 'other';
-  stripe_payment_intent_id?: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Alias Profile interface for backward compatibility
-export interface Profile extends UserProfile {}
-
 // ============================================================================
 // PROPERTY TYPES
 // ============================================================================

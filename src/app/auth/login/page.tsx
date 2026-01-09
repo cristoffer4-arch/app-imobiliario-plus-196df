@@ -1,23 +1,17 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabase } from '@/app/providers';
-import GoogleSignInButton from '@/components/GoogleSignInButton';
+import { createClient } from '@/lib/supabase';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
 function LoginPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const supabase = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Get the redirect target from query params
-  const redirectedFrom = searchParams.get('redirectedFrom') || '/home';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +19,7 @@ function LoginPageContent() {
     setError('');
 
     try {
+      const supabase = createClient();
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -36,12 +31,32 @@ function LoginPageContent() {
         return;
       }
 
-      router.push(redirectedFrom);
+      router.push('/imoveis');
     } catch (err) {
       setError('Erro ao fazer login');
       console.error('Unexpected login error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const supabase = createClient();
+      const { error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: buildAbsoluteUrl('/auth/callback'),
+        },
+      });
+
+      if (googleError) {
+        setError('Erro ao iniciar login com Google');
+        console.error('Google login error:', googleError);
+      }
+    } catch (err) {
+      setError('Erro ao iniciar login com Google');
+      console.error('Unexpected Google login error:', err);
     }
   };
 
@@ -96,7 +111,13 @@ function LoginPageContent() {
           </div>
 
           <div>
-            <GoogleSignInButton redirectTo={redirectedFrom} />
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <span>Continuar com Google</span>
+            </button>
           </div>
 
           <div className="text-sm text-center">
