@@ -29,11 +29,20 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Permitir acesso a rotas públicas
   if (publicPaths.includes(pathname)) {
     return supabaseResponse;
+  }
+
+  // Protect /dashboard routes - redirect unauthenticated users to /login
+  if (pathname.startsWith('/dashboard')) {
+    if (!user) {
+      const loginUrl = new URL('/auth/login', request.url);
+      loginUrl.searchParams.set('redirectedFrom', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   // Redirecionar root para login (depois o usuário será redirecionado pelo cliente)
