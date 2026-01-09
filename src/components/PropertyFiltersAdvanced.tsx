@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X, Filter } from 'lucide-react';
-import { DISTRITOS_PT, TipologiaPT, CertificadoEnergetico } from '@/types/property-pt';
+import { DISTRITOS_PT, TipologiaPT, CertificadoEnergetico, CERTIFICADO_OPTIONS, TIPOLOGIA_LABELS } from '@/types/property-pt';
 import { PropertyType } from '@/types/property';
 
 export interface AdvancedFilters {
@@ -290,7 +290,7 @@ export default function PropertyFiltersAdvanced({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Todos</SelectItem>
-                  {['A+', 'A', 'B', 'B-', 'C', 'D', 'E', 'F'].map((cert) => (
+                  {CERTIFICADO_OPTIONS.map((cert) => (
                     <SelectItem key={cert} value={cert}>
                       {cert}
                     </SelectItem>

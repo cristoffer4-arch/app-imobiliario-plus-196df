@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { MapPin, Search, Loader2 } from 'lucide-react';
+import { initializeLeaflet } from '@/lib/leaflet-utils';
 
 interface LocationPickerProps {
   address?: string;
@@ -32,6 +33,7 @@ export default function LocationPicker({
   const [searchQuery, setSearchQuery] = useState(address);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
 
   // Default center (Lisbon)
@@ -42,26 +44,10 @@ export default function LocationPicker({
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    import('leaflet').then((leaflet) => {
-      const L = leaflet.default;
-
-      // Load CSS
-      if (!document.querySelector('link[href*="leaflet.css"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-      }
-
-      // Fix marker icons
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      });
-
-      setL(L);
+    initializeLeaflet().then((leaflet) => {
+      setL(leaflet);
+    }).catch((error) => {
+      console.error('Error loading Leaflet:', error);
     });
   }, []);
 
@@ -197,8 +183,28 @@ export default function LocationPicker({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    geocodeAddress(searchQuery);
+    
+    // Clear existing timeout
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    
+    // Debounce the search
+    const timeout = setTimeout(() => {
+      geocodeAddress(searchQuery);
+    }, 300);
+    
+    setDebounceTimeout(timeout);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+    };
+  }, [debounceTimeout]);
 
   return (
     <div className={`space-y-4 ${className}`}>

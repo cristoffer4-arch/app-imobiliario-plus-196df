@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PropertyFiltersAdvanced, { AdvancedFilters } from '@/components/PropertyFiltersAdvanced';
 import PropertyMapInteractive from '@/components/PropertyMapInteractive';
 import PropertyCard from '@/components/PropertyCard';
@@ -48,6 +49,7 @@ const SAMPLE_PROPERTIES: PropertyLocation[] = [
 ];
 
 export default function AdvancedSearchDemo() {
+  const router = useRouter();
   const [filters, setFilters] = useState<AdvancedFilters | null>(null);
   const [filteredProperties, setFilteredProperties] = useState<PropertyLocation[]>(SAMPLE_PROPERTIES);
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
@@ -85,7 +87,7 @@ export default function AdvancedSearchDemo() {
   const handlePropertyClick = (propertyId: string) => {
     console.log('Property clicked:', propertyId);
     // Navigate to property details page
-    window.location.href = `/properties/${propertyId}`;
+    router.push(`/properties/${propertyId}`);
   };
 
   return (

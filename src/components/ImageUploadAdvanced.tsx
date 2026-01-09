@@ -171,9 +171,9 @@ export default function ImageUploadAdvanced({
 
       const compressedFile = await imageCompression(file, compressionOptions);
 
-      // Generate unique filename
+      // Generate unique filename with crypto
       const fileExt = file.name.split('.').pop() || 'jpg';
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const filePath = `properties/${fileName}`;
 
       // Upload to Supabase Storage
@@ -340,7 +340,7 @@ export default function ImageUploadAdvanced({
   };
 
   // Sync with parent images prop
-  useState(() => {
+  useEffect(() => {
     if (images.length !== imageData.filter((img) => !img.isUploading).length) {
       setImageData(
         images.map((url, idx) => ({
@@ -350,7 +350,7 @@ export default function ImageUploadAdvanced({
         }))
       );
     }
-  });
+  }, [images, primaryImageIndex]);
 
   return (
     <div className="space-y-4">

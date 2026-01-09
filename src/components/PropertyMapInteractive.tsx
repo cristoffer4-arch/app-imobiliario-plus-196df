@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MapPin, Layers, ZoomIn, ZoomOut, Search, X } from 'lucide-react';
+import {
+  initializeLeaflet,
+  initializeMarkerCluster,
+} from '@/lib/leaflet-utils';
 import type { PropertyLocation, MapBounds } from '@/lib/maps';
 
 interface PropertyMapInteractiveProps {
@@ -54,46 +58,13 @@ export default function PropertyMapInteractive({
     const loadLeaflet = async () => {
       try {
         // Load Leaflet
-        const leaflet = await import('leaflet');
-        const L = leaflet.default;
+        const L = await initializeLeaflet();
 
         // Load MarkerCluster if enabled
         let MarkerClusterGroup = null;
         if (enableClustering) {
-          const clusterModule = await import('leaflet.markercluster');
-          MarkerClusterGroup = (clusterModule as any).default;
+          MarkerClusterGroup = await initializeMarkerCluster();
         }
-
-        // Load Leaflet CSS
-        if (!document.querySelector('link[href*="leaflet.css"]')) {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-          document.head.appendChild(link);
-        }
-
-        // Load MarkerCluster CSS
-        if (enableClustering && !document.querySelector('link[href*="MarkerCluster.css"]')) {
-          const clusterLink = document.createElement('link');
-          clusterLink.rel = 'stylesheet';
-          clusterLink.href =
-            'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css';
-          document.head.appendChild(clusterLink);
-
-          const clusterDefaultLink = document.createElement('link');
-          clusterDefaultLink.rel = 'stylesheet';
-          clusterDefaultLink.href =
-            'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css';
-          document.head.appendChild(clusterDefaultLink);
-        }
-
-        // Fix marker icons
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        });
 
         setL(L);
         setMarkerCluster(MarkerClusterGroup);
@@ -201,10 +172,16 @@ export default function PropertyMapInteractive({
         icon: propertyIcon,
       });
 
-      // Create popup content
+      // Create popup content with proper escaping
+      const escapeHtml = (text: string) => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      };
+
       const popupContent = `
         <div class="property-popup" style="min-width: 200px;">
-          <h3 class="font-semibold text-sm mb-1">${property.title}</h3>
+          <h3 class="font-semibold text-sm mb-1">${escapeHtml(property.title)}</h3>
           <p class="text-lg font-bold text-blue-600 mb-2">€${property.price.toLocaleString()}</p>
           ${
             property.distance
@@ -213,7 +190,7 @@ export default function PropertyMapInteractive({
           }
           <button 
             class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 w-full"
-            onclick="window.dispatchEvent(new CustomEvent('property-click', { detail: '${property.id}' }))"
+            data-property-id="${escapeHtml(property.id)}"
           >
             Ver Detalhes
           </button>
@@ -223,6 +200,18 @@ export default function PropertyMapInteractive({
       marker.bindPopup(popupContent, {
         maxWidth: 250,
         className: 'custom-popup',
+      });
+
+      // Add click handler to popup button
+      marker.on('popupopen', () => {
+        const button = document.querySelector(`[data-property-id="${escapeHtml(property.id)}"]`);
+        if (button) {
+          button.addEventListener('click', () => {
+            if (onPropertyClick) {
+              onPropertyClick(property.id);
+            }
+          });
+        }
       });
 
       markers.push(marker);
