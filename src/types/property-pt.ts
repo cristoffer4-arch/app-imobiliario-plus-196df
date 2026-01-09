@@ -208,3 +208,6 @@ export const CERTIFICADO_COLORS: Record<CertificadoEnergetico, string> = {
   'E': '#ee1c25',
   'F': '#b91622'
 };
+
+// Energy certificate options for UI
+export const CERTIFICADO_OPTIONS: CertificadoEnergetico[] = ['A+', 'A', 'B', 'B-', 'C', 'D', 'E', 'F'];
