@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState } from useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/providers';
 import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
-export default function LoginPage() {
+function LoginPageContent() {function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = useSupabase();
@@ -108,4 +108,12 @@ export default function LoginPage() {
       </div>
     </div>
   );
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
+  );
+}
 }
