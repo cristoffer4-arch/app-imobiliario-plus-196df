@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from useState, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/providers';
