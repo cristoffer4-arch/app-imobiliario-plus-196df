@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import PropertyForm from '@/components/PropertyForm';
 import { ArrowLeft } from 'lucide-react';
 
+// Disable prerendering for this page to avoid server-side hook errors
+export const dynamic = 'force-dynamic';
+
 export default function NewPropertyPage() {
   const router = useRouter();
 
