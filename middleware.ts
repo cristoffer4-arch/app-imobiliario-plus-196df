@@ -6,26 +6,13 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/callback', '/pricing', '/termos', '/privacidade'];
 
-  // Permitir acesso a rotas públicas
-  if (publicPaths.includes(pathname)) {
-    return NextResponse.next();
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase environment variables in middleware');
-    return NextResponse.redirect(new URL('/auth/login?error=config_error', request.url));
-  }
-
   let supabaseResponse = NextResponse.next({
     request,
   });
 
   const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
@@ -42,13 +29,11 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refresh session if expired - required for Server Components
-  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.auth.getUser();
 
-  // Pprotected routes - redirect unauthenticated users to /login
-  if (pathname.startsWith('/dashboard') startsWith('/dashboard') || pathname.startsWith('/gamificacao') || pathname.startsWith('/scanner-documentos')) && !user) {
-    const loginUrl = new URL('/auth/login', request.url);
-    loginUrl.searchParams.set('redirectedFrom', pathname);
-    return NextResponse.redirect(loginUrl);
+  // Permitir acesso a rotas públicas
+  if (publicPaths.includes(pathname)) {
+    return supabaseResponse;
   }
 
   // Redirecionar root para login (depois o usuário será redirecionado pelo cliente)

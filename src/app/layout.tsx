@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import "../lib/fonts";
-import { SupabaseProvider } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -151,9 +150,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SupabaseProvider>
-          {children}
-        </SupabaseProvider>
+                        {children}
       </body>
     </html>
   );
