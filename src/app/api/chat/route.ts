@@ -118,6 +118,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Inicializar Gemini
+
+        // DEBUG: Logs temporários para diagnóstico
+        console.log('[DEBUG] API Key presente:', !!apiKey);
+        console.log('[DEBUG] API Key primeiros 10 chars:', apiKey?.substring(0, 10));
+        console.log('[DEBUG] Modelo sendo usado: gemini-2.0-flash');
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const promptWithContext = buildPrompt(userInput, context, history);
@@ -132,6 +137,10 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
       });
     } catch (geminiError: unknown) {
+          // DEBUG: Log detalhado do erro
+          console.error('[DEBUG] Erro completo:', JSON.stringify(geminiError, null, 2));
+          console.error('[DEBUG] Status code:', (geminiError as any)?.response?.status);
+          console.error('[DEBUG] Error name:', (geminiError as any)?.name);
       const errorMessage =
         geminiError instanceof Error
           ? geminiError.message
