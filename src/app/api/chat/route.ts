@@ -17,8 +17,9 @@ type PropertyContext = {
   area?: number;
 };
 
-// Forçar runtime Node.js
+// Forçar runtime Node.js e evitar cache estático em plataformas serverless
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const buildPrompt = (
   message: string,
@@ -105,14 +106,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar API Key
-    const apiKey = process.env.GOOGLE_GEMINI_KEY;
-        console.log('[DEBUG] API Key exists:', !!apiKey);
-    
+    // Verificar API Key (aceita GOOGLE_GEMINI_KEY ou GOOGLE_API_KEY para compatibilidade)
+    const apiKey = process.env.GOOGLE_GEMINI_KEY || process.env.GOOGLE_API_KEY;
+    console.log(
+      '[DEBUG] Gemini API key source:',
+      process.env.GOOGLE_GEMINI_KEY
+        ? 'GOOGLE_GEMINI_KEY'
+        : process.env.GOOGLE_API_KEY
+          ? 'GOOGLE_API_KEY'
+          : 'none'
+    );
+
     if (!apiKey) {
-      console.error('GOOGLE_GEMINI_KEY não configurada');
+      console.error('Gemini API key não configurada (GOOGLE_GEMINI_KEY ou GOOGLE_API_KEY ausentes)');
       return NextResponse.json(
-        { error: 'Configuração inválida do servidor' },
+        { error: 'Configuração inválida do servidor (API key ausente)' },
         { status: 500 }
       );
     }
@@ -127,20 +135,28 @@ export async function POST(request: NextRequest) {
             console.log('[DEBUG] Calling Gemini with prompt length:', promptWithContext.length);
       const result = await model.generateContent(promptWithContext);
       const response = result.response.text();
-            console.log('[DEBUG] Gemini response received, length:', response.length);
+      console.log('[DEBUG] Gemini response received, length:', response.length);
 
       return NextResponse.json({
         message: response,
         timestamp: new Date().toISOString(),
       });
     } catch (geminiError: unknown) {
-      console.error('Erro da API Gemini:', geminiError);
-            console.log('[DEBUG] Gemini error details:', JSON.stringify(geminiError));
-      
-      // Tratar erros específicos da Gemini
-      const errorMessage = geminiError instanceof Error
-        ? geminiError.message
-        : 'Erro ao chamar o modelo de IA';
+      const errorMessage =
+        geminiError instanceof Error
+          ? geminiError.message
+          : typeof geminiError === 'object' && geminiError !== null && 'message' in geminiError
+            ? String((geminiError as { message?: unknown }).message)
+            : 'Erro ao chamar o modelo de IA';
+
+      console.error('Erro da API Gemini:', errorMessage);
+      if (process.env.NODE_ENV !== 'production') {
+        try {
+          console.error('[DEBUG] Gemini error details:', JSON.stringify(geminiError));
+        } catch {
+          console.error('[DEBUG] Gemini error details: não foi possível serializar');
+        }
+      }
       
       if (errorMessage.includes('quota')) {
         return NextResponse.json(
@@ -157,7 +173,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: 'Erro ao processar sua mensagem com a IA' },
+        { error: errorMessage || 'Erro ao processar sua mensagem com a IA' },
         { status: 502 }
       );
     }
