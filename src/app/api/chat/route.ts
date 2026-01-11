@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar API Key
     const apiKey = process.env.GOOGLE_GEMINI_KEY;
+        console.log('[DEBUG] API Key exists:', !!apiKey);
     
     if (!apiKey) {
       console.error('GOOGLE_GEMINI_KEY não configurada');
@@ -123,8 +124,10 @@ export async function POST(request: NextRequest) {
 
     // Chamar API com tratamento de erro específico
     try {
+            console.log('[DEBUG] Calling Gemini with prompt length:', promptWithContext.length);
       const result = await model.generateContent(promptWithContext);
       const response = result.response.text();
+            console.log('[DEBUG] Gemini response received, length:', response.length);
 
       return NextResponse.json({
         message: response,
@@ -132,6 +135,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (geminiError: unknown) {
       console.error('Erro da API Gemini:', geminiError);
+            console.log('[DEBUG] Gemini error details:', JSON.stringify(geminiError));
       
       // Tratar erros específicos da Gemini
       const errorMessage = geminiError instanceof Error
