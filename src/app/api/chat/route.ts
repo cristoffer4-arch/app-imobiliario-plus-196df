@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: errorMessage || 'Erro ao processar sua mensagem com a IA' },
+        { error: errorMessage },
         { status: 502 }
       );
     }
