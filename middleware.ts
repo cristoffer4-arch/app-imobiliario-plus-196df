@@ -46,5 +46,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  // Evita interceptar rotas de API (ex: /api/chat) que não precisam de Supabase
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/|.*\\..*).*)'],
 };
