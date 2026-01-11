@@ -1,8 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp?: string | Date;
+};
+
+type PropertyContext = {
+  title?: string;
+  price?: number;
+  location?: string;
+  type?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+};
+
 // Forçar runtime Node.js
 export const runtime = 'nodejs';
+
+const buildPrompt = (
+  message: string,
+  context?: PropertyContext,
+  history?: ChatMessage[]
+) => {
+  let prompt = 'Você é um assistente especializado em imóveis de luxo. ';
+  prompt += 'Responda de forma profissional, prestativa e detalhada em português.\n\n';
+
+  if (context && typeof context === 'object') {
+    prompt += 'Contexto do Imóvel:\n';
+    if (context.title) prompt += `- Título: ${context.title}\n`;
+    if (context.price) prompt += `- Preço: R$ ${context.price.toLocaleString('pt-BR')}\n`;
+    if (context.location) prompt += `- Localização: ${context.location}\n`;
+    if (context.type) prompt += `- Tipo: ${context.type}\n`;
+    if (context.bedrooms) prompt += `- Quartos: ${context.bedrooms}\n`;
+    if (context.bathrooms) prompt += `- Banheiros: ${context.bathrooms}\n`;
+    if (context.area) prompt += `- Área: ${context.area}m²\n`;
+    prompt += '\n';
+  }
+
+  if (Array.isArray(history) && history.length > 0) {
+    prompt += 'Histórico da Conversa:\n';
+    history.slice(-5).forEach((msg) => {
+      if (!msg?.content || !msg?.role) return;
+      const role = msg.role === 'user' ? 'Usuário' : 'Assistente';
+      prompt += `${role}: ${msg.content}\n`;
+    });
+    prompt += '\n';
+  }
+
+  prompt += `Usuário: ${message}\nAssistente:`;
+  return prompt;
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,11 +77,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { prompt } = body;
+    const { prompt, message, context, history } = body as {
+      prompt?: string;
+      message?: string;
+      context?: PropertyContext;
+      history?: ChatMessage[];
+    };
 
-    // Validar e normalizar prompt
-    const normalized = prompt?.trim();
-    if (!normalized || typeof normalized !== 'string') {
+    const userInput = typeof prompt === 'string' && prompt.trim()
+      ? prompt.trim()
+      : typeof message === 'string' && message.trim()
+        ? message.trim()
+        : '';
+
+    if (!userInput) {
       return NextResponse.json(
         { error: 'Prompt é obrigatório' },
         { status: 400 }
@@ -39,7 +98,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar tamanho máximo
-    if (normalized.length > 10000) {
+    if (userInput.length > 10000) {
       return NextResponse.json(
         { error: 'Prompt muito longo (máximo 10000 caracteres)' },
         { status: 400 }
@@ -60,17 +119,24 @@ export async function POST(request: NextRequest) {
     // Inicializar Gemini
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const promptWithContext = buildPrompt(userInput, context, history);
+
     // Chamar API com tratamento de erro específico
     try {
-      const result = await model.generateContent(normalized);
+      const result = await model.generateContent(promptWithContext);
       const response = result.response.text();
 
-      return NextResponse.json({ response });
-    } catch (geminiError: any) {
+      return NextResponse.json({
+        message: response,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (geminiError: unknown) {
       console.error('Erro da API Gemini:', geminiError);
       
       // Tratar erros específicos da Gemini
-      const errorMessage = geminiError?.message || 'Erro ao chamar o modelo de IA';
+      const errorMessage = geminiError instanceof Error
+        ? geminiError.message
+        : 'Erro ao chamar o modelo de IA';
       
       if (errorMessage.includes('quota')) {
         return NextResponse.json(
@@ -91,7 +157,7 @@ export async function POST(request: NextRequest) {
         { status: 502 }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erro geral na API:', error);
     return NextResponse.json(
       { error: 'Erro ao processar requisição' },
