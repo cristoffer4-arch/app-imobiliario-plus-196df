@@ -108,14 +108,6 @@ export async function POST(request: NextRequest) {
 
     // Verificar API Key (aceita GOOGLE_GEMINI_KEY ou GOOGLE_API_KEY para compatibilidade)
     const apiKey = process.env.GOOGLE_GEMINI_KEY || process.env.GOOGLE_API_KEY;
-    console.log(
-      '[DEBUG] Gemini API key source:',
-      process.env.GOOGLE_GEMINI_KEY
-        ? 'GOOGLE_GEMINI_KEY'
-        : process.env.GOOGLE_API_KEY
-          ? 'GOOGLE_API_KEY'
-          : 'none'
-    );
 
     if (!apiKey) {
       console.error('Gemini API key não configurada (GOOGLE_GEMINI_KEY ou GOOGLE_API_KEY ausentes)');
@@ -127,15 +119,13 @@ export async function POST(request: NextRequest) {
 
     // Inicializar Gemini
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const promptWithContext = buildPrompt(userInput, context, history);
 
     // Chamar API com tratamento de erro específico
     try {
-            console.log('[DEBUG] Calling Gemini with prompt length:', promptWithContext.length);
       const result = await model.generateContent(promptWithContext);
       const response = result.response.text();
-      console.log('[DEBUG] Gemini response received, length:', response.length);
 
       return NextResponse.json({
         message: response,
