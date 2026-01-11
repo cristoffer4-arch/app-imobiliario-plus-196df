@@ -4,7 +4,6 @@ import { useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
-import { buildAbsoluteUrl } from '@/lib/site-url';
 
 function LoginPageContent() {
   const router = useRouter();
@@ -37,26 +36,6 @@ function LoginPageContent() {
       console.error('Unexpected login error:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const supabase = createClient();
-      const { error: googleError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: buildAbsoluteUrl('/auth/callback'),
-        },
-      });
-
-      if (googleError) {
-        setError('Erro ao iniciar login com Google');
-        console.error('Google login error:', googleError);
-      }
-    } catch (err) {
-      setError('Erro ao iniciar login com Google');
-      console.error('Unexpected Google login error:', err);
     }
   };
 
@@ -99,7 +78,6 @@ function LoginPageContent() {
               />
             </div>
           </div>
-
           <div>
             <button
               type="submit"
@@ -109,17 +87,6 @@ function LoginPageContent() {
               {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </div>
-
-          <div>
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <span>Continuar com Google</span>
-            </button>
-          </div>
-
           <div className="text-sm text-center">
             <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
               Não tem conta? Cadastre-se
@@ -129,7 +96,7 @@ function LoginPageContent() {
       </div>
     </div>
   );
-  }
+}
 
 export default function LoginPage() {
   return (
@@ -137,5 +104,4 @@ export default function LoginPage() {
       <LoginPageContent />
     </Suspense>
   );
-
 }
